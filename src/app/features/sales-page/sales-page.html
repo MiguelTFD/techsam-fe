@@ -1,0 +1,47 @@
+<div class="sales-page">
+  <!-- Header -->
+  <header class="page-header">
+    <h1>💰 Gestión de Ventas</h1>
+    <p>Administra y controla el historial de ventas</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ totalVentas }}</span>
+      <span class="stat-label">Ventas Totales</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ ventasCompletadas }}</span>
+      <span class="stat-label">Ventas Completadas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ formatCurrency(totalIngresos) }}</span>
+      <span class="stat-label">Ingresos Totales</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ formatCurrency(promedioVenta) }}</span>
+      <span class="stat-label">Promedio por Venta</span>
+    </div>
+  </div>
+
+  <!-- Tabla de Ventas -->
+  <div class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [showAddButton]="showAddButton"
+      [addButtonLabel]="addButtonLabel"
+      [search]="{ placeholder: 'Buscar ventas...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)"
+      (add)="onAdd()">
+    </app-data-table>
+  </div>
+</div>

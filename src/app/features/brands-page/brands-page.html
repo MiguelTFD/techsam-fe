@@ -1,0 +1,43 @@
+<div class="brands-page">
+  <!-- Header -->
+  <header class="page-header">
+    <h1>⭐ Gestión de Marcas</h1>
+    <p>Administra las marcas y fabricantes de productos</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ totalBrands }}</span>
+      <span class="stat-label">Marcas Totales</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ activeBrands }}</span>
+      <span class="stat-label">Marcas Activas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ internationalBrands }}</span>
+      <span class="stat-label">Países</span>
+    </div>
+  </div>
+
+  <!-- Tabla de Marcas -->
+  <div class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [showAddButton]="showAddButton"
+      [addButtonLabel]="addButtonLabel"
+      [search]="{ placeholder: 'Buscar marcas...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)"
+      (add)="onAdd()">
+    </app-data-table>
+  </div>
+</div>

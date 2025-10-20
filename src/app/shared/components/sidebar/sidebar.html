@@ -1,0 +1,30 @@
+<!-- sidebar.component.html -->
+<aside class="sidebar" [class.sidebar--collapsed]="!isOpen">
+  
+  <!-- Header del Sidebar -->
+  <div class="sidebar__header">
+    <h2 *ngIf="isOpen" class="sidebar__title">Mi App</h2>
+    <button (click)="toggleSidebar()" class="sidebar__toggle">
+      {{ isOpen ? '◀' : '▶' }}
+    </button>
+  </div>
+
+  <!-- Navegación -->
+  <nav class="sidebar__nav">
+    <a 
+      *ngFor="let item of navItems" 
+      [routerLink]="item.url"
+      routerLinkActive="active"
+      class="sidebar__nav-item">
+      
+      <span class="sidebar__nav-icon">{{ item.icon }}</span>
+      
+      <span 
+        class="sidebar__nav-text"
+        [class.sidebar__nav-text--hidden]="!isOpen">
+        {{ item.title }}
+      </span>
+    </a>
+  </nav>
+
+</aside>

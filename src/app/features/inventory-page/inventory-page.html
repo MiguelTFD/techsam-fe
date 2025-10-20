@@ -1,0 +1,51 @@
+<div class="inventory-page">
+  <!-- Header -->
+  <header class="page-header">
+    <h1>📦 Gestión de Inventario</h1>
+    <p>Administra y controla tu stock de productos</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ totalProductos }}</span>
+      <span class="stat-label">Productos Totales</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ productosDisponibles }}</span>
+      <span class="stat-label">Disponibles</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ productosAgotados }}</span>
+      <span class="stat-label">Agotados</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ productosBajoStock }}</span>
+      <span class="stat-label">Bajo Stock</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ formatCurrency(valorTotalInventario) }}</span>
+      <span class="stat-label">Valor Total</span>
+    </div>
+  </div>
+
+  <!-- Tabla de Productos -->
+  <div class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [showAddButton]="showAddButton"
+      [addButtonLabel]="addButtonLabel"
+      [search]="{ placeholder: 'Buscar productos...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)"
+      (add)="onAdd()">
+    </app-data-table>
+  </div>
+</div>

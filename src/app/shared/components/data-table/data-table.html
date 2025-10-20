@@ -1,0 +1,145 @@
+<div class="data-table">
+  
+   <!-- HEADER CON BOTÓN AÑADIR -->
+  <div class="table-header">
+    <div class="header-actions">
+      <div class="search-container">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          [placeholder]="search.placeholder"
+          class="search-input">
+        
+        <button 
+          *ngIf="searchTerm" 
+          (click)="clearSearch()"
+          class="clear-search">
+          ✕
+        </button>
+      </div>
+
+      <!-- BOTÓN AÑADIR -->
+      <button 
+        *ngIf="showAddButton"
+        (click)="onAdd()"
+        class="add-button">
+        ➕ {{ addButtonLabel }}
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th 
+            *ngFor="let col of columns" 
+            [class.sortable]="col.sortable"
+            [class.sorted]="sortColumn === col.key"
+            (click)="onSort(col)">
+            
+            {{ col.label }}
+            
+            <span 
+              *ngIf="col.sortable && sortColumn === col.key" 
+              class="sort-icon">
+              {{ sortDirection === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          
+          <!-- COLUMNA ACCIONES -->
+          <th *ngIf="showActions" class="actions-header">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngIf="loading">
+          <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="loading">
+            ⏳ Cargando datos...
+          </td>
+        </tr>
+
+        <tr 
+          *ngFor="let row of data; let i = index"
+          (click)="onRowClick(row)"
+          class="table-row">
+          
+          <!-- DATOS NORMALES -->
+          <td *ngFor="let col of columns">
+            {{ row[col.key] }}
+          </td>
+          
+          <!-- COLUMNA ACCIONES -->
+          <td class="actions-cell">
+            <div class="actions-container">
+              <button 
+                *ngFor="let action of actions"
+                (click)="onAction(action.name, row, $event)"
+                [class]="'action-btn ' + action.name"
+                [title]="action.label">
+                {{ action.icon }} {{ action.label }}
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="!loading && data.length === 0">
+          <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="no-data">
+            {{ searchTerm ? '🔍 No se encontraron resultados' : '📭 No hay datos disponibles' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <div class="pagination-info">
+  Mostrando {{ displayRangeStart }} - 
+  {{ displayRangeEnd }} 
+  de {{ pagination.total }} registros
+</div>
+
+    <div class="pagination-controls">
+      <button 
+        (click)="goToPage(1)"
+        [disabled]="pagination.page === 1"
+        class="pagination-btn">
+        ««
+      </button>
+
+      <button 
+        (click)="goToPage(pagination.page - 1)"
+        [disabled]="pagination.page === 1"
+        class="pagination-btn">
+        «
+      </button>
+
+      <button 
+        *ngFor="let page of visiblePages"
+        (click)="goToPage(page)"
+        [class.active]="page === pagination.page"
+        class="pagination-btn">
+        {{ page }}
+      </button>
+
+      <button 
+        (click)="goToPage(pagination.page + 1)"
+        [disabled]="pagination.page === totalPages"
+        class="pagination-btn">
+        »
+      </button>
+
+      <button 
+        (click)="goToPage(totalPages)"
+        [disabled]="pagination.page === totalPages"
+        class="pagination-btn">
+        »»
+      </button>
+    </div>
+  </div>
+</div>

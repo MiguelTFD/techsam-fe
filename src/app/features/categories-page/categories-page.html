@@ -1,0 +1,44 @@
+<div class="categories-page">
+  <!-- Header -->
+  <header class="page-header">
+    <h1>🏷️ Gestión de Categorías</h1>
+    <p>Organiza y administra las categorías de productos</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ totalCategories }}</span>
+      <span class="stat-label">Categorías Totales</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ activeCategories }}</span>
+      <span class="stat-label">Categorías Activas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ categoriesWithProducts }}</span>
+      <span class="stat-label">Con Productos</span>
+    </div>
+  </div>
+
+  <!-- Tabla de Categorías -->
+  <div class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+        [actions]="actions"    
+      [showAddButton]="showAddButton"
+      [addButtonLabel]="addButtonLabel"
+      [search]="{ placeholder: 'Buscar categorías...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)"
+      (add)="onAdd()">
+    </app-data-table>
+  </div>
+</div>
