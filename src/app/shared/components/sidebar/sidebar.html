@@ -1,15 +1,14 @@
-<!-- sidebar.component.html -->
 <aside class="sidebar" [class.sidebar--collapsed]="!isOpen">
   
   <!-- Header del Sidebar -->
   <div class="sidebar__header">
-    <h2 *ngIf="isOpen" class="sidebar__title">Mi App</h2>
+    <h2 *ngIf="isOpen" class="sidebar__title">Mi Tienda</h2>
     <button (click)="toggleSidebar()" class="sidebar__toggle">
       {{ isOpen ? '◀' : '▶' }}
     </button>
   </div>
 
-  <!-- Navegación -->
+  <!-- Navegación Principal -->
   <nav class="sidebar__nav">
     <a 
       *ngFor="let item of navItems" 
@@ -26,5 +25,34 @@
       </span>
     </a>
   </nav>
+
+  <!-- Información del Usuario (Opcional) -->
+  <div *ngIf="isOpen && currentUser" class="sidebar__user">
+    <div class="user-info">
+      <div class="user-avatar">
+        {{ currentUser.name.charAt(0) }}
+      </div>
+      <div class="user-details">
+        <div class="user-name">{{ currentUser.name }}</div>
+        <div class="user-role">{{ currentUser.role }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer con Botón de Logout -->
+  <div class="sidebar__footer">
+    <button 
+      (click)="onLogout()"
+      class="sidebar__logout-btn">
+      
+      <span class="sidebar__nav-icon">🚪</span>
+      
+      <span 
+        class="sidebar__nav-text"
+        [class.sidebar__nav-text--hidden]="!isOpen">
+        Cerrar Sesión
+      </span>
+    </button>
+  </div>
 
 </aside>
