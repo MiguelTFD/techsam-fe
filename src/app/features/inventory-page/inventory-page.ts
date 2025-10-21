@@ -1,14 +1,85 @@
 import { Component } from '@angular/core';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
+import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [DataTable],
+  imports: [DataTable, ModalForm],
   templateUrl: './inventory-page.html',
   styleUrl: './inventory-page.scss'
 })
 export class InventoryPage {
+    // AGREGAR ESTAS PROPIEDADES PARA EL MODAL
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nuevo Producto';
+  
+  // Datos para los selects (en un caso real vendrían de tu API)
+  categories = [
+    { value: 1, label: 'Electrónicos' },
+    { value: 2, label: 'Accesorios' },
+    { value: 3, label: 'Componentes' },
+    { value: 4, label: 'Redes' },
+    { value: 5, label: 'Impresión' }
+  ];
+
+  brands = [
+    { value: 1, label: 'Samsung' },
+    { value: 2, label: 'Apple' },
+    { value: 3, label: 'HP' },
+    { value: 4, label: 'Lenovo' },
+    { value: 5, label: 'Dell' },
+    { value: 6, label: 'Logitech' },
+    { value: 7, label: 'Sony' },
+    { value: 8, label: 'Kingston' }
+  ];
+
+  modalFields: FormField[] = [
+    {
+      key: 'nombre_producto',
+      label: 'Nombre del Producto',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Laptop HP Pavilion 15'
+    },
+    {
+      key: 'id_categoria',
+      label: 'Categoría',
+      type: 'select',
+      required: true,
+      options: this.categories
+    },
+    {
+      key: 'id_marca',
+      label: 'Marca',
+      type: 'select',
+      required: true,
+      options: this.brands
+    },
+    {
+      key: 'precio_venta',
+      label: 'Precio de Venta (S/)',
+      type: 'number',
+      required: true,
+      placeholder: '0.00'
+    },
+    {
+      key: 'stock',
+      label: 'Stock Inicial',
+      type: 'number',
+      required: true,
+      placeholder: '0'
+    },
+    {
+      key: 'descripcion',
+      label: 'Descripción Adicional',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Características o especificaciones del producto...'
+    }
+  ];
+
   // Columnas basadas en tu tabla BD de productos
   columns: Column[] = [
     { key: 'id_producto', label: 'ID', sortable: true },
@@ -51,6 +122,11 @@ export class InventoryPage {
   showActions: boolean = true;
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nuevo Producto';
+
+  actions = [
+    { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
+    { name: 'toggle', label: 'Discontinuar', icon: '🚫', color: 'red', confirm: true, dangerous: true }
+  ];
 
   // Propiedades computadas para estadísticas
   get totalProductos(): number {
@@ -116,10 +192,11 @@ export class InventoryPage {
   }
 
   onRowClick(row: TableData) {
-    console.log('📝 Producto seleccionado:', row);
+    console.log('Producto seleccionado:', row);
     alert(`Producto: ${row['nombre_producto']}\nCategoría: ${row['categoria']}\nMarca: ${row['marca']}\nPrecio: S/ ${row['precio_venta']}\nStock: ${row['stock']} unidades`);
   }
 
+  // ACTUALIZAR el método onAction para usar toggle
   onAction(event: ActionEvent) {
     console.log('🔧 Acción en producto:', event.action, event.row);
     
@@ -127,15 +204,63 @@ export class InventoryPage {
       case 'edit':
         this.editProduct(event.row);
         break;
-      case 'delete':
-        this.deleteProduct(event.row);
+      case 'toggle':
+        this.toggleProduct(event.row);
         break;
     }
   }
 
+  private toggleProduct(product: any) {
+    const action = product.estado_stock === 'Discontinuado' ? 'Reactivar' : 'Discontinuar';
+    
+    if (confirm(`¿${action} el producto "${product.nombre_producto}"?`)) {
+      console.log(`✅ Producto ${action.toLowerCase()}:`, product.nombre_producto);
+      // Aquí iría la lógica para cambiar el estado en tu API
+      alert(`Producto ${action.toLowerCase()} correctamente`);
+    }
+  }
+
   onAdd() {
-    console.log('➕ Añadir nuevo producto');
-    alert('Abrir formulario para nuevo producto');
+     this.showModal = true;
+  }
+  // AGREGAR métodos para el modal
+  onSaveProduct(formData: any) {
+    console.log('Guardando producto:', formData);
+    this.modalLoading = true;
+
+    // Simular guardado
+    setTimeout(() => {
+      // Encontrar nombres de categoría y marca para mostrar en la tabla
+      const categoria = this.categories.find(c => c.value == formData.id_categoria)?.label || 'Desconocida';
+      const marca = this.brands.find(b => b.value == formData.id_marca)?.label || 'Desconocida';
+      
+      // Aquí llamarías a tu API
+      const newProduct = {
+        id_producto: this.productsData.length + 1,
+        nombre_producto: formData.nombre_producto,
+        categoria: categoria,
+        marca: marca,
+        precio_venta: parseFloat(formData.precio_venta),
+        stock: parseInt(formData.stock),
+        estado_stock: this.getStockStatus(parseInt(formData.stock)),
+        // Guardar los IDs reales para cuando edites
+        id_categoria: formData.id_categoria,
+        id_marca: formData.id_marca,
+        descripcion: formData.descripcion || ''
+      };
+
+      this.productsData.unshift(newProduct);
+      this.updateDisplayedData();
+      
+      this.modalLoading = false;
+      this.showModal = false;
+      
+      alert('Producto creado exitosamente');
+    }, 1000);
+  }
+
+  onCancelModal() {
+    this.showModal = false;
   }
 
   private editProduct(product: any) {

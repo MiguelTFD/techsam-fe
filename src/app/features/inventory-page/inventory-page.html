@@ -48,4 +48,15 @@
       (add)="onAdd()">
     </app-data-table>
   </div>
+
+   <!-- MODAL PARA NUEVO PRODUCTO -->
+  <app-modal-form
+    [title]="modalTitle"
+    [fields]="modalFields"
+    [show]="showModal"
+    [loading]="modalLoading"
+    (save)="onSaveProduct($event)"
+    (cancel)="onCancelModal()">
+  </app-modal-form>
+  
 </div>

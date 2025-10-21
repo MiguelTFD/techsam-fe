@@ -1,0 +1,73 @@
+<div class="modal-overlay" *ngIf="show" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="close-btn" (click)="onCancel()">×</button>
+    </div>
+
+    <!-- Form -->
+    <div class="modal-body">
+      <form (ngSubmit)="onSave()" class="form">
+        
+        <div *ngFor="let field of fields; trackBy: trackByField" class="form-group">
+          <label [for]="field.key" class="form-label">
+            {{ field.label }}
+            <span *ngIf="field.required" class="required">*</span>
+          </label>
+
+          <!-- Input Text/Number/Email/Password -->
+          <input
+            *ngIf="field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'password'"
+            [id]="field.key"
+            [type]="field.type"
+            [placeholder]="field.placeholder || ''"
+            [(ngModel)]="formData[field.key]"
+            [name]="field.key"
+            class="form-input"
+            [required]="field.required ?? false">
+
+          <!-- Textarea -->
+          <textarea
+            *ngIf="field.type === 'textarea'"
+            [id]="field.key"
+            [placeholder]="field.placeholder || ''"
+            [(ngModel)]="formData[field.key]"
+            [name]="field.key"
+            class="form-textarea"
+            [required]="field.required ?? false"
+            rows="4">
+          </textarea>
+
+          <!-- Select -->
+          <select
+            *ngIf="field.type === 'select'"
+            [id]="field.key"
+            [(ngModel)]="formData[field.key]"
+            [name]="field.key"
+            class="form-select"
+            [required]="field.required ?? false">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let option of field.options" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-save" (click)="onSave()" [disabled]="loading">
+        {{ loading ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -32,7 +32,6 @@
       [data]="displayedData"
       [loading]="loading"
       [pagination]="pagination"
-      [showActions]="showActions"
       [showAddButton]="showAddButton"
       [addButtonLabel]="addButtonLabel"
       [search]="{ placeholder: 'Buscar ventas...', debounceTime: 500 }"
@@ -44,4 +43,15 @@
       (add)="onAdd()">
     </app-data-table>
   </div>
+
+   <!-- MODAL PARA NUEVA VENTA -->
+  <app-modal-form
+    [title]="modalTitle"
+    [fields]="modalFields"
+    [show]="showModal"
+    [loading]="modalLoading"
+    (save)="onSaveSale($event)"
+    (cancel)="onCancelModal()">
+  </app-modal-form>
+
 </div>

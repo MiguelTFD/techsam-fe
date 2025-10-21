@@ -40,4 +40,13 @@
       (add)="onAdd()">
     </app-data-table>
   </div>
+  
+<app-modal-form
+    [title]="modalTitle"
+    [fields]="modalFields"
+    [show]="showModal"
+    [loading]="modalLoading"
+    (save)="onSaveBrand($event)"
+    (cancel)="onCancelModal()">
+  </app-modal-form>
 </div>

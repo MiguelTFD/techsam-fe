@@ -1,14 +1,36 @@
 import { Component } from '@angular/core';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent} from '../../shared/components/data-table/types';
+import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 
 @Component({
   selector: 'app-categories-page',
-  imports: [DataTable],
+  imports: [DataTable, ModalForm],
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.scss'
 })
 export class CategoriesPage {
+  // PROPIEDADES PARA EL MODAL de nueva categoria
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nueva Categoría';
+
+   modalFields: FormField[] = [
+    {
+      key: 'name',
+      label: 'Nombre de la categoría',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Electrónicos'
+    },
+    {
+      key: 'description', 
+      label: 'Descripción',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Descripción opcional de la categoría'
+    }
+  ];
   // Columnas específicas para categorías
   columns: Column[] = [
     { key: 'id', label: 'ID', sortable: true },
@@ -17,6 +39,7 @@ export class CategoriesPage {
     { key: 'productCount', label: 'Productos', sortable: true },
     { key: 'status', label: 'Estado', sortable: true }
   ];
+
 
   // Datos de ejemplo para categorías
   categoriesData: TableData[] = [
@@ -117,9 +140,39 @@ export class CategoriesPage {
   }
 
   onAdd() {
-    console.log('➕ Añadir nueva categoría');
-    alert('Abrir formulario para nueva categoría');
+     this.showModal = true;
   }
+
+  // métodos para el modal
+  onSaveCategory(formData: any) {
+    console.log('💾 Guardando categoría:', formData);
+    this.modalLoading = true;
+
+    // Simular guardado
+    setTimeout(() => {
+      // Aquí llamarías a tu API
+      const newCategory = {
+        id: this.categoriesData.length + 1,
+        name: formData.name,
+        description: formData.description,
+        productCount: 0,
+        status: 'Activo'
+      };
+
+      this.categoriesData.unshift(newCategory);
+      this.updateDisplayedData();
+      
+      this.modalLoading = false;
+      this.showModal = false;
+      
+      alert('✅ Categoría creada exitosamente');
+    }, 1000);
+  }
+
+  onCancelModal() {
+    this.showModal = false;
+  }
+
 
   private editCategory(category: any) {
     console.log('✏️ Editando categoría:', category);

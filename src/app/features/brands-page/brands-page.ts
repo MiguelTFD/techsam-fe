@@ -1,14 +1,43 @@
 import { Component } from '@angular/core';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
+import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 
 @Component({
   selector: 'app-brands-page',
-  imports: [DataTable],
+  imports: [DataTable, ModalForm],
   templateUrl: './brands-page.html',
   styleUrl: './brands-page.scss'
 })
 export class BrandsPage {
+  //PROPIEDADES PARA EL MODAL
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nueva Marca';
+  
+  modalFields: FormField[] = [
+    {
+      key: 'name',
+      label: 'Nombre de la marca',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Samsung, Apple, HP...'
+    },
+    {
+      key: 'description', 
+      label: 'Descripción',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Descripción de la marca o fabricante'
+    },
+    {
+      key: 'country',
+      label: 'País de origen',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Corea del Sur, Estados Unidos...'
+    }
+  ];
   // Columnas específicas para marcas
   columns: Column[] = [
     { key: 'id', label: 'ID', sortable: true },
@@ -45,6 +74,11 @@ export class BrandsPage {
   showActions: boolean = true;
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nueva Marca';
+
+   actions = [
+    { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
+    { name: 'toggle', label: 'Activar/Desactivar', icon: '🔁', color: 'orange', confirm: true }
+  ];
 
   // Propiedades computadas para estadísticas
   get totalBrands(): number {
@@ -104,6 +138,7 @@ export class BrandsPage {
     alert(`Marca: ${row['name']}\nPaís: ${row['country']}\nProductos: ${row['productCount']}`);
   }
 
+   // ACTUALIZAR el método onAction para usar toggle
   onAction(event: ActionEvent) {
     console.log('🔧 Acción en marca:', event.action, event.row);
     
@@ -111,15 +146,56 @@ export class BrandsPage {
       case 'edit':
         this.editBrand(event.row);
         break;
-      case 'delete':
-        this.deleteBrand(event.row);
+      case 'toggle':
+        this.toggleBrand(event.row);
         break;
     }
   }
 
+  private toggleBrand(brand: any) {
+    const newStatus = brand.status === 'Activo' ? 'Inactivo' : 'Activo';
+    const action = newStatus === 'Activo' ? 'activar' : 'desactivar';
+    
+    if (confirm(`¿Estás seguro de ${action} la marca "${brand.name}"?`)) {
+      console.log(`✅ Marca ${action}da:`, brand.name);
+      // Aquí iría la lógica para cambiar el estado en tu API
+      // brand.status = newStatus;
+      alert(`Marca ${action}da correctamente`);
+    }
+  }
+
   onAdd() {
-    console.log('➕ Añadir nueva marca');
-    alert('Abrir formulario para nueva marca');
+    this.showModal = true;
+  }
+  // AGREGAR métodos para el modal
+  onSaveBrand(formData: any) {
+    console.log('💾 Guardando marca:', formData);
+    this.modalLoading = true;
+
+    // Simular guardado
+    setTimeout(() => {
+      // Aquí llamarías a tu API
+      const newBrand = {
+        id: this.brandsData.length + 1,
+        name: formData.name,
+        description: formData.description,
+        country: formData.country,
+        productCount: 0,
+        status: 'Activo'
+      };
+
+      this.brandsData.unshift(newBrand);
+      this.updateDisplayedData();
+      
+      this.modalLoading = false;
+      this.showModal = false;
+      
+      alert('✅ Marca creada exitosamente');
+    }, 1000);
+  }
+
+  onCancelModal() {
+    this.showModal = false;
   }
 
   private editBrand(brand: any) {
