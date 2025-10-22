@@ -1,42 +1,67 @@
-import { Component } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
+import { LucideAngularModule } from 'lucide-angular';
+import { 
+  Package, Plus, CakeSlice, IceCreamCone, Candy, Cake, 
+  Coffee, Gift, ShoppingCart, TrendingUp, AlertTriangle
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [DataTable, ModalForm],
+  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
   templateUrl: './inventory-page.html',
   styleUrl: './inventory-page.scss'
 })
-export class InventoryPage {
-  //Propiedades para exportar
+export class InventoryPage implements OnInit {
+  // Iconos para usar en el template
+  icons = {
+    package: Package,
+    plus: Plus,
+    cupcake: CakeSlice,
+    iceCream: IceCreamCone,
+    candy: Candy,
+    cake: Cake,
+    coffee: Coffee,
+    gift: Gift,
+    shoppingCart: ShoppingCart,
+    trendingUp: TrendingUp,
+    alertTriangle: AlertTriangle
+  };
+
+  // Propiedades para exportar
   showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Inventario';
-  exportFileName: string = 'inventario';
-    // AGREGAR ESTAS PROPIEDADES PARA EL MODAL
+  exportTitle: string = 'Reporte de Inventario de Dulces';
+  exportFileName: string = 'inventario_dulces';
+  
+  // Propiedades para el modal
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nuevo Producto';
-  
-  // Datos para los selects (en un caso real vendrían de tu API)
+  modalTitle: string = 'Nuevo Producto Dulce 🍰';
+
+  // Datos para los selects - ahora de dulces!
   categories = [
-    { value: 1, label: 'Electrónicos' },
-    { value: 2, label: 'Accesorios' },
-    { value: 3, label: 'Componentes' },
-    { value: 4, label: 'Redes' },
-    { value: 5, label: 'Impresión' }
+    { value: 1, label: 'Pasteles Decorados' },
+    { value: 2, label: 'Cupcakes' },
+    { value: 3, label: 'Helados Artesanales' },
+    { value: 4, label: 'Chocolates Finos' },
+    { value: 5, label: 'Galletas Decoradas' },
+    { value: 6, label: 'Postres Individuales' },
+    { value: 7, label: 'Bebidas Dulces' },
+    { value: 8, label: 'Dulces Tradicionales' }
   ];
 
   brands = [
-    { value: 1, label: 'Samsung' },
-    { value: 2, label: 'Apple' },
-    { value: 3, label: 'HP' },
-    { value: 4, label: 'Lenovo' },
-    { value: 5, label: 'Dell' },
-    { value: 6, label: 'Logitech' },
-    { value: 7, label: 'Sony' },
-    { value: 8, label: 'Kingston' }
+    { value: 1, label: 'Dulce Corazón' },
+    { value: 2, label: 'Pastelería Mágica' },
+    { value: 3, label: 'Chocolatería Finita' },
+    { value: 4, label: 'Heladería Artesanal' },
+    { value: 5, label: 'Repostería Creativa' },
+    { value: 6, label: 'Dulces Tradicionales' },
+    { value: 7, label: 'Postres Gourmet' },
+    { value: 8, label: 'Galletas Encantadas' }
   ];
 
   modalFields: FormField[] = [
@@ -45,7 +70,7 @@ export class InventoryPage {
       label: 'Nombre del Producto',
       type: 'text',
       required: true,
-      placeholder: 'Ej: Laptop HP Pavilion 15'
+      placeholder: 'Ej: Pastel de Fresa Decorado'
     },
     {
       key: 'id_categoria',
@@ -80,11 +105,11 @@ export class InventoryPage {
       label: 'Descripción Adicional',
       type: 'textarea',
       required: false,
-      placeholder: 'Características o especificaciones del producto...'
+      placeholder: 'Ingredientes, sabores, decoraciones especiales...'
     }
   ];
 
-  // Columnas basadas en tu tabla BD de productos
+  // Columnas para productos dulces
   columns: Column[] = [
     { key: 'id_producto', label: 'ID', sortable: true },
     { key: 'nombre_producto', label: 'Producto', sortable: true },
@@ -95,23 +120,158 @@ export class InventoryPage {
     { key: 'estado_stock', label: 'Estado', sortable: true }
   ];
 
-  // Datos de ejemplo basados en tu estructura BD
+  // Datos de ejemplo para dulcería 🍭
   productsData: TableData[] = [
-    { id_producto: 1, nombre_producto: 'Laptop HP Pavilion 15', categoria: 'Electrónicos', marca: 'HP', precio_venta: 899.99, stock: 15, estado_stock: 'Disponible' },
-    { id_producto: 2, nombre_producto: 'Mouse Inalámbrico Logitech', categoria: 'Accesorios', marca: 'Logitech', precio_venta: 25.50, stock: 32, estado_stock: 'Disponible' },
-    { id_producto: 3, nombre_producto: 'Teclado Mecánico RGB', categoria: 'Accesorios', marca: 'Redragon', precio_venta: 75.00, stock: 8, estado_stock: 'Bajo Stock' },
-    { id_producto: 4, nombre_producto: 'Monitor 24" Samsung', categoria: 'Electrónicos', marca: 'Samsung', precio_venta: 199.99, stock: 0, estado_stock: 'Agotado' },
-    { id_producto: 5, nombre_producto: 'Tablet Samsung Galaxy', categoria: 'Electrónicos', marca: 'Samsung', precio_venta: 299.99, stock: 12, estado_stock: 'Disponible' },
-    { id_producto: 6, nombre_producto: 'Auriculares Bluetooth Sony', categoria: 'Accesorios', marca: 'Sony', precio_venta: 45.00, stock: 25, estado_stock: 'Disponible' },
-    { id_producto: 7, nombre_producto: 'Cargador USB-C Rápido', categoria: 'Accesorios', marca: 'Anker', precio_venta: 15.99, stock: 3, estado_stock: 'Bajo Stock' },
-    { id_producto: 8, nombre_producto: 'Disco Duro 1TB Seagate', categoria: 'Componentes', marca: 'Seagate', precio_venta: 59.99, stock: 18, estado_stock: 'Disponible' },
-    { id_producto: 9, nombre_producto: 'Memoria RAM 8GB Kingston', categoria: 'Componentes', marca: 'Kingston', precio_venta: 39.99, stock: 0, estado_stock: 'Agotado' },
-    { id_producto: 10, nombre_producto: 'Impresora Laser HP', categoria: 'Electrónicos', marca: 'HP', precio_venta: 189.99, stock: 6, estado_stock: 'Disponible' },
-    { id_producto: 11, nombre_producto: 'Webcam HD 1080p', categoria: 'Accesorios', marca: 'Logitech', precio_venta: 35.00, stock: 14, estado_stock: 'Disponible' },
-    { id_producto: 12, nombre_producto: 'Router WiFi TP-Link', categoria: 'Redes', marca: 'TP-Link', precio_venta: 79.99, stock: 9, estado_stock: 'Disponible' },
-    { id_producto: 13, nombre_producto: 'SSD 500GB WD', categoria: 'Componentes', marca: 'Western Digital', precio_venta: 49.99, stock: 22, estado_stock: 'Disponible' },
-    { id_producto: 14, nombre_producto: 'Monitor 27" LG', categoria: 'Electrónicos', marca: 'LG', precio_venta: 249.99, stock: 4, estado_stock: 'Bajo Stock' },
-    { id_producto: 15, nombre_producto: 'Teclado Gaming Razer', categoria: 'Accesorios', marca: 'Razer', precio_venta: 89.99, stock: 7, estado_stock: 'Bajo Stock' }
+    { 
+      id_producto: 1, 
+      nombre_producto: 'Pastel de Fresa Decorado', 
+      categoria: 'Pasteles Decorados', 
+      marca: 'Pastelería Mágica', 
+      precio_venta: 45.00, 
+      stock: 8, 
+      estado_stock: 'Disponible',
+      icon: 'cake'
+    },
+    { 
+      id_producto: 2, 
+      nombre_producto: 'Cupcakes de Vainilla con Sprinkles', 
+      categoria: 'Cupcakes', 
+      marca: 'Dulce Corazón', 
+      precio_venta: 12.50, 
+      stock: 24, 
+      estado_stock: 'Disponible',
+      icon: 'cupcake'
+    },
+    { 
+      id_producto: 3, 
+      nombre_producto: 'Helado de Chocolate Belga', 
+      categoria: 'Helados Artesanales', 
+      marca: 'Heladería Artesanal', 
+      precio_venta: 18.00, 
+      stock: 15, 
+      estado_stock: 'Disponible',
+      icon: 'iceCream'
+    },
+    { 
+      id_producto: 4, 
+      nombre_producto: 'Trufas de Chocolate Amargo', 
+      categoria: 'Chocolates Finos', 
+      marca: 'Chocolatería Finita', 
+      precio_venta: 25.00, 
+      stock: 0, 
+      estado_stock: 'Agotado',
+      icon: 'candy'
+    },
+    { 
+      id_producto: 5, 
+      nombre_producto: 'Galletas con Glaseado de Colores', 
+      categoria: 'Galletas Decoradas', 
+      marca: 'Galletas Encantadas', 
+      precio_venta: 8.50, 
+      stock: 32, 
+      estado_stock: 'Disponible',
+      icon: 'gift'
+    },
+    { 
+      id_producto: 6, 
+      nombre_producto: 'Malteada de Fresa con Crema', 
+      categoria: 'Bebidas Dulces', 
+      marca: 'Dulce Corazón', 
+      precio_venta: 15.00, 
+      stock: 20, 
+      estado_stock: 'Disponible',
+      icon: 'coffee'
+    },
+    { 
+      id_producto: 7, 
+      nombre_producto: 'Alfajores Tradicionales', 
+      categoria: 'Dulces Tradicionales', 
+      marca: 'Dulces Tradicionales', 
+      precio_venta: 6.00, 
+      stock: 3, 
+      estado_stock: 'Bajo Stock',
+      icon: 'gift'
+    },
+    { 
+      id_producto: 8, 
+      nombre_producto: 'Cheesecake de Frutos Rojos', 
+      categoria: 'Postres Individuales', 
+      marca: 'Postres Gourmet', 
+      precio_venta: 22.00, 
+      stock: 12, 
+      estado_stock: 'Disponible',
+      icon: 'cake'
+    },
+    { 
+      id_producto: 9, 
+      nombre_producto: 'Chocolate con Almendras', 
+      categoria: 'Chocolates Finos', 
+      marca: 'Chocolatería Finita', 
+      precio_venta: 18.50, 
+      stock: 0, 
+      estado_stock: 'Agotado',
+      icon: 'candy'
+    },
+    { 
+      id_producto: 10, 
+      nombre_producto: 'Helado de Vainilla Madagascar', 
+      categoria: 'Helados Artesanales', 
+      marca: 'Heladería Artesanal', 
+      precio_venta: 16.00, 
+      stock: 5, 
+      estado_stock: 'Bajo Stock',
+      icon: 'iceCream'
+    },
+    { 
+      id_producto: 11, 
+      nombre_producto: 'Pastelito de Manzana Canela', 
+      categoria: 'Postres Individuales', 
+      marca: 'Repostería Creativa', 
+      precio_venta: 9.00, 
+      stock: 18, 
+      estado_stock: 'Disponible',
+      icon: 'cake'
+    },
+    { 
+      id_producto: 12, 
+      nombre_producto: 'Café Helado con Caramelo', 
+      categoria: 'Bebidas Dulces', 
+      marca: 'Dulce Corazón', 
+      precio_venta: 14.00, 
+      stock: 25, 
+      estado_stock: 'Disponible',
+      icon: 'coffee'
+    },
+    { 
+      id_producto: 13, 
+      nombre_producto: 'Brownie con Nuez', 
+      categoria: 'Postres Individuales', 
+      marca: 'Repostería Creativa', 
+      precio_venta: 7.50, 
+      stock: 28, 
+      estado_stock: 'Disponible',
+      icon: 'cake'
+    },
+    { 
+      id_producto: 14, 
+      nombre_producto: 'Cupcakes de Red Velvet', 
+      categoria: 'Cupcakes', 
+      marca: 'Pastelería Mágica', 
+      precio_venta: 13.00, 
+      stock: 2, 
+      estado_stock: 'Bajo Stock',
+      icon: 'cupcake'
+    },
+    { 
+      id_producto: 15, 
+      nombre_producto: 'Galletas de Mantequilla', 
+      categoria: 'Galletas Decoradas', 
+      marca: 'Galletas Encantadas', 
+      precio_venta: 5.50, 
+      stock: 40, 
+      estado_stock: 'Disponible',
+      icon: 'gift'
+    }
   ];
 
   // Configuración
@@ -192,15 +352,13 @@ export class InventoryPage {
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando productos por:', sortEvent);
-    // Aquí ordenarías los datos
   }
 
   onRowClick(row: TableData) {
     console.log('Producto seleccionado:', row);
-    alert(`Producto: ${row['nombre_producto']}\nCategoría: ${row['categoria']}\nMarca: ${row['marca']}\nPrecio: S/ ${row['precio_venta']}\nStock: ${row['stock']} unidades`);
+    alert(`🍰 Producto: ${row['nombre_producto']}\n🎀 Categoría: ${row['categoria']}\n⭐ Marca: ${row['marca']}\n💰 Precio: S/ ${row['precio_venta']}\n📦 Stock: ${row['stock']} unidades`);
   }
 
-  // ACTUALIZAR el método onAction para usar toggle
   onAction(event: ActionEvent) {
     console.log('🔧 Acción en producto:', event.action, event.row);
     
@@ -219,7 +377,6 @@ export class InventoryPage {
     
     if (confirm(`¿${action} el producto "${product.nombre_producto}"?`)) {
       console.log(`✅ Producto ${action.toLowerCase()}:`, product.nombre_producto);
-      // Aquí iría la lógica para cambiar el estado en tu API
       alert(`Producto ${action.toLowerCase()} correctamente`);
     }
   }
@@ -227,18 +384,15 @@ export class InventoryPage {
   onAdd() {
      this.showModal = true;
   }
-  // AGREGAR métodos para el modal
+
   onSaveProduct(formData: any) {
     console.log('Guardando producto:', formData);
     this.modalLoading = true;
 
-    // Simular guardado
     setTimeout(() => {
-      // Encontrar nombres de categoría y marca para mostrar en la tabla
       const categoria = this.categories.find(c => c.value == formData.id_categoria)?.label || 'Desconocida';
       const marca = this.brands.find(b => b.value == formData.id_marca)?.label || 'Desconocida';
       
-      // Aquí llamarías a tu API
       const newProduct = {
         id_producto: this.productsData.length + 1,
         nombre_producto: formData.nombre_producto,
@@ -247,7 +401,7 @@ export class InventoryPage {
         precio_venta: parseFloat(formData.precio_venta),
         stock: parseInt(formData.stock),
         estado_stock: this.getStockStatus(parseInt(formData.stock)),
-        // Guardar los IDs reales para cuando edites
+        icon: this.getCategoryIcon(formData.id_categoria),
         id_categoria: formData.id_categoria,
         id_marca: formData.id_marca,
         descripcion: formData.descripcion || ''
@@ -259,7 +413,7 @@ export class InventoryPage {
       this.modalLoading = false;
       this.showModal = false;
       
-      alert('Producto creado exitosamente');
+      alert('🎉 Producto creado exitosamente! 🍰');
     }, 1000);
   }
 
@@ -272,12 +426,24 @@ export class InventoryPage {
     alert(`Editando producto: ${product.nombre_producto}`);
   }
 
-  private deleteProduct(product: any) {
-    console.log('🗑️ Eliminando producto:', product);
-    if (confirm(`¿Estás seguro de eliminar el producto "${product.nombre_producto}"?\nEsta acción no se puede deshacer.`)) {
-      // Lógica para eliminar
-      console.log('Producto eliminado:', product.id_producto);
-    }
+  // Método para obtener icono según categoría
+  getCategoryIcon(categoryId: number): string {
+    const iconMap: { [key: number]: string } = {
+      1: 'cake',
+      2: 'cupcake', 
+      3: 'iceCream',
+      4: 'candy',
+      5: 'gift',
+      6: 'cake',
+      7: 'coffee',
+      8: 'gift'
+    };
+    return iconMap[categoryId] || 'gift';
+  }
+
+  // Método para obtener el icono Lucide
+  getProductIcon(iconName: string): any {
+    return this.icons[iconName as keyof typeof this.icons] || this.icons.gift;
   }
 
   // Formatear moneda
@@ -290,5 +456,15 @@ export class InventoryPage {
     if (stock === 0) return 'Agotado';
     if (stock < 10) return 'Bajo Stock';
     return 'Disponible';
+  }
+
+  // Obtener clase CSS para el estado del stock
+  getStockStatusClass(status: string): string {
+    const statusClasses: { [key: string]: string } = {
+      'Disponible': 'status-available',
+      'Bajo Stock': 'status-low',
+      'Agotado': 'status-out'
+    };
+    return statusClasses[status] || '';
   }
 }

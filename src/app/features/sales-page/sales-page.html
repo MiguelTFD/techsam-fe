@@ -1,60 +1,124 @@
 <div class="sales-page">
-  <!-- Header -->
-  <header class="page-header">
-    <h1>💰 Gestión de Ventas</h1>
-    <p>Administra y controla el historial de ventas</p>
-  </header>
+  <!-- Header con estadísticas -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <i-lucide [name]="icons.shoppingCart" class="header-icon"></i-lucide>
+          Ventas de Dulcería
+        </h1>
+        <p>Gestiona las ventas más dulces de tu negocio 🍭</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
+            <i-lucide [name]="icons.shoppingCart" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ totalVentas }}</span>
+            <span class="stat-label">Total Ventas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
+            <i-lucide [name]="icons.checkCircle" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ ventasCompletadas }}</span>
+            <span class="stat-label">Completadas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i-lucide [name]="icons.dollarSign" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ formatCurrency(totalIngresos) }}</span>
+            <span class="stat-label">Ingresos Totales</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ formatCurrency(promedioVenta) }}</span>
+            <span class="stat-label">Promedio/Venta</span>
+          </div>
+        </div>
+      </div>
 
-  <!-- Estadísticas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ totalVentas }}</span>
-      <span class="stat-label">Ventas Totales</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ ventasCompletadas }}</span>
-      <span class="stat-label">Ventas Completadas</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ formatCurrency(totalIngresos) }}</span>
-      <span class="stat-label">Ingresos Totales</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ formatCurrency(promedioVenta) }}</span>
-      <span class="stat-label">Promedio por Venta</span>
+      <!-- Vendedor destacado -->
+      <div class="featured-seller">
+        <div class="featured-content">
+          <i-lucide [name]="icons.users" class="featured-icon"></i-lucide>
+          <div class="featured-info">
+            <span class="featured-label">Vendedor del Mes</span>
+            <span class="featured-name">{{ mejorVendedor }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla de Ventas -->
-  <div class="table-section">
-    <app-data-table
-      [columns]="columns"
-      [data]="displayedData"
-      [loading]="loading"
-      [pagination]="pagination"
-      [showAddButton]="showAddButton"
-      [addButtonLabel]="addButtonLabel"
-      [showExportButton]="showExportButton"
-      [exportTitle]="exportTitle"          
-      [exportFileName]="exportFileName"
-      [search]="{ placeholder: 'Buscar ventas...', debounceTime: 500 }"
-      (sort)="onSort($event)"
-      (rowClick)="onRowClick($event)"
-      (pageChange)="onPageChange($event)"
-      (searchChange)="onSearchChange($event)"
-      (action)="onAction($event)"
-      (add)="onAdd()">
-    </app-data-table>
-  </div>
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="displayedData"
+    [pagination]="pagination"
+    [loading]="loading"
+    [showActions]="showActions"
+    [showAddButton]="showAddButton"
+    [addButtonLabel]="addButtonLabel"
+    [showExportButton]="showExportButton"
+    [exportTitle]="exportTitle"
+    [exportFileName]="exportFileName"
+    [exportStats]="{
+      totalVentas: totalVentas,
+      ventasCompletadas: ventasCompletadas,
+      totalIngresos: totalIngresos,
+      promedioVenta: promedioVenta
+    }"
+    (pageChange)="onPageChange($event)"
+    (searchChange)="onSearchChange($event)"
+    (sort)="onSort($event)"
+    (rowClick)="onRowClick($event)"
+    (action)="onAction($event)"
+    (add)="onAdd()">
+    
+    <!-- Template personalizado para las filas -->
+    <ng-template let-row>
+      <div class="sale-row">
+        <div class="sale-icon">
+          <i-lucide [name]="getSaleIcon(row['icon'])" class="sale-icon-svg"></i-lucide>
+        </div>
+        <div class="sale-info">
+          <span class="sale-product">{{ row['producto'] }}</span>
+          <div class="sale-meta">
+            <span class="sale-seller">por {{ row['nombre_usuario'] }}</span>
+            <span class="sale-date">• {{ formatDate(row['fecha_venta']) }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
-   <!-- MODAL PARA NUEVA VENTA -->
+    <!-- Template personalizado para el método de pago -->
+    <ng-template let-row [ngIf]="false">
+    </ng-template>
+    
+  </app-data-table>
+
+  <!-- Modal para nueva venta -->
   <app-modal-form
+    [show]="showModal"
     [title]="modalTitle"
     [fields]="modalFields"
-    [show]="showModal"
     [loading]="modalLoading"
     (save)="onSaveSale($event)"
     (cancel)="onCancelModal()">
   </app-modal-form>
-
 </div>

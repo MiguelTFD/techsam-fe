@@ -1,53 +1,127 @@
 <div class="brands-page">
-  <!-- Header -->
-  <header class="page-header">
-    <h1>⭐ Gestión de Marcas</h1>
-    <p>Administra las marcas y fabricantes de productos</p>
-  </header>
+  <!-- Header con estadísticas -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <i-lucide [name]="icons.crown" class="header-icon"></i-lucide>
+          Marcas de Dulcería
+        </h1>
+        <p>Gestiona las marcas más dulces del mundo 🍭</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
+            <i-lucide [name]="icons.building" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ totalBrands }}</span>
+            <span class="stat-label">Total Marcas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
+            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ activeBrands }}</span>
+            <span class="stat-label">Marcas Activas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <i-lucide [name]="icons.globe" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ internationalBrands }}</span>
+            <span class="stat-label">Países</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i-lucide [name]="icons.package" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ totalProducts }}</span>
+            <span class="stat-label">Total Productos</span>
+          </div>
+        </div>
+      </div>
 
-  <!-- Estadísticas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ totalBrands }}</span>
-      <span class="stat-label">Marcas Totales</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ activeBrands }}</span>
-      <span class="stat-label">Marcas Activas</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ internationalBrands }}</span>
-      <span class="stat-label">Países</span>
+      <!-- Marca destacada -->
+      <div class="featured-brand">
+        <div class="featured-content">
+          <i-lucide [name]="icons.award" class="featured-icon"></i-lucide>
+          <div class="featured-info">
+            <span class="featured-label">Marca Destacada</span>
+            <span class="featured-name">{{ topBrand }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla de Marcas -->
-  <div class="table-section">
-    <app-data-table
-      [columns]="columns"
-      [data]="displayedData"
-      [loading]="loading"
-      [pagination]="pagination"
-      [showActions]="showActions"
-      [showAddButton]="showAddButton"
-      [addButtonLabel]="addButtonLabel"
-      [showExportButton]="showExportButton"
-      [exportTitle]="exportTitle"          
-      [exportFileName]="exportFileName"
-      [search]="{ placeholder: 'Buscar marcas...', debounceTime: 500 }"
-      (sort)="onSort($event)"
-      (rowClick)="onRowClick($event)"
-      (pageChange)="onPageChange($event)"
-      (searchChange)="onSearchChange($event)"
-      (action)="onAction($event)"
-      (add)="onAdd()">
-    </app-data-table>
-  </div>
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="displayedData"
+    [pagination]="pagination"
+    [loading]="loading"
+    [showActions]="showActions"
+    [actions]="actions"
+    [showAddButton]="showAddButton"
+    [addButtonLabel]="addButtonLabel"
+    [showExportButton]="showExportButton"
+    [exportTitle]="exportTitle"
+    [exportFileName]="exportFileName"
+    [exportStats]="{
+      totalBrands: totalBrands,
+      activeBrands: activeBrands,
+      internationalBrands: internationalBrands,
+      totalProducts: totalProducts
+    }"
+    (pageChange)="onPageChange($event)"
+    (searchChange)="onSearchChange($event)"
+    (sort)="onSort($event)"
+    (rowClick)="onRowClick($event)"
+    (action)="onAction($event)"
+    (add)="onAdd()">
+    
+    <!-- Template personalizado para las filas -->
+    <ng-template let-row>
+      <div class="brand-row">
+        <div class="brand-icon">
+          <i-lucide [name]="getBrandIcon(row['icon'])" class="brand-icon-svg"></i-lucide>
+        </div>
+        <div class="brand-info">
+          <span class="brand-name">{{ row['name'] }}</span>
+          <div class="brand-meta">
+            <span class="brand-country">
+              {{ getCountryFlag(row['country']) }} {{ row['country'] }}
+            </span>
+            <span class="brand-since" *ngIf="row['since']">
+              • Desde {{ row['since'] }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
-<app-modal-form
+    <!-- Template personalizado para el estado -->
+    <ng-template let-row [ngIf]="false">
+    </ng-template>
+    
+  </app-data-table>
+
+  <!-- Modal para nueva marca -->
+  <app-modal-form
+    [show]="showModal"
     [title]="modalTitle"
     [fields]="modalFields"
-    [show]="showModal"
     [loading]="modalLoading"
     (save)="onSaveBrand($event)"
     (cancel)="onCancelModal()">

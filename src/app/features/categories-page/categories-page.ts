@@ -1,31 +1,46 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent} from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
+import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift } from 'lucide-angular';
 
 @Component({
   selector: 'app-categories-page',
-  imports: [DataTable, ModalForm],
+  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.scss'
 })
-export class CategoriesPage {
-  //Propiedades para exportar
+export class CategoriesPage implements OnInit {
+  // Iconos para usar en el template
+  icons = {
+    plus: Plus,
+    cupcake: CakeSlice,
+    iceCream: IceCreamCone,
+    candy: Candy,
+    cake: Cake,
+    coffee: Coffee,
+    utensils: Utensils,
+    gift: Gift
+  };
+
+  // Propiedades para exportar
   showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Categorías';
-  exportFileName: string = 'categorias';
+  exportTitle: string = 'Reporte de Categorías de Dulces';
+  exportFileName: string = 'categorias_dulces';
+
   // PROPIEDADES PARA EL MODAL de nueva categoria
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Categoría';
+  modalTitle: string = 'Nueva Categoría de Dulce';
 
-   modalFields: FormField[] = [
+  modalFields: FormField[] = [
     {
       key: 'name',
       label: 'Nombre de la categoría',
       type: 'text',
       required: true,
-      placeholder: 'Ej: Electrónicos'
+      placeholder: 'Ej: Pasteles Decorados'
     },
     {
       key: 'description', 
@@ -35,7 +50,8 @@ export class CategoriesPage {
       placeholder: 'Descripción opcional de la categoría'
     }
   ];
-  // Columnas específicas para categorías
+
+  // Columnas específicas para categorías de dulces
   columns: Column[] = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Nombre', sortable: true },
@@ -44,17 +60,72 @@ export class CategoriesPage {
     { key: 'status', label: 'Estado', sortable: true }
   ];
 
-
-  // Datos de ejemplo para categorías
+  // Datos de ejemplo para categorías de dulces 🍰
   categoriesData: TableData[] = [
-    { id: 1, name: 'Electrónicos', description: 'Dispositivos electrónicos y gadgets', productCount: 15, status: 'Activo' },
-    { id: 2, name: 'Accesorios', description: 'Accesorios para computadora', productCount: 8, status: 'Activo' },
-    { id: 3, name: 'Componentes', description: 'Partes de hardware interno', productCount: 12, status: 'Activo' },
-    { id: 4, name: 'Software', description: 'Programas y aplicaciones', productCount: 0, status: 'Inactivo' },
-    { id: 5, name: 'Muebles', description: 'Mobiliario para oficina', productCount: 5, status: 'Activo' },
-    { id: 6, name: 'Impresión', description: 'Suministros de impresión', productCount: 7, status: 'Activo' },
-    { id: 7, name: 'Redes', description: 'Equipos de networking', productCount: 3, status: 'Activo' },
-    { id: 8, name: 'Almacenamiento', description: 'Discos y memorias', productCount: 9, status: 'Activo' }
+    { 
+      id: 1, 
+      name: 'Pasteles Decorados', 
+      description: 'Pasteles artesanales con decoraciones especiales', 
+      productCount: 15, 
+      status: 'Activo',
+      icon: 'cake'
+    },
+    { 
+      id: 2, 
+      name: 'Cupcakes', 
+      description: 'Pequeños pasteles individuales con toppings', 
+      productCount: 8, 
+      status: 'Activo',
+      icon: 'cupcake'
+    },
+    { 
+      id: 3, 
+      name: 'Helados Artesanales', 
+      description: 'Helados gourmet con sabores únicos', 
+      productCount: 12, 
+      status: 'Activo',
+      icon: 'iceCream'
+    },
+    { 
+      id: 4, 
+      name: 'Chocolates Finos', 
+      description: 'Chocolates premium y trufas artesanales', 
+      productCount: 20, 
+      status: 'Activo',
+      icon: 'candy'
+    },
+    { 
+      id: 5, 
+      name: 'Galletas Decoradas', 
+      description: 'Galletas con glaseado y diseños creativos', 
+      productCount: 5, 
+      status: 'Activo',
+      icon: 'utensils'
+    },
+    { 
+      id: 6, 
+      name: 'Postres Individuales', 
+      description: 'Postres pequeños para eventos y regalos', 
+      productCount: 7, 
+      status: 'Activo',
+      icon: 'gift'
+    },
+    { 
+      id: 7, 
+      name: 'Bebidas Dulces', 
+      description: 'Malteadas, frappés y bebidas especiales', 
+      productCount: 3, 
+      status: 'Activo',
+      icon: 'coffee'
+    },
+    { 
+      id: 8, 
+      name: 'Dulces Tradicionales', 
+      description: 'Dulces mexicanos y tradicionales', 
+      productCount: 9, 
+      status: 'Activo',
+      icon: 'candy'
+    }
   ];
 
   // Configuración
@@ -147,20 +218,20 @@ export class CategoriesPage {
      this.showModal = true;
   }
 
-  // métodos para el modal
+  // Métodos para el modal
   onSaveCategory(formData: any) {
     console.log('💾 Guardando categoría:', formData);
     this.modalLoading = true;
 
     // Simular guardado
     setTimeout(() => {
-      // Aquí llamarías a tu API
       const newCategory = {
         id: this.categoriesData.length + 1,
         name: formData.name,
         description: formData.description,
         productCount: 0,
-        status: 'Activo'
+        status: 'Activo',
+        icon: 'gift' // Icono por defecto para nuevas categorías
       };
 
       this.categoriesData.unshift(newCategory);
@@ -169,14 +240,13 @@ export class CategoriesPage {
       this.modalLoading = false;
       this.showModal = false;
       
-      alert('✅ Categoría creada exitosamente');
+      alert('✅ Categoría de dulce creada exitosamente 🍰');
     }, 1000);
   }
 
   onCancelModal() {
     this.showModal = false;
   }
-
 
   private editCategory(category: any) {
     console.log('✏️ Editando categoría:', category);
@@ -189,9 +259,12 @@ export class CategoriesPage {
     
     if (confirm(`¿Estás seguro de ${action} la categoría "${category.name}"?`)) {
       console.log(`✅ Categoría ${action}da:`, category.name);
-      // Aquí iría la lógica para cambiar el estado en tu API
-      // category.status = newStatus;
       alert(`Categoría ${action}da correctamente`);
     }
+  }
+
+  // Método para obtener el icono según la categoría
+  getCategoryIcon(iconName: string): any {
+    return this.icons[iconName as keyof typeof this.icons] || this.icons.gift;
   }
 }

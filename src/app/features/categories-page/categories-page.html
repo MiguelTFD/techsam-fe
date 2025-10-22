@@ -1,57 +1,91 @@
 <div class="categories-page">
-  <!-- Header -->
-  <header class="page-header">
-    <h1>🏷️ Gestión de Categorías</h1>
-    <p>Organiza y administra las categorías de productos</p>
-  </header>
-
-  <!-- Estadísticas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ totalCategories }}</span>
-      <span class="stat-label">Categorías Totales</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ activeCategories }}</span>
-      <span class="stat-label">Categorías Activas</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ categoriesWithProducts }}</span>
-      <span class="stat-label">Con Productos</span>
+  <!-- Header con estadísticas -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <i-lucide [name]="icons.cupcake" class="header-icon"></i-lucide>
+          Categorías de Dulces
+        </h1>
+        <p>Gestiona las categorías de tu pastelería 🍰</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i-lucide [name]="icons.cake" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ totalCategories }}</span>
+            <span class="stat-label">Total Categorías</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i-lucide [name]="icons.iceCream" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ activeCategories }}</span>
+            <span class="stat-label">Categorías Activas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i-lucide [name]="icons.candy" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ categoriesWithProducts }}</span>
+            <span class="stat-label">Con Productos</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla de Categorías -->
-  <div class="table-section">
-    <app-data-table
-      [columns]="columns"
-      [data]="displayedData"
-      [loading]="loading"
-      [pagination]="pagination"
-      [showActions]="showActions"
-        [actions]="actions"    
-      [showAddButton]="showAddButton"
-      [addButtonLabel]="addButtonLabel"
-      [showExportButton]="showExportButton"
-      [exportTitle]="exportTitle"          
-      [exportFileName]="exportFileName"      
-      [search]="{ placeholder: 'Buscar categorías...', debounceTime: 500 }"
-      (sort)="onSort($event)"
-      (rowClick)="onRowClick($event)"
-      (pageChange)="onPageChange($event)"
-      (searchChange)="onSearchChange($event)"
-      (action)="onAction($event)"
-      (add)="onAdd()">
-    </app-data-table>
-  </div>
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="displayedData"
+    [pagination]="pagination"
+    [loading]="loading"
+    [showActions]="showActions"
+    [actions]="actions"
+    [showAddButton]="showAddButton"
+    [addButtonLabel]="addButtonLabel"
+    [showExportButton]="showExportButton"
+    [exportTitle]="exportTitle"
+    [exportFileName]="exportFileName"
+    (pageChange)="onPageChange($event)"
+    (searchChange)="onSearchChange($event)"
+    (sort)="onSort($event)"
+    (rowClick)="onRowClick($event)"
+    (action)="onAction($event)"
+    (add)="onAdd()">
+    
+    <!-- Template personalizado para las filas -->
+    <ng-template let-row>
+      <div class="category-row">
+        <div class="category-icon">
+          <i-lucide [name]="getCategoryIcon(row['icon'])" class="category-icon-svg"></i-lucide>
+        </div>
+        <div class="category-info">
+          <span class="category-name">{{ row['name'] }}</span>
+          <span class="category-description">{{ row['description'] }}</span>
+        </div>
+      </div>
+    </ng-template>
+    
+  </app-data-table>
 
+  <!-- Modal para nueva categoría -->
   <app-modal-form
-  [title]="modalTitle"
-  [fields]="modalFields"
-  [show]="showModal"
-  [loading]="modalLoading"
-  (save)="onSaveCategory($event)"
-  (cancel)="onCancelModal()">
-</app-modal-form>
-
+    [show]="showModal"
+    [title]="modalTitle"
+    [fields]="modalFields"
+    [loading]="modalLoading"
+    (save)="onSaveCategory($event)"
+    (cancel)="onCancelModal()">
+  </app-modal-form>
 </div>

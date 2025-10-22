@@ -1,65 +1,114 @@
 <div class="inventory-page">
-  <!-- Header -->
-  <header class="page-header">
-    <h1>📦 Gestión de Inventario</h1>
-    <p>Administra y controla tu stock de productos</p>
-  </header>
-
-  <!-- Estadísticas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ totalProductos }}</span>
-      <span class="stat-label">Productos Totales</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ productosDisponibles }}</span>
-      <span class="stat-label">Disponibles</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ productosAgotados }}</span>
-      <span class="stat-label">Agotados</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ productosBajoStock }}</span>
-      <span class="stat-label">Bajo Stock</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ formatCurrency(valorTotalInventario) }}</span>
-      <span class="stat-label">Valor Total</span>
+  <!-- Header con estadísticas -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <i-lucide [name]="icons.package" class="header-icon"></i-lucide>
+          Inventario de Dulcería
+        </h1>
+        <p>Gestiona tus productos dulces y deliciosos 🍭</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
+            <i-lucide [name]="icons.cupcake" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ totalProductos }}</span>
+            <span class="stat-label">Total Productos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
+            <i-lucide [name]="icons.shoppingCart" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ productosDisponibles }}</span>
+            <span class="stat-label">Disponibles</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i-lucide [name]="icons.alertTriangle" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ productosBajoStock }}</span>
+            <span class="stat-label">Bajo Stock</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ formatCurrency(valorTotalInventario) }}</span>
+            <span class="stat-label">Valor Total</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla de Productos -->
-  <div class="table-section">
-    <app-data-table
-      [columns]="columns"
-      [data]="displayedData"
-      [loading]="loading"
-      [pagination]="pagination"
-      [showActions]="showActions"
-      [showAddButton]="showAddButton"
-      [addButtonLabel]="addButtonLabel"
-      [showExportButton]="showExportButton"
-      [exportTitle]="exportTitle"          
-      [exportFileName]="exportFileName"
-      [search]="{ placeholder: 'Buscar productos...', debounceTime: 500 }"
-      (sort)="onSort($event)"
-      (rowClick)="onRowClick($event)"
-      (pageChange)="onPageChange($event)"
-      (searchChange)="onSearchChange($event)"
-      (action)="onAction($event)"
-      (add)="onAdd()">
-    </app-data-table>
-  </div>
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="displayedData"
+    [pagination]="pagination"
+    [loading]="loading"
+    [showActions]="showActions"
+    [actions]="actions"
+    [showAddButton]="showAddButton"
+    [addButtonLabel]="addButtonLabel"
+    [showExportButton]="showExportButton"
+    [exportTitle]="exportTitle"
+    [exportFileName]="exportFileName"
+    [exportStats]="{
+      totalProductos: totalProductos,
+      productosDisponibles: productosDisponibles,
+      productosBajoStock: productosBajoStock,
+      valorTotal: valorTotalInventario
+    }"
+    (pageChange)="onPageChange($event)"
+    (searchChange)="onSearchChange($event)"
+    (sort)="onSort($event)"
+    (rowClick)="onRowClick($event)"
+    (action)="onAction($event)"
+    (add)="onAdd()">
+    
+    <!-- Template personalizado para las filas -->
+    <ng-template let-row>
+      <div class="product-row">
+        <div class="product-icon">
+          <i-lucide [name]="getProductIcon(row['icon'])" class="product-icon-svg"></i-lucide>
+        </div>
+        <div class="product-info">
+          <span class="product-name">{{ row['nombre_producto'] }}</span>
+          <div class="product-meta">
+            <span class="product-category">{{ row['categoria'] }}</span>
+            <span class="product-brand">{{ row['marca'] }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
-   <!-- MODAL PARA NUEVO PRODUCTO -->
+    <!-- Template personalizado para el estado -->
+    <ng-template let-row [ngIf]="false"> <!-- Esto es para evitar errores -->
+    </ng-template>
+    
+  </app-data-table>
+
+  <!-- Modal para nuevo producto -->
   <app-modal-form
+    [show]="showModal"
     [title]="modalTitle"
     [fields]="modalFields"
-    [show]="showModal"
     [loading]="modalLoading"
     (save)="onSaveProduct($event)"
     (cancel)="onCancelModal()">
   </app-modal-form>
-
 </div>

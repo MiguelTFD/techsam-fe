@@ -1,21 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+
 .brands-page {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 1rem;
+  background: linear-gradient(135deg, #fff9fb 0%, #fff0f5 100%);
+  min-height: 100vh;
 }
 
 .page-header {
+  background: linear-gradient(135deg, #ff9cd9 0%, #74154f 100%);
+  border-radius: 20px;
+  padding: 2rem;
   margin-bottom: 2rem;
+  color: white;
+  box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
   
-  h1 {
-    color: #1f2937;
-    font-size: 2rem;
-    margin: 0 0 0.5rem 0;
-  }
-  
-  p {
-    color: #6b7280;
-    margin: 0;
+  .header-content {
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      
+      h1 {
+        font-family: 'Dancing Script', cursive;
+        font-size: 2.5rem;
+        margin: 0;
+        background: linear-gradient(45deg, #ffffff, #ffe4f3);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      p {
+        font-family: 'Nunito', sans-serif;
+        font-weight: 300;
+        opacity: 0.9;
+        margin: 0;
+      }
+      
+      .header-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        color: #ff9cd9;
+      }
+    }
   }
 }
 
@@ -23,33 +51,226 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  
+  .stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .stat-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .stat-icon-svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        color: white;
+      }
+    }
+    
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      
+      .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        font-family: 'Comic Neue', cursive;
+      }
+      
+      .stat-label {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        font-family: 'Nunito', sans-serif;
+      }
+    }
+  }
 }
 
-.stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  text-align: center;
-  border-left: 4px solid #f59e0b; /* Color ámbar para marcas */
+.featured-brand {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   
-  .stat-number {
-    display: block;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #1f2937;
-  }
-  
-  .stat-label {
-    color: #6b7280;
-    font-size: 0.875rem;
+  .featured-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .featured-icon {
+      width: 2rem;
+      height: 2rem;
+      color: #ffd700;
+    }
+    
+    .featured-info {
+      display: flex;
+      flex-direction: column;
+      
+      .featured-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        font-family: 'Nunito', sans-serif;
+      }
+      
+      .featured-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        font-family: 'Comic Neue', cursive;
+        color: #ffd700;
+      }
+    }
   }
 }
 
-.table-section {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  overflow: hidden;
+// Estilos para las filas personalizadas de marcas
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  
+  .brand-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .brand-icon-svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: white;
+    }
+  }
+  
+  .brand-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    
+    .brand-name {
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      color: #74154f;
+      font-size: 0.95rem;
+    }
+    
+    .brand-meta {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
+      
+      .brand-country, .brand-since {
+        font-size: 0.8rem;
+        color: #666;
+        font-family: 'Nunito', sans-serif;
+      }
+    }
+  }
+}
+
+// Estados personalizados
+.status-active {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-inactive {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .brands-page {
+    padding: 0.5rem;
+  }
+  
+  .page-header {
+    padding: 1.5rem;
+    
+    .header-title {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.5rem;
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .featured-brand {
+      .featured-content {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+  }
+  
+  .brand-row {
+    gap: 0.75rem;
+    
+    .brand-info {
+      .brand-name {
+        font-size: 0.9rem;
+      }
+      
+      .brand-meta {
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        .brand-country, .brand-since {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}
+
+// Animaciones bonitas
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.stat-card:hover .stat-icon {
+  animation: float 2s ease-in-out infinite;
+}
+
+.featured-brand:hover .featured-icon {
+  animation: float 1.5s ease-in-out infinite;
 }

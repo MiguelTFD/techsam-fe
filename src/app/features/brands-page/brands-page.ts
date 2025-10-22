@@ -1,47 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
+import { LucideAngularModule } from 'lucide-angular';
+import { 
+  Crown, Plus, Building2, Globe, Package, 
+  TrendingUp, Users, Award, Star
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-brands-page',
-  imports: [DataTable, ModalForm],
+  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
   templateUrl: './brands-page.html',
   styleUrl: './brands-page.scss'
 })
-export class BrandsPage {
-  //Propiedades para exportar
+export class BrandsPage implements OnInit{
+  // Iconos para usar en el template
+  icons = {
+    crown: Crown,
+    plus: Plus,
+    building: Building2,
+    globe: Globe,
+    package: Package,
+    trendingUp: TrendingUp,
+    users: Users,
+    award: Award,
+    star: Star
+  };
+
+  // Propiedades para exportar
   showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Categorías';
-  exportFileName: string = 'categorias';
-  //PROPIEDADES PARA EL MODAL
+  exportTitle: string = 'Reporte de Marcas Dulces';
+  exportFileName: string = 'marcas_dulces';
+  
+  // PROPIEDADES PARA EL MODAL
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Marca';
-  
+  modalTitle: string = 'Nueva Marca Dulce 🎀';
+
   modalFields: FormField[] = [
     {
       key: 'name',
       label: 'Nombre de la marca',
       type: 'text',
       required: true,
-      placeholder: 'Ej: Samsung, Apple, HP...'
+      placeholder: 'Ej: Dulce Corazón, Pastelería Mágica...'
     },
     {
       key: 'description', 
       label: 'Descripción',
       type: 'textarea',
       required: false,
-      placeholder: 'Descripción de la marca o fabricante'
+      placeholder: 'Descripción de la marca o especialidad'
     },
     {
       key: 'country',
       label: 'País de origen',
       type: 'text',
       required: true,
-      placeholder: 'Ej: Corea del Sur, Estados Unidos...'
+      placeholder: 'Ej: Italia, Francia, México...'
     }
   ];
+
   // Columnas específicas para marcas
   columns: Column[] = [
     { key: 'id', label: 'ID', sortable: true },
@@ -52,18 +73,108 @@ export class BrandsPage {
     { key: 'status', label: 'Estado', sortable: true }
   ];
 
-  // Datos de ejemplo para marcas
+  // Datos de ejemplo para marcas de dulces 🍰
   brandsData: TableData[] = [
-    { id: 1, name: 'Samsung', description: 'Tecnología y electrónica', country: 'Corea del Sur', productCount: 23, status: 'Activo' },
-    { id: 2, name: 'Apple', description: 'Dispositivos y software', country: 'Estados Unidos', productCount: 18, status: 'Activo' },
-    { id: 3, name: 'HP', description: 'Computadoras e impresoras', country: 'Estados Unidos', productCount: 15, status: 'Activo' },
-    { id: 4, name: 'Lenovo', description: 'Equipos de computación', country: 'China', productCount: 12, status: 'Activo' },
-    { id: 5, name: 'Dell', description: 'Tecnología y soluciones', country: 'Estados Unidos', productCount: 14, status: 'Activo' },
-    { id: 6, name: 'Sony', description: 'Electrónica y entretenimiento', country: 'Japón', productCount: 9, status: 'Activo' },
-    { id: 7, name: 'LG', description: 'Electrodomésticos y tecnología', country: 'Corea del Sur', productCount: 7, status: 'Activo' },
-    { id: 8, name: 'Toshiba', description: 'Tecnología diversa', country: 'Japón', productCount: 5, status: 'Inactivo' },
-    { id: 9, name: 'Asus', description: 'Hardware y componentes', country: 'Taiwán', productCount: 11, status: 'Activo' },
-    { id: 10, name: 'Acer', description: 'Computadoras y monitores', country: 'Taiwán', productCount: 8, status: 'Activo' }
+    { 
+      id: 1, 
+      name: 'Dulce Corazón', 
+      description: 'Pastelería artesanal con ingredientes premium', 
+      country: 'Francia', 
+      productCount: 23, 
+      status: 'Activo',
+      icon: 'crown',
+      since: 1995
+    },
+    { 
+      id: 2, 
+      name: 'Pastelería Mágica', 
+      description: 'Creaciones únicas y decoraciones especiales', 
+      country: 'Italia', 
+      productCount: 18, 
+      status: 'Activo',
+      icon: 'award',
+      since: 2005
+    },
+    { 
+      id: 3, 
+      name: 'Chocolatería Finita', 
+      description: 'Chocolates gourmet y trufas artesanales', 
+      country: 'Bélgica', 
+      productCount: 15, 
+      status: 'Activo',
+      icon: 'star',
+      since: 1988
+    },
+    { 
+      id: 4, 
+      name: 'Heladería Artesanal', 
+      description: 'Helados naturales con sabores únicos', 
+      country: 'Italia', 
+      productCount: 12, 
+      status: 'Activo',
+      icon: 'globe',
+      since: 1999
+    },
+    { 
+      id: 5, 
+      name: 'Galletas Encantadas', 
+      description: 'Galletas decoradas con diseños creativos', 
+      country: 'México', 
+      productCount: 14, 
+      status: 'Activo',
+      icon: 'package',
+      since: 2010
+    },
+    { 
+      id: 6, 
+      name: 'Repostería Creativa', 
+      description: 'Postres innovadores y modernos', 
+      country: 'España', 
+      productCount: 9, 
+      status: 'Activo',
+      icon: 'building',
+      since: 2015
+    },
+    { 
+      id: 7, 
+      name: 'Dulces Tradicionales', 
+      description: 'Recetas ancestrales y auténticas', 
+      country: 'México', 
+      productCount: 7, 
+      status: 'Activo',
+      icon: 'users',
+      since: 1975
+    },
+    { 
+      id: 8, 
+      name: 'Postres Gourmet', 
+      description: 'Alta repostería y presentaciones elegantes', 
+      country: 'Francia', 
+      productCount: 5, 
+      status: 'Inactivo',
+      icon: 'award',
+      since: 2008
+    },
+    { 
+      id: 9, 
+      name: 'Cafetería Especial', 
+      description: 'Bebidas dulces y acompañamientos', 
+      country: 'Colombia', 
+      productCount: 11, 
+      status: 'Activo',
+      icon: 'globe',
+      since: 2012
+    },
+    { 
+      id: 10, 
+      name: 'Confitería Real', 
+      description: 'Dulces finos y caramelos artesanales', 
+      country: 'Suiza', 
+      productCount: 8, 
+      status: 'Activo',
+      icon: 'crown',
+      since: 1992
+    }
   ];
 
   // Configuración
@@ -79,7 +190,7 @@ export class BrandsPage {
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nueva Marca';
 
-   actions = [
+  actions = [
     { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
     { name: 'toggle', label: 'Activar/Desactivar', icon: '🔁', color: 'orange', confirm: true }
   ];
@@ -96,6 +207,17 @@ export class BrandsPage {
   get internationalBrands(): number {
     const countries = new Set(this.brandsData.map(b => b['country']));
     return countries.size;
+  }
+
+  get totalProducts(): number {
+    return this.brandsData.reduce((sum, brand) => sum + brand['productCount'], 0);
+  }
+
+  get topBrand(): string {
+    const top = this.brandsData.reduce((prev, current) => 
+      (prev['productCount'] > current['productCount']) ? prev : current
+    );
+    return top['name'];
   }
 
   ngOnInit() {
@@ -134,15 +256,13 @@ export class BrandsPage {
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando marcas por:', sortEvent);
-    // Aquí ordenarías los datos
   }
 
   onRowClick(row: TableData) {
     console.log('📝 Marca seleccionada:', row);
-    alert(`Marca: ${row['name']}\nPaís: ${row['country']}\nProductos: ${row['productCount']}`);
+    alert(`🎀 Marca: ${row['name']}\n🌎 País: ${row['country']}\n📦 Productos: ${row['productCount']}\n⭐ Desde: ${row['since'] || 'N/A'}`);
   }
 
-   // ACTUALIZAR el método onAction para usar toggle
   onAction(event: ActionEvent) {
     console.log('🔧 Acción en marca:', event.action, event.row);
     
@@ -162,30 +282,28 @@ export class BrandsPage {
     
     if (confirm(`¿Estás seguro de ${action} la marca "${brand.name}"?`)) {
       console.log(`✅ Marca ${action}da:`, brand.name);
-      // Aquí iría la lógica para cambiar el estado en tu API
-      // brand.status = newStatus;
-      alert(`Marca ${action}da correctamente`);
+      alert(`Marca ${action}da correctamente 🎀`);
     }
   }
 
   onAdd() {
     this.showModal = true;
   }
-  // AGREGAR métodos para el modal
+
   onSaveBrand(formData: any) {
     console.log('💾 Guardando marca:', formData);
     this.modalLoading = true;
 
-    // Simular guardado
     setTimeout(() => {
-      // Aquí llamarías a tu API
       const newBrand = {
         id: this.brandsData.length + 1,
         name: formData.name,
         description: formData.description,
         country: formData.country,
         productCount: 0,
-        status: 'Activo'
+        status: 'Activo',
+        icon: this.getRandomIcon(),
+        since: new Date().getFullYear()
       };
 
       this.brandsData.unshift(newBrand);
@@ -194,7 +312,7 @@ export class BrandsPage {
       this.modalLoading = false;
       this.showModal = false;
       
-      alert('✅ Marca creada exitosamente');
+      alert('🎉 Marca creada exitosamente! 🌟');
     }, 1000);
   }
 
@@ -207,11 +325,33 @@ export class BrandsPage {
     alert(`Editando marca: ${brand.name}`);
   }
 
-  private deleteBrand(brand: any) {
-    console.log('🗑️ Eliminando marca:', brand);
-    if (confirm(`¿Estás seguro de eliminar la marca "${brand.name}"?\nTodos los productos asociados se verán afectados.`)) {
-      // Lógica para eliminar
-      console.log('Marca eliminada:', brand.id);
-    }
+  // Método para obtener icono aleatorio para nuevas marcas
+  private getRandomIcon(): string {
+    const icons = ['crown', 'award', 'star', 'globe', 'building', 'users', 'package'];
+    return icons[Math.floor(Math.random() * icons.length)];
+  }
+
+  // Método para obtener el icono Lucide
+  getBrandIcon(iconName: string): any {
+    return this.icons[iconName as keyof typeof this.icons] || this.icons.star;
+  }
+
+  // Obtener clase CSS para el estado
+  getStatusClass(status: string): string {
+    return status === 'Activo' ? 'status-active' : 'status-inactive';
+  }
+
+  // Obtener bandera emoji para el país
+  getCountryFlag(country: string): string {
+    const flagMap: { [key: string]: string } = {
+      'Francia': '🇫🇷',
+      'Italia': '🇮🇹', 
+      'Bélgica': '🇧🇪',
+      'México': '🇲🇽',
+      'España': '🇪🇸',
+      'Colombia': '🇨🇴',
+      'Suiza': '🇨🇭'
+    };
+    return flagMap[country] || '🌎';
   }
 }

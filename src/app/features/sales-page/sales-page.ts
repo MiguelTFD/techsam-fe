@@ -1,32 +1,58 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
+import { LucideAngularModule } from 'lucide-angular';
+import { 
+  ShoppingCart, Plus, TrendingUp, DollarSign, 
+  CheckCircle, Clock, XCircle, Users, Package,
+  Calendar, CreditCard, Gift
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-sales-page',
-  imports: [DataTable, ModalForm],
+  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
   templateUrl: './sales-page.html',
   styleUrl: './sales-page.scss'
 })
-export class SalesPage {
-  //Propiedades para exportar
+export class SalesPage implements OnInit{
+  // Iconos para usar en el template
+  icons = {
+    shoppingCart: ShoppingCart,
+    plus: Plus,
+    trendingUp: TrendingUp,
+    dollarSign: DollarSign,
+    checkCircle: CheckCircle,
+    clock: Clock,
+    xCircle: XCircle,
+    users: Users,
+    package: Package,
+    calendar: Calendar,
+    creditCard: CreditCard,
+    gift: Gift
+  };
+
+  // Propiedades para exportar
   showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Ventas';
-  exportFileName: string = 'ventas';
-  // AGREGAR ESTAS PROPIEDADES PARA EL MODAL DE VENTA
+  exportTitle: string = 'Reporte de Ventas Dulces';
+  exportFileName: string = 'ventas_dulces';
+  
+  // Propiedades para el modal de venta
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Venta';
-  
-  // Productos disponibles para vender (en un caso real vendrían de tu API)
+  modalTitle: string = 'Nueva Venta Dulce 🍰';
+
+  // Productos disponibles para vender - ahora de dulcería!
   availableProducts = [
-    { value: 1, label: 'Laptop HP Pavilion 15 - S/ 899.99 (Stock: 15)', stock: 15, price: 899.99 },
-    { value: 2, label: 'Mouse Inalámbrico Logitech - S/ 25.50 (Stock: 32)', stock: 32, price: 25.50 },
-    { value: 3, label: 'Teclado Mecánico RGB - S/ 75.00 (Stock: 8)', stock: 8, price: 75.00 },
-    { value: 4, label: 'Monitor 24" Samsung - S/ 199.99 (Stock: 0)', stock: 0, price: 199.99 },
-    { value: 5, label: 'Tablet Samsung Galaxy - S/ 299.99 (Stock: 12)', stock: 12, price: 299.99 },
-    { value: 6, label: 'Auriculares Bluetooth Sony - S/ 45.00 (Stock: 25)', stock: 25, price: 45.00 }
+    { value: 1, label: 'Pastel de Fresa Decorado - S/ 45.00 (Stock: 8)', stock: 8, price: 45.00, icon: 'gift' },
+    { value: 2, label: 'Cupcakes de Vainilla - S/ 12.50 (Stock: 24)', stock: 24, price: 12.50, icon: 'gift' },
+    { value: 3, label: 'Helado de Chocolate Belga - S/ 18.00 (Stock: 15)', stock: 15, price: 18.00, icon: 'gift' },
+    { value: 4, label: 'Trufas de Chocolate Amargo - S/ 25.00 (Stock: 0)', stock: 0, price: 25.00, icon: 'gift' },
+    { value: 5, label: 'Galletas con Glaseado - S/ 8.50 (Stock: 32)', stock: 32, price: 8.50, icon: 'gift' },
+    { value: 6, label: 'Malteada de Fresa - S/ 15.00 (Stock: 20)', stock: 20, price: 15.00, icon: 'gift' },
+    { value: 7, label: 'Cheesecake de Frutos Rojos - S/ 22.00 (Stock: 12)', stock: 12, price: 22.00, icon: 'gift' },
+    { value: 8, label: 'Brownie con Nuez - S/ 7.50 (Stock: 28)', stock: 28, price: 7.50, icon: 'gift' }
   ];
 
   // Vendedores (usuarios)
@@ -48,7 +74,7 @@ export class SalesPage {
     },
     {
       key: 'id_producto',
-      label: 'Producto',
+      label: 'Producto Dulce 🍭',
       type: 'select',
       required: true,
       options: this.availableProducts.map(p => ({
@@ -64,35 +90,159 @@ export class SalesPage {
       placeholder: '1'
     },
     {
+      key: 'metodo_pago',
+      label: 'Método de Pago',
+      type: 'select',
+      required: true,
+      options: [
+        { value: 'efectivo', label: '💵 Efectivo' },
+        { value: 'tarjeta', label: '💳 Tarjeta' },
+        { value: 'transferencia', label: '🏦 Transferencia' },
+        { value: 'yape', label: '📱 Yape' }
+      ]
+    },
+    {
       key: 'observaciones',
-      label: 'Observaciones',
+      label: 'Observaciones Especiales',
       type: 'textarea',
       required: false,
-      placeholder: 'Notas adicionales de la venta...'
+      placeholder: 'Decoraciones especiales, mensajes, alergias...'
     }
   ];
-  // Columnas basadas en tu tabla BD
+
+  // Columnas para ventas de dulces
   columns: Column[] = [
     { key: 'id_venta', label: 'ID Venta', sortable: true },
-    { key: 'id_usuario', label: 'ID Usuario', sortable: true },
     { key: 'nombre_usuario', label: 'Vendedor', sortable: true },
-    { key: 'fecha_venta', label: 'Fecha Venta', sortable: true },
+    { key: 'producto', label: 'Producto', sortable: true },
+    { key: 'fecha_venta', label: 'Fecha', sortable: true },
     { key: 'total', label: 'Total (S/)', sortable: true },
+    { key: 'metodo_pago', label: 'Pago', sortable: true },
     { key: 'estado', label: 'Estado', sortable: true }
   ];
 
-  // Datos de ejemplo basados en tu estructura
+  // Datos de ejemplo para ventas de dulcería 🍰
   salesData: TableData[] = [
-    { id_venta: 1, id_usuario: 101, nombre_usuario: 'Ana García', fecha_venta: '2024-01-15 10:30:00', total: 450.50, estado: 'Completada' },
-    { id_venta: 2, id_usuario: 102, nombre_usuario: 'Carlos López', fecha_venta: '2024-01-15 11:15:00', total: 1200.00, estado: 'Completada' },
-    { id_venta: 3, id_usuario: 103, nombre_usuario: 'María Torres', fecha_venta: '2024-01-15 14:20:00', total: 789.99, estado: 'Completada' },
-    { id_venta: 4, id_usuario: 101, nombre_usuario: 'Ana García', fecha_venta: '2024-01-16 09:45:00', total: 2345.75, estado: 'Completada' },
-    { id_venta: 5, id_usuario: 104, nombre_usuario: 'Juan Pérez', fecha_venta: '2024-01-16 12:30:00', total: 567.80, estado: 'Pendiente' },
-    { id_venta: 6, id_usuario: 102, nombre_usuario: 'Carlos López', fecha_venta: '2024-01-16 15:10:00', total: 890.25, estado: 'Completada' },
-    { id_venta: 7, id_usuario: 105, nombre_usuario: 'Laura Medina', fecha_venta: '2024-01-17 08:20:00', total: 1234.56, estado: 'Completada' },
-    { id_venta: 8, id_usuario: 103, nombre_usuario: 'María Torres', fecha_venta: '2024-01-17 11:45:00', total: 678.90, estado: 'Cancelada' },
-    { id_venta: 9, id_usuario: 101, nombre_usuario: 'Ana García', fecha_venta: '2024-01-17 16:30:00', total: 345.67, estado: 'Completada' },
-    { id_venta: 10, id_usuario: 104, nombre_usuario: 'Juan Pérez', fecha_venta: '2024-01-18 10:00:00', total: 1567.89, estado: 'Completada' }
+    { 
+      id_venta: 1, 
+      id_usuario: 101, 
+      nombre_usuario: 'Ana García', 
+      producto: 'Pastel de Fresa Decorado',
+      fecha_venta: '2024-01-15 10:30:00', 
+      total: 90.00, 
+      metodo_pago: 'tarjeta',
+      estado: 'Completada',
+      cantidad: 2,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 2, 
+      id_usuario: 102, 
+      nombre_usuario: 'Carlos López', 
+      producto: 'Cupcakes de Vainilla',
+      fecha_venta: '2024-01-15 11:15:00', 
+      total: 75.00, 
+      metodo_pago: 'efectivo',
+      estado: 'Completada',
+      cantidad: 6,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 3, 
+      id_usuario: 103, 
+      nombre_usuario: 'María Torres', 
+      producto: 'Helado de Chocolate',
+      fecha_venta: '2024-01-15 14:20:00', 
+      total: 54.00, 
+      metodo_pago: 'yape',
+      estado: 'Completada',
+      cantidad: 3,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 4, 
+      id_usuario: 101, 
+      nombre_usuario: 'Ana García', 
+      producto: 'Cheesecake de Frutos Rojos',
+      fecha_venta: '2024-01-16 09:45:00', 
+      total: 44.00, 
+      metodo_pago: 'transferencia',
+      estado: 'Completada',
+      cantidad: 2,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 5, 
+      id_usuario: 104, 
+      nombre_usuario: 'Juan Pérez', 
+      producto: 'Galletas con Glaseado',
+      fecha_venta: '2024-01-16 12:30:00', 
+      total: 25.50, 
+      metodo_pago: 'efectivo',
+      estado: 'Pendiente',
+      cantidad: 3,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 6, 
+      id_usuario: 102, 
+      nombre_usuario: 'Carlos López', 
+      producto: 'Malteada de Fresa',
+      fecha_venta: '2024-01-16 15:10:00', 
+      total: 45.00, 
+      metodo_pago: 'tarjeta',
+      estado: 'Completada',
+      cantidad: 3,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 7, 
+      id_usuario: 105, 
+      nombre_usuario: 'Laura Medina', 
+      producto: 'Brownie con Nuez',
+      fecha_venta: '2024-01-17 08:20:00', 
+      total: 22.50, 
+      metodo_pago: 'yape',
+      estado: 'Completada',
+      cantidad: 3,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 8, 
+      id_usuario: 103, 
+      nombre_usuario: 'María Torres', 
+      producto: 'Trufas de Chocolate',
+      fecha_venta: '2024-01-17 11:45:00', 
+      total: 50.00, 
+      metodo_pago: 'efectivo',
+      estado: 'Cancelada',
+      cantidad: 2,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 9, 
+      id_usuario: 101, 
+      nombre_usuario: 'Ana García', 
+      producto: 'Pastel de Fresa',
+      fecha_venta: '2024-01-17 16:30:00', 
+      total: 45.00, 
+      metodo_pago: 'tarjeta',
+      estado: 'Completada',
+      cantidad: 1,
+      icon: 'gift'
+    },
+    { 
+      id_venta: 10, 
+      id_usuario: 104, 
+      nombre_usuario: 'Juan Pérez', 
+      producto: 'Variedad de Cupcakes',
+      fecha_venta: '2024-01-18 10:00:00', 
+      total: 150.00, 
+      metodo_pago: 'transferencia',
+      estado: 'Completada',
+      cantidad: 12,
+      icon: 'gift'
+    }
   ];
 
   // Configuración
@@ -117,6 +267,10 @@ export class SalesPage {
     return this.salesData.filter(v => v['estado'] === 'Completada').length;
   }
 
+  get ventasPendientes(): number {
+    return this.salesData.filter(v => v['estado'] === 'Pendiente').length;
+  }
+
   get totalIngresos(): number {
     return this.salesData
       .filter(v => v['estado'] === 'Completada')
@@ -128,6 +282,21 @@ export class SalesPage {
     return ventasCompletadas.length > 0 
       ? this.totalIngresos / ventasCompletadas.length 
       : 0;
+  }
+
+  get mejorVendedor(): string {
+    const ventasPorVendedor = this.salesData.reduce((acc, venta) => {
+      if (venta['estado'] === 'Completada') {
+        acc[venta['nombre_usuario']] = (acc[venta['nombre_usuario']] || 0) + parseFloat(venta['total']);
+      }
+      return acc;
+    }, {} as { [key: string]: number });
+
+    const mejor = Object.entries(ventasPorVendedor).reduce((prev, current) => 
+      (prev[1] > current[1]) ? prev : current, ['', 0]
+    );
+
+    return mejor[0] || 'Sin ventas';
   }
 
   ngOnInit() {
@@ -155,6 +324,7 @@ export class SalesPage {
     } else {
       this.allData = this.salesData.filter(venta =>
         venta['nombre_usuario'].toLowerCase().includes(searchTerm.toLowerCase()) ||
+        venta['producto'].toLowerCase().includes(searchTerm.toLowerCase()) ||
         venta['id_venta'].toString().includes(searchTerm) ||
         venta['estado'].toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -166,31 +336,21 @@ export class SalesPage {
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando ventas por:', sortEvent);
-    // Aquí ordenarías los datos
   }
 
   onRowClick(row: TableData) {
     console.log('Venta seleccionada:', row);
-    alert(`Venta #${row['id_venta']}\nVendedor: ${row['nombre_usuario']}\nTotal: S/ ${row['total']}\nEstado: ${row['estado']}`);
+    alert(`🎀 Venta #${row['id_venta']}\n👤 Vendedor: ${row['nombre_usuario']}\n🍰 Producto: ${row['producto']}\n💰 Total: S/ ${row['total']}\n💳 Método: ${this.getPaymentMethodLabel(row['metodo_pago'])}\n📊 Estado: ${row['estado']}`);
   }
 
   onAction(event: ActionEvent) {
     console.log('Acción en venta:', event.action, event.row);
-    
-    switch (event.action) {
-      case 'edit':
-        this.editSale(event.row);
-        break;
-      case 'delete':
-        this.deleteSale(event.row);
-        break;
-    }
   }
 
   onAdd() {
     this.showModal = true;
   }
-  // AGREGAR métodos para el modal
+
   onSaveSale(formData: any) {
     console.log('💾 Registrando venta:', formData);
     this.modalLoading = true;
@@ -219,7 +379,6 @@ export class SalesPage {
 
     // Simular registro de venta
     setTimeout(() => {
-      // Encontrar nombres para mostrar en la tabla
       const vendedor = this.sellers.find(s => s.value == formData.id_usuario)?.label || 'Desconocido';
       const producto = this.availableProducts.find(p => p.value == formData.id_producto);
       
@@ -231,18 +390,19 @@ export class SalesPage {
 
       const total = producto.price * cantidad;
       
-      // Aquí llamarías a tu API para registrar la venta
+      // Registrar la venta
       const newSale = {
         id_venta: this.salesData.length + 1,
         id_usuario: formData.id_usuario,
         nombre_usuario: vendedor,
+        producto: producto.label.split(' - ')[0],
         fecha_venta: new Date().toLocaleString('es-ES'),
         total: total,
+        metodo_pago: formData.metodo_pago,
         estado: 'Completada',
-        // Datos adicionales para el detalle
-        producto: producto.label.split(' - ')[0], // Solo el nombre del producto
         cantidad: cantidad,
-        precio_unitario: producto.price
+        precio_unitario: producto.price,
+        icon: 'gift'
       };
 
       this.salesData.unshift(newSale);
@@ -251,7 +411,7 @@ export class SalesPage {
       this.modalLoading = false;
       this.showModal = false;
       
-      alert(`✅ Venta registrada exitosamente\nTotal: S/ ${total.toFixed(2)}`);
+      alert(`🎉 Venta registrada exitosamente!\n💰 Total: S/ ${total.toFixed(2)}\n🍰 ${cantidad} x ${producto.label.split(' - ')[0]}`);
     }, 1000);
   }
 
@@ -259,21 +419,53 @@ export class SalesPage {
     this.showModal = false;
   }
 
-  private editSale(venta: any) {
-    console.log('✏️ Editando venta:', venta);
-    alert(`Editando venta #${venta.id_venta}`);
+  // Método para obtener etiqueta del método de pago
+  getPaymentMethodLabel(metodo: string): string {
+    const methods: { [key: string]: string } = {
+      'efectivo': '💵 Efectivo',
+      'tarjeta': '💳 Tarjeta',
+      'transferencia': '🏦 Transferencia',
+      'yape': '📱 Yape'
+    };
+    return methods[metodo] || metodo;
   }
 
-  private deleteSale(venta: any) {
-    console.log('Eliminando venta:', venta);
-    if (confirm(`¿Estás seguro de eliminar la venta #${venta.id_venta}?\nEsta acción no se puede deshacer.`)) {
-      // Lógica para eliminar
-      console.log('Venta eliminada:', venta.id_venta);
-    }
+  // Método para obtener el icono Lucide
+  getSaleIcon(iconName: string): any {
+    return this.icons[iconName as keyof typeof this.icons] || this.icons.gift;
+  }
+
+  // Obtener clase CSS para el estado
+  getStatusClass(status: string): string {
+    const statusClasses: { [key: string]: string } = {
+      'Completada': 'status-completed',
+      'Pendiente': 'status-pending',
+      'Cancelada': 'status-cancelled'
+    };
+    return statusClasses[status] || '';
+  }
+
+  // Obtener icono para el estado
+  getStatusIcon(status: string): any {
+    const statusIcons: { [key: string]: any } = {
+      'Completada': this.icons.checkCircle,
+      'Pendiente': this.icons.clock,
+      'Cancelada': this.icons.xCircle
+    };
+    return statusIcons[status] || this.icons.clock;
   }
 
   // Formatear moneda
   formatCurrency(amount: number): string {
     return `S/ ${amount.toFixed(2)}`;
+  }
+
+  // Formatear fecha
+  formatDate(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   }
 }
