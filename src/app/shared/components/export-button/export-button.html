@@ -1,0 +1,15 @@
+<button 
+  class="export-btn"
+  [class.export-btn--loading]="loading"
+  [class.export-btn--disabled]="data.length === 0"
+  (click)="onExport()"
+  [title]="data.length === 0 ? 'No hay datos para exportar' : 'Exportar a PDF'">
+  
+  <span class="export-btn__icon">📄</span>
+  
+  <span class="export-btn__text">
+    {{ loading ? 'Exportando...' : 'Exportar PDF' }}
+  </span>
+
+  <span *ngIf="loading" class="export-btn__spinner"></span>
+</button>

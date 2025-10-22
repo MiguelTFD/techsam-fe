@@ -31,6 +31,9 @@
       [showActions]="showActions"
       [showAddButton]="showAddButton"
       [addButtonLabel]="addButtonLabel"
+      [showExportButton]="showExportButton"
+      [exportTitle]="exportTitle"          
+      [exportFileName]="exportFileName"
       [search]="{ placeholder: 'Buscar marcas...', debounceTime: 500 }"
       (sort)="onSort($event)"
       (rowClick)="onRowClick($event)"
@@ -40,7 +43,7 @@
       (add)="onAdd()">
     </app-data-table>
   </div>
-  
+
 <app-modal-form
     [title]="modalTitle"
     [fields]="modalFields"

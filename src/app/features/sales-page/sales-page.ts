@@ -10,6 +10,10 @@ import { ModalForm, FormField} from '../../shared/components/modal-form/modal-fo
   styleUrl: './sales-page.scss'
 })
 export class SalesPage {
+  //Propiedades para exportar
+  showExportButton: boolean = true;
+  exportTitle: string = 'Reporte de Ventas';
+  exportFileName: string = 'ventas';
   // AGREGAR ESTAS PROPIEDADES PARA EL MODAL DE VENTA
   showModal: boolean = false;
   modalLoading: boolean = false;

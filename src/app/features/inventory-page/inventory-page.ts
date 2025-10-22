@@ -10,6 +10,10 @@ import { ModalForm, FormField} from '../../shared/components/modal-form/modal-fo
   styleUrl: './inventory-page.scss'
 })
 export class InventoryPage {
+  //Propiedades para exportar
+  showExportButton: boolean = true;
+  exportTitle: string = 'Reporte de Inventario';
+  exportFileName: string = 'inventario';
     // AGREGAR ESTAS PROPIEDADES PARA EL MODAL
   showModal: boolean = false;
   modalLoading: boolean = false;

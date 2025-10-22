@@ -19,13 +19,27 @@
         </button>
       </div>
 
-      <!-- BOTÓN AÑADIR -->
+      <div class="action-buttons">
+      <!-- Botón Exportar como Componente -->
+      <app-export-button
+        *ngIf="showExportButton"
+        [title]="exportTitle"
+        [columns]="columns"
+        [data]="data"
+        [fileName]="exportFileName"
+        [loading]="loading"
+        [stats]="exportStats"
+        (export)="export.emit()">
+      </app-export-button>
+
+      <!-- Botón Añadir -->
       <button 
         *ngIf="showAddButton"
         (click)="onAdd()"
         class="add-button">
         ➕ {{ addButtonLabel }}
       </button>
+    </div>
     </div>
   </div>
 

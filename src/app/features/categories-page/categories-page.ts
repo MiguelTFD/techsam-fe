@@ -10,6 +10,10 @@ import { ModalForm, FormField } from '../../shared/components/modal-form/modal-f
   styleUrl: './categories-page.scss'
 })
 export class CategoriesPage {
+  //Propiedades para exportar
+  showExportButton: boolean = true;
+  exportTitle: string = 'Reporte de Categorías';
+  exportFileName: string = 'categorias';
   // PROPIEDADES PARA EL MODAL de nueva categoria
   showModal: boolean = false;
   modalLoading: boolean = false;

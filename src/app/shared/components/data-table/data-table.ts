@@ -3,11 +3,12 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Column, TableData, SortEvent, PaginationConfig, SearchConfig, Action, ActionEvent } from './types';
+import { ExportButton } from '../export-button/export-button';
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportButton],
   templateUrl: './data-table.html',
   styleUrls: ['./data-table.scss']
 })
@@ -21,6 +22,13 @@ export class DataTable implements OnInit, OnChanges {
   @Input() actions: Action[] = [];
   @Input() showAddButton: boolean = true;
   @Input() addButtonLabel: string = 'Añadir Nuevo';
+//Inputs para exportar
+  @Input() showExportButton: boolean = false;
+  @Input() exportTitle: string = 'Reporte';
+  @Input() exportFileName: string = 'reporte';
+  @Input() exportStats: any = {};
+  
+  @Output() export = new EventEmitter<void>();
   
   @Output() action = new EventEmitter<ActionEvent>();
   @Output() add = new EventEmitter<void>();
@@ -37,6 +45,9 @@ export class DataTable implements OnInit, OnChanges {
   // OnInit: Se ejecuta cuando el componente se inicializa
   ngOnInit() {
     console.log('🚀 DataTable inicializado');
+    console.log('🔍 DataTable - showExportButton:', this.showExportButton);
+    console.log('🔍 DataTable - columns:', this.columns);
+    console.log('🔍 DataTable - data length:', this.data.length);
     
     // Inicializaciones que solo se hacen una vez
     this.initializeDefaultSort();

@@ -39,6 +39,9 @@
       [showActions]="showActions"
       [showAddButton]="showAddButton"
       [addButtonLabel]="addButtonLabel"
+      [showExportButton]="showExportButton"
+      [exportTitle]="exportTitle"          
+      [exportFileName]="exportFileName"
       [search]="{ placeholder: 'Buscar productos...', debounceTime: 500 }"
       (sort)="onSort($event)"
       (rowClick)="onRowClick($event)"
@@ -58,5 +61,5 @@
     (save)="onSaveProduct($event)"
     (cancel)="onCancelModal()">
   </app-modal-form>
-  
+
 </div>
