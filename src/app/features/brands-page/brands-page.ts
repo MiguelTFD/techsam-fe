@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
+import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
+import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
@@ -11,11 +13,18 @@ import {
 
 @Component({
   selector: 'app-brands-page',
-  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
+  imports: [
+    CommonModule,
+    DataTable, 
+    ModalForm, 
+    LucideAngularModule,
+    StatsCards,
+    FeaturedCard
+  ],
   templateUrl: './brands-page.html',
   styleUrl: './brands-page.scss'
 })
-export class BrandsPage implements OnInit{
+export class BrandsPage implements OnInit {
   // Iconos para usar en el template
   icons = {
     crown: Crown,
@@ -193,6 +202,34 @@ export class BrandsPage implements OnInit{
   actions = [
     { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
     { name: 'toggle', label: 'Activar/Desactivar', icon: '🔁', color: 'orange', confirm: true }
+  ];
+
+  // ✅ ESTADÍSTICAS CONFIGURABLES PARA EL NUEVO COMPONENTE
+  stats: StatCard[] = [
+    {
+      value: this.totalBrands,
+      label: 'Total Marcas',
+      icon: this.icons.building,
+      gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
+    },
+    {
+      value: this.activeBrands,
+      label: 'Marcas Activas',
+      icon: this.icons.trendingUp,
+      gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
+    },
+    {
+      value: this.internationalBrands,
+      label: 'Países',
+      icon: this.icons.globe,
+      gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+    },
+    {
+      value: this.totalProducts,
+      label: 'Total Productos',
+      icon: this.icons.package,
+      gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
+    }
   ];
 
   // Propiedades computadas para estadísticas

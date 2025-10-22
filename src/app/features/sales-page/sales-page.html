@@ -4,64 +4,21 @@
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [name]="icons.shoppingCart" class="header-icon"></i-lucide>
+          <i-lucide [img]="icons.shoppingCart" class="header-icon"></i-lucide>
           Ventas de Dulcería
         </h1>
-        <p>Gestiona las ventas más dulces de tu negocio 🍭</p>
+        <p>Gestiona las ventas más dulces del mundo 🍭</p>
       </div>
       
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
-            <i-lucide [name]="icons.shoppingCart" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ totalVentas }}</span>
-            <span class="stat-label">Total Ventas</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
-            <i-lucide [name]="icons.checkCircle" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ ventasCompletadas }}</span>
-            <span class="stat-label">Completadas</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-            <i-lucide [name]="icons.dollarSign" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ formatCurrency(totalIngresos) }}</span>
-            <span class="stat-label">Ingresos Totales</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ formatCurrency(promedioVenta) }}</span>
-            <span class="stat-label">Promedio/Venta</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+      <app-stats-cards [stats]="stats"></app-stats-cards>
 
-      <!-- Vendedor destacado -->
-      <div class="featured-seller">
-        <div class="featured-content">
-          <i-lucide [name]="icons.users" class="featured-icon"></i-lucide>
-          <div class="featured-info">
-            <span class="featured-label">Vendedor del Mes</span>
-            <span class="featured-name">{{ mejorVendedor }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
+      <app-featured-card
+        [label]="'Mejor Vendedor'"
+        [value]="mejorVendedor"
+        [icon]="icons.award">
+      </app-featured-card>
     </div>
   </div>
 
@@ -90,24 +47,44 @@
     (action)="onAction($event)"
     (add)="onAdd()">
     
-    <!-- Template personalizado para las filas -->
+    <!-- Template personalizado para vendedor -->
     <ng-template let-row>
-      <div class="sale-row">
-        <div class="sale-icon">
-          <i-lucide [name]="getSaleIcon(row['icon'])" class="sale-icon-svg"></i-lucide>
-        </div>
-        <div class="sale-info">
-          <span class="sale-product">{{ row['producto'] }}</span>
-          <div class="sale-meta">
-            <span class="sale-seller">por {{ row['nombre_usuario'] }}</span>
-            <span class="sale-date">• {{ formatDate(row['fecha_venta']) }}</span>
-          </div>
-        </div>
+      <div class="seller-info">
+        <i-lucide [img]="icons.users" class="seller-icon"></i-lucide>
+        <span class="seller-name">{{ row['nombre_usuario'] }}</span>
       </div>
     </ng-template>
 
-    <!-- Template personalizado para el método de pago -->
-    <ng-template let-row [ngIf]="false">
+    <!-- Template personalizado para producto -->
+    <ng-template let-row>
+      <div class="product-info">
+        <i-lucide [img]="getSaleIcon(row['icon'])" class="product-icon"></i-lucide>
+        <span class="product-name">{{ row['producto'] }}</span>
+        <span class="product-quantity">({{ row['cantidad'] }} und)</span>
+      </div>
+    </ng-template>
+
+    <!-- Template personalizado para fecha -->
+    <ng-template let-row>
+      <span class="sale-date">{{ formatDate(row['fecha_venta']) }}</span>
+    </ng-template>
+
+    <!-- Template personalizado para total -->
+    <ng-template let-row>
+      <span class="sale-total">{{ formatCurrency(row['total']) }}</span>
+    </ng-template>
+
+    <!-- Template personalizado para método de pago -->
+    <ng-template let-row>
+      <span class="payment-method">{{ getPaymentMethodLabel(row['metodo_pago']) }}</span>
+    </ng-template>
+
+    <!-- Template personalizado para estado -->
+    <ng-template let-row>
+      <div class="sale-status" [class]="getStatusClass(row['estado'])">
+        <i-lucide [img]="getStatusIcon(row['estado'])" class="status-icon"></i-lucide>
+        {{ row['estado'] }}
+      </div>
     </ng-template>
     
   </app-data-table>

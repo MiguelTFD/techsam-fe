@@ -4,53 +4,21 @@
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [name]="icons.package" class="header-icon"></i-lucide>
+          <i-lucide [img]="icons.package" class="header-icon"></i-lucide>
           Inventario de Dulcería
         </h1>
-        <p>Gestiona tus productos dulces y deliciosos 🍭</p>
+        <p>Gestiona tu stock de productos dulces 🍭</p>
       </div>
       
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
-            <i-lucide [name]="icons.cupcake" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ totalProductos }}</span>
-            <span class="stat-label">Total Productos</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
-            <i-lucide [name]="icons.shoppingCart" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ productosDisponibles }}</span>
-            <span class="stat-label">Disponibles</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-            <i-lucide [name]="icons.alertTriangle" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ productosBajoStock }}</span>
-            <span class="stat-label">Bajo Stock</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ formatCurrency(valorTotalInventario) }}</span>
-            <span class="stat-label">Valor Total</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+      <app-stats-cards [stats]="stats"></app-stats-cards>
+
+      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
+      <app-featured-card
+        [label]="'Producto Más Vendido'"
+        [value]="productoMasVendido"
+        [icon]="icons.award">
+      </app-featured-card>
     </div>
   </div>
 
@@ -71,7 +39,7 @@
       totalProductos: totalProductos,
       productosDisponibles: productosDisponibles,
       productosBajoStock: productosBajoStock,
-      valorTotal: valorTotalInventario
+      valorTotalInventario: valorTotalInventario
     }"
     (pageChange)="onPageChange($event)"
     (searchChange)="onSearchChange($event)"
@@ -84,20 +52,28 @@
     <ng-template let-row>
       <div class="product-row">
         <div class="product-icon">
-          <i-lucide [name]="getProductIcon(row['icon'])" class="product-icon-svg"></i-lucide>
+          <i-lucide [img]="getProductIcon(row['icon'])" class="product-icon-svg"></i-lucide>
         </div>
         <div class="product-info">
           <span class="product-name">{{ row['nombre_producto'] }}</span>
           <div class="product-meta">
             <span class="product-category">{{ row['categoria'] }}</span>
-            <span class="product-brand">{{ row['marca'] }}</span>
+            <span class="product-brand">• {{ row['marca'] }}</span>
           </div>
         </div>
       </div>
     </ng-template>
 
-    <!-- Template personalizado para el estado -->
-    <ng-template let-row [ngIf]="false"> <!-- Esto es para evitar errores -->
+    <!-- Template personalizado para el precio -->
+    <ng-template let-row>
+      <span class="product-price">{{ formatCurrency(row['precio_venta']) }}</span>
+    </ng-template>
+
+    <!-- Template personalizado para el estado del stock -->
+    <ng-template let-row>
+      <span [class]="getStockStatusClass(row['estado_stock'])">
+        {{ row['estado_stock'] }}
+      </span>
     </ng-template>
     
   </app-data-table>

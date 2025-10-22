@@ -47,148 +47,65 @@
   }
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  
-  .stat-card {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.3);
-    }
-    
-    .stat-icon {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      .stat-icon-svg {
-        width: 1.5rem;
-        height: 1.5rem;
-        color: white;
-      }
-    }
-    
-    .stat-info {
-      display: flex;
-      flex-direction: column;
-      
-      .stat-number {
-        font-size: 1.5rem;
-        font-weight: bold;
-        font-family: 'Comic Neue', cursive;
-      }
-      
-      .stat-label {
-        font-size: 0.875rem;
-        opacity: 0.9;
-        font-family: 'Nunito', sans-serif;
-      }
-    }
-  }
-}
-
-.featured-seller {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 1rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  
-  .featured-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    
-    .featured-icon {
-      width: 2rem;
-      height: 2rem;
-      color: #ffd700;
-    }
-    
-    .featured-info {
-      display: flex;
-      flex-direction: column;
-      
-      .featured-label {
-        font-size: 0.8rem;
-        opacity: 0.8;
-        font-family: 'Nunito', sans-serif;
-      }
-      
-      .featured-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        font-family: 'Comic Neue', cursive;
-        color: #ffd700;
-      }
-    }
-  }
-}
-
 // Estilos para las filas personalizadas de ventas
-.sale-row {
+.seller-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  gap: 0.75rem;
   
-  .sale-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    .sale-icon-svg {
-      width: 1.25rem;
-      height: 1.25rem;
-      color: white;
-    }
+  .seller-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #ff6bb8;
   }
   
-  .sale-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    
-    .sale-product {
-      font-weight: 600;
-      font-family: 'Nunito', sans-serif;
-      color: #74154f;
-      font-size: 0.95rem;
-    }
-    
-    .sale-meta {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.25rem;
-      flex-wrap: wrap;
-      
-      .sale-seller, .sale-date {
-        font-size: 0.8rem;
-        color: #666;
-        font-family: 'Nunito', sans-serif;
-      }
-    }
+  .seller-name {
+    font-weight: 500;
+    font-family: 'Nunito', sans-serif;
+    color: #74154f;
   }
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  
+  .product-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #ff6bb8;
+  }
+  
+  .product-name {
+    font-weight: 500;
+    font-family: 'Nunito', sans-serif;
+    color: #74154f;
+  }
+  
+  .product-quantity {
+    font-size: 0.8rem;
+    color: #666;
+    font-family: 'Nunito', sans-serif;
+  }
+}
+
+.sale-date {
+  font-family: 'Nunito', sans-serif;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.sale-total {
+  font-weight: 600;
+  color: #74154f;
+  font-family: 'Comic Neue', cursive;
+}
+
+.payment-method {
+  font-family: 'Nunito', sans-serif;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 // Estados personalizados para ventas
@@ -202,6 +119,11 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  
+  .status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 }
 
 .status-pending {
@@ -214,6 +136,11 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  
+  .status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 }
 
 .status-cancelled {
@@ -226,15 +153,11 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-}
-
-// Métodos de pago
-.payment-method {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: #666;
+  
+  .status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 }
 
 // Responsive
@@ -256,54 +179,36 @@
       }
     }
     
-    .stats-grid {
-      grid-template-columns: 1fr;
+  }
+  
+  .seller-info,
+  .product-info {
+    gap: 0.5rem;
+    
+    .seller-name,
+    .product-name {
+      font-size: 0.9rem;
     }
     
-    .featured-seller {
-      .featured-content {
-        justify-content: center;
-        text-align: center;
-      }
+    .product-quantity {
+      font-size: 0.75rem;
     }
   }
   
-  .sale-row {
-    gap: 0.75rem;
+  .sale-date,
+  .payment-method {
+    font-size: 0.8rem;
+  }
+  
+  .status-completed,
+  .status-pending,
+  .status-cancelled {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
     
-    .sale-info {
-      .sale-product {
-        font-size: 0.9rem;
-      }
-      
-      .sale-meta {
-        flex-direction: column;
-        gap: 0.25rem;
-        
-        .sale-seller, .sale-date {
-          font-size: 0.75rem;
-        }
-      }
+    .status-icon {
+      width: 0.75rem;
+      height: 0.75rem;
     }
   }
-}
-
-// Animaciones bonitas
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-}
-
-.stat-card:hover .stat-icon {
-  animation: float 2s ease-in-out infinite;
-}
-
-.featured-seller:hover .featured-icon {
-  animation: float 1.5s ease-in-out infinite;
-}
-
-// Efecto de confeti para ventas completadas
-@keyframes confetti {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
 }

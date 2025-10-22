@@ -1,13 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
+import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
+import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent} from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
-import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift } from 'lucide-angular';
+import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift, Package, TrendingUp, Award } from 'lucide-angular';
 
 @Component({
   selector: 'app-categories-page',
-  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
+  imports: [
+    DataTable, 
+    ModalForm, 
+    CommonModule, 
+    LucideAngularModule,
+    StatsCards,
+    FeaturedCard
+  ],
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.scss'
 })
@@ -21,7 +30,10 @@ export class CategoriesPage implements OnInit {
     cake: Cake,
     coffee: Coffee,
     utensils: Utensils,
-    gift: Gift
+    gift: Gift,
+    package: Package,
+    trendingUp: TrendingUp,
+    award: Award
   };
 
   // Propiedades para exportar
@@ -29,38 +41,7 @@ export class CategoriesPage implements OnInit {
   exportTitle: string = 'Reporte de Categorías de Dulces';
   exportFileName: string = 'categorias_dulces';
 
-  // PROPIEDADES PARA EL MODAL de nueva categoria
-  showModal: boolean = false;
-  modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Categoría de Dulce';
-
-  modalFields: FormField[] = [
-    {
-      key: 'name',
-      label: 'Nombre de la categoría',
-      type: 'text',
-      required: true,
-      placeholder: 'Ej: Pasteles Decorados'
-    },
-    {
-      key: 'description', 
-      label: 'Descripción',
-      type: 'textarea',
-      required: false,
-      placeholder: 'Descripción opcional de la categoría'
-    }
-  ];
-
-  // Columnas específicas para categorías de dulces
-  columns: Column[] = [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Nombre', sortable: true },
-    { key: 'description', label: 'Descripción', sortable: true },
-    { key: 'productCount', label: 'Productos', sortable: true },
-    { key: 'status', label: 'Estado', sortable: true }
-  ];
-
-  // Datos de ejemplo para categorías de dulces 🍰
+  // ✅ INICIALIZAR categoriesData PRIMERO
   categoriesData: TableData[] = [
     { 
       id: 1, 
@@ -128,6 +109,65 @@ export class CategoriesPage implements OnInit {
     }
   ];
 
+  // ✅ AHORA SÍ CREAR LAS STATS (después de categoriesData)
+  stats: StatCard[] = [
+    {
+      value: this.totalCategories,
+      label: 'Total Categorías',
+      icon: this.icons.package,
+      gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
+    },
+    {
+      value: this.activeCategories,
+      label: 'Categorías Activas',
+      icon: this.icons.trendingUp,
+      gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
+    },
+    {
+      value: this.categoriesWithProducts,
+      label: 'Con Productos',
+      icon: this.icons.cake,
+      gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+    },
+    {
+      value: this.totalProducts,
+      label: 'Total Productos',
+      icon: this.icons.gift,
+      gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
+    }
+  ];
+
+  // PROPIEDADES PARA EL MODAL de nueva categoria
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nueva Categoría de Dulce';
+
+  modalFields: FormField[] = [
+    {
+      key: 'name',
+      label: 'Nombre de la categoría',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Pasteles Decorados'
+    },
+    {
+      key: 'description', 
+      label: 'Descripción',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Descripción opcional de la categoría'
+    }
+  ];
+
+  // Columnas específicas para categorías de dulces
+  columns: Column[] = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Nombre', sortable: true },
+    { key: 'description', label: 'Descripción', sortable: true },
+    { key: 'productCount', label: 'Productos', sortable: true },
+    { key: 'status', label: 'Estado', sortable: true }
+  ];
+
   // Configuración
   displayedData: TableData[] = [];
   pagination: PaginationConfig = {
@@ -147,15 +187,27 @@ export class CategoriesPage implements OnInit {
 
   // Propiedades computadas para estadísticas
   get totalCategories(): number {
-    return this.categoriesData.length;
+    return this.categoriesData?.length || 0; // ✅ Agregar safe navigation
   }
 
   get activeCategories(): number {
-    return this.categoriesData.filter(c => c['status'] === 'Activo').length;
+    return this.categoriesData?.filter(c => c['status'] === 'Activo').length || 0;
   }
 
   get categoriesWithProducts(): number {
-    return this.categoriesData.filter(c => c['productCount'] > 0).length;
+    return this.categoriesData?.filter(c => c['productCount'] > 0).length || 0;
+  }
+
+  get totalProducts(): number {
+    return this.categoriesData?.reduce((sum, category) => sum + category['productCount'], 0) || 0;
+  }
+
+  get topCategory(): string {
+    if (!this.categoriesData?.length) return 'No hay categorías';
+    const top = this.categoriesData.reduce((prev, current) => 
+      (prev['productCount'] > current['productCount']) ? prev : current
+    );
+    return top['name'];
   }
 
   ngOnInit() {
@@ -193,7 +245,6 @@ export class CategoriesPage implements OnInit {
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando categorías por:', sortEvent);
-    // Aquí ordenarías los datos
   }
 
   onRowClick(row: TableData) {
@@ -208,7 +259,7 @@ export class CategoriesPage implements OnInit {
       case 'edit':
         this.editCategory(event.row);
         break;
-      case 'delete':
+      case 'toggle':
         this.toggleCategory(event.row);
         break;
     }
@@ -231,7 +282,7 @@ export class CategoriesPage implements OnInit {
         description: formData.description,
         productCount: 0,
         status: 'Activo',
-        icon: 'gift' // Icono por defecto para nuevas categorías
+        icon: 'gift'
       };
 
       this.categoriesData.unshift(newCategory);
@@ -266,5 +317,10 @@ export class CategoriesPage implements OnInit {
   // Método para obtener el icono según la categoría
   getCategoryIcon(iconName: string): any {
     return this.icons[iconName as keyof typeof this.icons] || this.icons.gift;
+  }
+
+  // Obtener clase CSS para el estado
+  getStatusClass(status: string): string {
+    return status === 'Activo' ? 'status-active' : 'status-inactive';
   }
 }

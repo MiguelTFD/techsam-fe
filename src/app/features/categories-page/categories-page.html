@@ -4,43 +4,21 @@
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [name]="icons.cupcake" class="header-icon"></i-lucide>
-          Categorías de Dulces
+          <i-lucide [img]="icons.cake" class="header-icon"></i-lucide>
+          Categorías de Dulcería
         </h1>
-        <p>Gestiona las categorías de tu pastelería 🍰</p>
+        <p>Organiza tus dulces por categorías deliciosas 🍭</p>
       </div>
       
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i-lucide [name]="icons.cake" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ totalCategories }}</span>
-            <span class="stat-label">Total Categorías</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i-lucide [name]="icons.iceCream" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ activeCategories }}</span>
-            <span class="stat-label">Categorías Activas</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i-lucide [name]="icons.candy" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ categoriesWithProducts }}</span>
-            <span class="stat-label">Con Productos</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+      <app-stats-cards [stats]="stats"></app-stats-cards>
+
+      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
+      <app-featured-card
+        [label]="'Categoría Más Popular'"
+        [value]="topCategory"
+        [icon]="icons.award">
+      </app-featured-card>
     </div>
   </div>
 
@@ -57,6 +35,12 @@
     [showExportButton]="showExportButton"
     [exportTitle]="exportTitle"
     [exportFileName]="exportFileName"
+    [exportStats]="{
+      totalCategories: totalCategories,
+      activeCategories: activeCategories,
+      categoriesWithProducts: categoriesWithProducts,
+      totalProducts: totalProducts
+    }"
     (pageChange)="onPageChange($event)"
     (searchChange)="onSearchChange($event)"
     (sort)="onSort($event)"
@@ -68,13 +52,20 @@
     <ng-template let-row>
       <div class="category-row">
         <div class="category-icon">
-          <i-lucide [name]="getCategoryIcon(row['icon'])" class="category-icon-svg"></i-lucide>
+          <i-lucide [img]="getCategoryIcon(row['icon'])" class="category-icon-svg"></i-lucide>
         </div>
         <div class="category-info">
           <span class="category-name">{{ row['name'] }}</span>
-          <span class="category-description">{{ row['description'] }}</span>
+          <div class="category-description">{{ row['description'] }}</div>
         </div>
       </div>
+    </ng-template>
+
+    <!-- Template personalizado para el estado -->
+    <ng-template let-row>
+      <span [class]="getStatusClass(row['status'])">
+        {{ row['status'] }}
+      </span>
     </ng-template>
     
   </app-data-table>

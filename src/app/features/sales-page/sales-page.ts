@@ -1,18 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
+import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
+import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
 import { 
   ShoppingCart, Plus, TrendingUp, DollarSign, 
   CheckCircle, Clock, XCircle, Users, Package,
-  Calendar, CreditCard, Gift
+  Calendar, CreditCard, Gift, Award
 } from 'lucide-angular';
 
 @Component({
   selector: 'app-sales-page',
-  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
+  imports: [
+    DataTable, 
+    ModalForm, 
+    CommonModule, 
+    LucideAngularModule,
+    StatsCards,    // ✅ Nuevo componente
+    FeaturedCard   // ✅ Nuevo componente
+  ],
   templateUrl: './sales-page.html',
   styleUrl: './sales-page.scss'
 })
@@ -30,98 +39,11 @@ export class SalesPage implements OnInit{
     package: Package,
     calendar: Calendar,
     creditCard: CreditCard,
-    gift: Gift
+    gift: Gift,
+    award: Award
   };
 
-  // Propiedades para exportar
-  showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Ventas Dulces';
-  exportFileName: string = 'ventas_dulces';
-  
-  // Propiedades para el modal de venta
-  showModal: boolean = false;
-  modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Venta Dulce 🍰';
-
-  // Productos disponibles para vender - ahora de dulcería!
-  availableProducts = [
-    { value: 1, label: 'Pastel de Fresa Decorado - S/ 45.00 (Stock: 8)', stock: 8, price: 45.00, icon: 'gift' },
-    { value: 2, label: 'Cupcakes de Vainilla - S/ 12.50 (Stock: 24)', stock: 24, price: 12.50, icon: 'gift' },
-    { value: 3, label: 'Helado de Chocolate Belga - S/ 18.00 (Stock: 15)', stock: 15, price: 18.00, icon: 'gift' },
-    { value: 4, label: 'Trufas de Chocolate Amargo - S/ 25.00 (Stock: 0)', stock: 0, price: 25.00, icon: 'gift' },
-    { value: 5, label: 'Galletas con Glaseado - S/ 8.50 (Stock: 32)', stock: 32, price: 8.50, icon: 'gift' },
-    { value: 6, label: 'Malteada de Fresa - S/ 15.00 (Stock: 20)', stock: 20, price: 15.00, icon: 'gift' },
-    { value: 7, label: 'Cheesecake de Frutos Rojos - S/ 22.00 (Stock: 12)', stock: 12, price: 22.00, icon: 'gift' },
-    { value: 8, label: 'Brownie con Nuez - S/ 7.50 (Stock: 28)', stock: 28, price: 7.50, icon: 'gift' }
-  ];
-
-  // Vendedores (usuarios)
-  sellers = [
-    { value: 101, label: 'Ana García' },
-    { value: 102, label: 'Carlos López' },
-    { value: 103, label: 'María Torres' },
-    { value: 104, label: 'Juan Pérez' },
-    { value: 105, label: 'Laura Medina' }
-  ];
-
-  modalFields: FormField[] = [
-    {
-      key: 'id_usuario',
-      label: 'Vendedor',
-      type: 'select',
-      required: true,
-      options: this.sellers
-    },
-    {
-      key: 'id_producto',
-      label: 'Producto Dulce 🍭',
-      type: 'select',
-      required: true,
-      options: this.availableProducts.map(p => ({
-        value: p.value,
-        label: p.label
-      }))
-    },
-    {
-      key: 'cantidad',
-      label: 'Cantidad',
-      type: 'number',
-      required: true,
-      placeholder: '1'
-    },
-    {
-      key: 'metodo_pago',
-      label: 'Método de Pago',
-      type: 'select',
-      required: true,
-      options: [
-        { value: 'efectivo', label: '💵 Efectivo' },
-        { value: 'tarjeta', label: '💳 Tarjeta' },
-        { value: 'transferencia', label: '🏦 Transferencia' },
-        { value: 'yape', label: '📱 Yape' }
-      ]
-    },
-    {
-      key: 'observaciones',
-      label: 'Observaciones Especiales',
-      type: 'textarea',
-      required: false,
-      placeholder: 'Decoraciones especiales, mensajes, alergias...'
-    }
-  ];
-
-  // Columnas para ventas de dulces
-  columns: Column[] = [
-    { key: 'id_venta', label: 'ID Venta', sortable: true },
-    { key: 'nombre_usuario', label: 'Vendedor', sortable: true },
-    { key: 'producto', label: 'Producto', sortable: true },
-    { key: 'fecha_venta', label: 'Fecha', sortable: true },
-    { key: 'total', label: 'Total (S/)', sortable: true },
-    { key: 'metodo_pago', label: 'Pago', sortable: true },
-    { key: 'estado', label: 'Estado', sortable: true }
-  ];
-
-  // Datos de ejemplo para ventas de dulcería 🍰
+  // ✅ INICIALIZAR salesData PRIMERO
   salesData: TableData[] = [
     { 
       id_venta: 1, 
@@ -245,6 +167,124 @@ export class SalesPage implements OnInit{
     }
   ];
 
+  // ✅ ESTADÍSTICAS CONFIGURABLES PARA VENTAS
+  stats: StatCard[] = [
+    {
+      value: this.totalVentas,
+      label: 'Total Ventas',
+      icon: this.icons.shoppingCart,
+      gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
+    },
+    {
+      value: this.ventasCompletadas,
+      label: 'Completadas',
+      icon: this.icons.checkCircle,
+      gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
+    },
+    {
+      value: this.totalIngresos,
+      label: 'Ingresos Totales',
+      icon: this.icons.dollarSign,
+      gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+      format: 'currency'
+    },
+    {
+      value: this.promedioVenta,
+      label: 'Ticket Promedio',
+      icon: this.icons.trendingUp,
+      gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      format: 'currency'
+    }
+  ];
+
+  // Propiedades para exportar
+  showExportButton: boolean = true;
+  exportTitle: string = 'Reporte de Ventas Dulces';
+  exportFileName: string = 'ventas_dulces';
+  
+  // Propiedades para el modal de venta
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nueva Venta Dulce 🍰';
+
+  // Productos disponibles para vender - ahora de dulcería!
+  availableProducts = [
+    { value: 1, label: 'Pastel de Fresa Decorado - S/ 45.00 (Stock: 8)', stock: 8, price: 45.00, icon: 'gift' },
+    { value: 2, label: 'Cupcakes de Vainilla - S/ 12.50 (Stock: 24)', stock: 24, price: 12.50, icon: 'gift' },
+    { value: 3, label: 'Helado de Chocolate Belga - S/ 18.00 (Stock: 15)', stock: 15, price: 18.00, icon: 'gift' },
+    { value: 4, label: 'Trufas de Chocolate Amargo - S/ 25.00 (Stock: 0)', stock: 0, price: 25.00, icon: 'gift' },
+    { value: 5, label: 'Galletas con Glaseado - S/ 8.50 (Stock: 32)', stock: 32, price: 8.50, icon: 'gift' },
+    { value: 6, label: 'Malteada de Fresa - S/ 15.00 (Stock: 20)', stock: 20, price: 15.00, icon: 'gift' },
+    { value: 7, label: 'Cheesecake de Frutos Rojos - S/ 22.00 (Stock: 12)', stock: 12, price: 22.00, icon: 'gift' },
+    { value: 8, label: 'Brownie con Nuez - S/ 7.50 (Stock: 28)', stock: 28, price: 7.50, icon: 'gift' }
+  ];
+
+  // Vendedores (usuarios)
+  sellers = [
+    { value: 101, label: 'Ana García' },
+    { value: 102, label: 'Carlos López' },
+    { value: 103, label: 'María Torres' },
+    { value: 104, label: 'Juan Pérez' },
+    { value: 105, label: 'Laura Medina' }
+  ];
+
+  modalFields: FormField[] = [
+    {
+      key: 'id_usuario',
+      label: 'Vendedor',
+      type: 'select',
+      required: true,
+      options: this.sellers
+    },
+    {
+      key: 'id_producto',
+      label: 'Producto Dulce 🍭',
+      type: 'select',
+      required: true,
+      options: this.availableProducts.map(p => ({
+        value: p.value,
+        label: p.label
+      }))
+    },
+    {
+      key: 'cantidad',
+      label: 'Cantidad',
+      type: 'number',
+      required: true,
+      placeholder: '1'
+    },
+    {
+      key: 'metodo_pago',
+      label: 'Método de Pago',
+      type: 'select',
+      required: true,
+      options: [
+        { value: 'efectivo', label: '💵 Efectivo' },
+        { value: 'tarjeta', label: '💳 Tarjeta' },
+        { value: 'transferencia', label: '🏦 Transferencia' },
+        { value: 'yape', label: '📱 Yape' }
+      ]
+    },
+    {
+      key: 'observaciones',
+      label: 'Observaciones Especiales',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Decoraciones especiales, mensajes, alergias...'
+    }
+  ];
+
+  // Columnas para ventas de dulces
+  columns: Column[] = [
+    { key: 'id_venta', label: 'ID Venta', sortable: true },
+    { key: 'nombre_usuario', label: 'Vendedor', sortable: true },
+    { key: 'producto', label: 'Producto', sortable: true },
+    { key: 'fecha_venta', label: 'Fecha', sortable: true },
+    { key: 'total', label: 'Total (S/)', sortable: true },
+    { key: 'metodo_pago', label: 'Pago', sortable: true },
+    { key: 'estado', label: 'Estado', sortable: true }
+  ];
+
   // Configuración
   displayedData: TableData[] = [];
   pagination: PaginationConfig = {
@@ -260,31 +300,33 @@ export class SalesPage implements OnInit{
 
   // Propiedades computadas para estadísticas
   get totalVentas(): number {
-    return this.salesData.length;
+    return this.salesData?.length || 0;
   }
 
   get ventasCompletadas(): number {
-    return this.salesData.filter(v => v['estado'] === 'Completada').length;
+    return this.salesData?.filter(v => v['estado'] === 'Completada').length || 0;
   }
 
   get ventasPendientes(): number {
-    return this.salesData.filter(v => v['estado'] === 'Pendiente').length;
+    return this.salesData?.filter(v => v['estado'] === 'Pendiente').length || 0;
   }
 
   get totalIngresos(): number {
     return this.salesData
-      .filter(v => v['estado'] === 'Completada')
-      .reduce((sum, venta) => sum + parseFloat(venta['total']), 0);
+      ?.filter(v => v['estado'] === 'Completada')
+      ?.reduce((sum, venta) => sum + parseFloat(venta['total']), 0) || 0;
   }
 
   get promedioVenta(): number {
-    const ventasCompletadas = this.salesData.filter(v => v['estado'] === 'Completada');
+    const ventasCompletadas = this.salesData?.filter(v => v['estado'] === 'Completada') || [];
     return ventasCompletadas.length > 0 
       ? this.totalIngresos / ventasCompletadas.length 
       : 0;
   }
 
   get mejorVendedor(): string {
+    if (!this.salesData?.length) return 'Sin ventas';
+    
     const ventasPorVendedor = this.salesData.reduce((acc, venta) => {
       if (venta['estado'] === 'Completada') {
         acc[venta['nombre_usuario']] = (acc[venta['nombre_usuario']] || 0) + parseFloat(venta['total']);

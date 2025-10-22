@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+
+.featured-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    
+    .featured-icon {
+      animation: float 1.5s ease-in-out infinite;
+    }
+  }
+  
+  .featured-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .featured-icon {
+      width: 2rem;
+      height: 2rem;
+      color: #ffd700;
+    }
+    
+    .featured-info {
+      display: flex;
+      flex-direction: column;
+      
+      .featured-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        font-family: 'Nunito', sans-serif;
+        color: white;
+      }
+      
+      .featured-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        font-family: 'Comic Neue', cursive;
+        color: #ffd700;
+      }
+    }
+  }
+}
+
+// Animación flotante
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .featured-card {
+    .featured-content {
+      justify-content: center;
+      text-align: center;
+    }
+  }
+}

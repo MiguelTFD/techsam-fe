@@ -47,99 +47,6 @@
   }
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  
-  .stat-card {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.3);
-    }
-    
-    .stat-icon {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      .stat-icon-svg {
-        width: 1.5rem;
-        height: 1.5rem;
-        color: white;
-      }
-    }
-    
-    .stat-info {
-      display: flex;
-      flex-direction: column;
-      
-      .stat-number {
-        font-size: 1.5rem;
-        font-weight: bold;
-        font-family: 'Comic Neue', cursive;
-      }
-      
-      .stat-label {
-        font-size: 0.875rem;
-        opacity: 0.9;
-        font-family: 'Nunito', sans-serif;
-      }
-    }
-  }
-}
-
-.featured-brand {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 1rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  
-  .featured-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    
-    .featured-icon {
-      width: 2rem;
-      height: 2rem;
-      color: #ffd700;
-    }
-    
-    .featured-info {
-      display: flex;
-      flex-direction: column;
-      
-      .featured-label {
-        font-size: 0.8rem;
-        opacity: 0.8;
-        font-family: 'Nunito', sans-serif;
-      }
-      
-      .featured-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        font-family: 'Comic Neue', cursive;
-        color: #ffd700;
-      }
-    }
-  }
-}
 
 // Estilos para las filas personalizadas de marcas
 .brand-row {
@@ -228,17 +135,6 @@
         font-size: 2rem;
       }
     }
-    
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .featured-brand {
-      .featured-content {
-        justify-content: center;
-        text-align: center;
-      }
-    }
   }
   
   .brand-row {
@@ -259,18 +155,4 @@
       }
     }
   }
-}
-
-// Animaciones bonitas
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-}
-
-.stat-card:hover .stat-icon {
-  animation: float 2s ease-in-out infinite;
-}
-
-.featured-brand:hover .featured-icon {
-  animation: float 1.5s ease-in-out infinite;
 }

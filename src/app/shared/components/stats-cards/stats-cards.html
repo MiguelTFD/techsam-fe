@@ -1,1 +1,18 @@
-<p>stats-cards works!</p>
+<div class="stats-grid">
+  <div 
+    *ngFor="let stat of stats" 
+    class="stat-card"
+    [style.background]="stat.color">
+    
+    <div class="stat-icon" [style.background]="stat.gradient">
+      <i-lucide [img]="stat.icon" class="stat-icon-svg"></i-lucide>
+    </div>
+    
+    <div class="stat-info">
+      <span class="stat-number">
+        {{ formatValue(stat.value, stat.format) }}
+      </span>
+      <span class="stat-label">{{ stat.label }}</span>
+    </div>
+  </div>
+</div>

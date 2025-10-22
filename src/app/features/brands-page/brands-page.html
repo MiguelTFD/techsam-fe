@@ -4,64 +4,21 @@
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [name]="icons.crown" class="header-icon"></i-lucide>
+          <i-lucide [img]="icons.crown" class="header-icon"></i-lucide>
           Marcas de Dulcería
         </h1>
         <p>Gestiona las marcas más dulces del mundo 🍭</p>
       </div>
       
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #ff9cd9, #ff6bb8);">
-            <i-lucide [name]="icons.building" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ totalBrands }}</span>
-            <span class="stat-label">Total Marcas</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);">
-            <i-lucide [name]="icons.trendingUp" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ activeBrands }}</span>
-            <span class="stat-label">Marcas Activas</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-            <i-lucide [name]="icons.globe" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ internationalBrands }}</span>
-            <span class="stat-label">Países</span>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-            <i-lucide [name]="icons.package" class="stat-icon-svg"></i-lucide>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ totalProducts }}</span>
-            <span class="stat-label">Total Productos</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+      <app-stats-cards [stats]="stats"></app-stats-cards>
 
-      <!-- Marca destacada -->
-      <div class="featured-brand">
-        <div class="featured-content">
-          <i-lucide [name]="icons.award" class="featured-icon"></i-lucide>
-          <div class="featured-info">
-            <span class="featured-label">Marca Destacada</span>
-            <span class="featured-name">{{ topBrand }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
+      <app-featured-card
+        [label]="'Marca Destacada'"
+        [value]="topBrand"
+        [icon]="icons.award">
+      </app-featured-card>
     </div>
   </div>
 
@@ -95,7 +52,7 @@
     <ng-template let-row>
       <div class="brand-row">
         <div class="brand-icon">
-          <i-lucide [name]="getBrandIcon(row['icon'])" class="brand-icon-svg"></i-lucide>
+          <i-lucide [img]="getBrandIcon(row['icon'])" class="brand-icon-svg"></i-lucide>
         </div>
         <div class="brand-info">
           <span class="brand-name">{{ row['name'] }}</span>
@@ -112,7 +69,10 @@
     </ng-template>
 
     <!-- Template personalizado para el estado -->
-    <ng-template let-row [ngIf]="false">
+    <ng-template let-row>
+      <span [class]="getStatusClass(row['status'])">
+        {{ row['status'] }}
+      </span>
     </ng-template>
     
   </app-data-table>

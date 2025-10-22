@@ -1,17 +1,26 @@
 import { Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
+import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
+import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
 import { 
   Package, Plus, CakeSlice, IceCreamCone, Candy, Cake, 
-  Coffee, Gift, ShoppingCart, TrendingUp, AlertTriangle
+  Coffee, Gift, ShoppingCart, TrendingUp, AlertTriangle, Award
 } from 'lucide-angular';
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [DataTable, ModalForm, CommonModule, LucideAngularModule],
+  imports: [
+    DataTable, 
+    ModalForm, 
+    CommonModule, 
+    LucideAngularModule,
+    StatsCards,    // ✅ Nuevo componente
+    FeaturedCard   // ✅ Nuevo componente
+  ],
   templateUrl: './inventory-page.html',
   styleUrl: './inventory-page.scss'
 })
@@ -28,99 +37,11 @@ export class InventoryPage implements OnInit {
     gift: Gift,
     shoppingCart: ShoppingCart,
     trendingUp: TrendingUp,
-    alertTriangle: AlertTriangle
+    alertTriangle: AlertTriangle,
+    award: Award
   };
 
-  // Propiedades para exportar
-  showExportButton: boolean = true;
-  exportTitle: string = 'Reporte de Inventario de Dulces';
-  exportFileName: string = 'inventario_dulces';
-  
-  // Propiedades para el modal
-  showModal: boolean = false;
-  modalLoading: boolean = false;
-  modalTitle: string = 'Nuevo Producto Dulce 🍰';
-
-  // Datos para los selects - ahora de dulces!
-  categories = [
-    { value: 1, label: 'Pasteles Decorados' },
-    { value: 2, label: 'Cupcakes' },
-    { value: 3, label: 'Helados Artesanales' },
-    { value: 4, label: 'Chocolates Finos' },
-    { value: 5, label: 'Galletas Decoradas' },
-    { value: 6, label: 'Postres Individuales' },
-    { value: 7, label: 'Bebidas Dulces' },
-    { value: 8, label: 'Dulces Tradicionales' }
-  ];
-
-  brands = [
-    { value: 1, label: 'Dulce Corazón' },
-    { value: 2, label: 'Pastelería Mágica' },
-    { value: 3, label: 'Chocolatería Finita' },
-    { value: 4, label: 'Heladería Artesanal' },
-    { value: 5, label: 'Repostería Creativa' },
-    { value: 6, label: 'Dulces Tradicionales' },
-    { value: 7, label: 'Postres Gourmet' },
-    { value: 8, label: 'Galletas Encantadas' }
-  ];
-
-  modalFields: FormField[] = [
-    {
-      key: 'nombre_producto',
-      label: 'Nombre del Producto',
-      type: 'text',
-      required: true,
-      placeholder: 'Ej: Pastel de Fresa Decorado'
-    },
-    {
-      key: 'id_categoria',
-      label: 'Categoría',
-      type: 'select',
-      required: true,
-      options: this.categories
-    },
-    {
-      key: 'id_marca',
-      label: 'Marca',
-      type: 'select',
-      required: true,
-      options: this.brands
-    },
-    {
-      key: 'precio_venta',
-      label: 'Precio de Venta (S/)',
-      type: 'number',
-      required: true,
-      placeholder: '0.00'
-    },
-    {
-      key: 'stock',
-      label: 'Stock Inicial',
-      type: 'number',
-      required: true,
-      placeholder: '0'
-    },
-    {
-      key: 'descripcion',
-      label: 'Descripción Adicional',
-      type: 'textarea',
-      required: false,
-      placeholder: 'Ingredientes, sabores, decoraciones especiales...'
-    }
-  ];
-
-  // Columnas para productos dulces
-  columns: Column[] = [
-    { key: 'id_producto', label: 'ID', sortable: true },
-    { key: 'nombre_producto', label: 'Producto', sortable: true },
-    { key: 'categoria', label: 'Categoría', sortable: true },
-    { key: 'marca', label: 'Marca', sortable: true },
-    { key: 'precio_venta', label: 'Precio (S/)', sortable: true },
-    { key: 'stock', label: 'Stock', sortable: true },
-    { key: 'estado_stock', label: 'Estado', sortable: true }
-  ];
-
-  // Datos de ejemplo para dulcería 🍭
+  // ✅ INICIALIZAR productsData PRIMERO
   productsData: TableData[] = [
     { 
       id_producto: 1, 
@@ -274,6 +195,124 @@ export class InventoryPage implements OnInit {
     }
   ];
 
+  // ✅ ESTADÍSTICAS CONFIGURABLES PARA INVENTARIO
+  stats: StatCard[] = [
+    {
+      value: this.totalProductos,
+      label: 'Total Productos',
+      icon: this.icons.package,
+      gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
+    },
+    {
+      value: this.productosDisponibles,
+      label: 'Disponibles',
+      icon: this.icons.trendingUp,
+      gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
+    },
+    {
+      value: this.productosBajoStock,
+      label: 'Bajo Stock',
+      icon: this.icons.alertTriangle,
+      gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
+    },
+    {
+      value: this.valorTotalInventario,
+      label: 'Valor Total',
+      icon: this.icons.shoppingCart,
+      gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+      format: 'currency'
+    }
+  ];
+
+  // Propiedades para exportar
+  showExportButton: boolean = true;
+  exportTitle: string = 'Reporte de Inventario de Dulces';
+  exportFileName: string = 'inventario_dulces';
+  
+  // Propiedades para el modal
+  showModal: boolean = false;
+  modalLoading: boolean = false;
+  modalTitle: string = 'Nuevo Producto Dulce 🍰';
+
+  // Datos para los selects - ahora de dulces!
+  categories = [
+    { value: 1, label: 'Pasteles Decorados' },
+    { value: 2, label: 'Cupcakes' },
+    { value: 3, label: 'Helados Artesanales' },
+    { value: 4, label: 'Chocolates Finos' },
+    { value: 5, label: 'Galletas Decoradas' },
+    { value: 6, label: 'Postres Individuales' },
+    { value: 7, label: 'Bebidas Dulces' },
+    { value: 8, label: 'Dulces Tradicionales' }
+  ];
+
+  brands = [
+    { value: 1, label: 'Dulce Corazón' },
+    { value: 2, label: 'Pastelería Mágica' },
+    { value: 3, label: 'Chocolatería Finita' },
+    { value: 4, label: 'Heladería Artesanal' },
+    { value: 5, label: 'Repostería Creativa' },
+    { value: 6, label: 'Dulces Tradicionales' },
+    { value: 7, label: 'Postres Gourmet' },
+    { value: 8, label: 'Galletas Encantadas' }
+  ];
+
+  modalFields: FormField[] = [
+    {
+      key: 'nombre_producto',
+      label: 'Nombre del Producto',
+      type: 'text',
+      required: true,
+      placeholder: 'Ej: Pastel de Fresa Decorado'
+    },
+    {
+      key: 'id_categoria',
+      label: 'Categoría',
+      type: 'select',
+      required: true,
+      options: this.categories
+    },
+    {
+      key: 'id_marca',
+      label: 'Marca',
+      type: 'select',
+      required: true,
+      options: this.brands
+    },
+    {
+      key: 'precio_venta',
+      label: 'Precio de Venta (S/)',
+      type: 'number',
+      required: true,
+      placeholder: '0.00'
+    },
+    {
+      key: 'stock',
+      label: 'Stock Inicial',
+      type: 'number',
+      required: true,
+      placeholder: '0'
+    },
+    {
+      key: 'descripcion',
+      label: 'Descripción Adicional',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Ingredientes, sabores, decoraciones especiales...'
+    }
+  ];
+
+  // Columnas para productos dulces
+  columns: Column[] = [
+    { key: 'id_producto', label: 'ID', sortable: true },
+    { key: 'nombre_producto', label: 'Producto', sortable: true },
+    { key: 'categoria', label: 'Categoría', sortable: true },
+    { key: 'marca', label: 'Marca', sortable: true },
+    { key: 'precio_venta', label: 'Precio (S/)', sortable: true },
+    { key: 'stock', label: 'Stock', sortable: true },
+    { key: 'estado_stock', label: 'Estado', sortable: true }
+  ];
+
   // Configuración
   displayedData: TableData[] = [];
   pagination: PaginationConfig = {
@@ -294,25 +333,33 @@ export class InventoryPage implements OnInit {
 
   // Propiedades computadas para estadísticas
   get totalProductos(): number {
-    return this.productsData.length;
+    return this.productsData?.length || 0;
   }
 
   get productosDisponibles(): number {
-    return this.productsData.filter(p => p['stock'] > 0).length;
+    return this.productsData?.filter(p => p['stock'] > 0).length || 0;
   }
 
   get productosAgotados(): number {
-    return this.productsData.filter(p => p['stock'] === 0).length;
+    return this.productsData?.filter(p => p['stock'] === 0).length || 0;
   }
 
   get productosBajoStock(): number {
-    return this.productsData.filter(p => p['stock'] < 10 && p['stock'] > 0).length;
+    return this.productsData?.filter(p => p['stock'] < 10 && p['stock'] > 0).length || 0;
   }
 
   get valorTotalInventario(): number {
-    return this.productsData.reduce((sum, product) => 
+    return this.productsData?.reduce((sum, product) => 
       sum + (parseFloat(product['precio_venta']) * product['stock']), 0
+    ) || 0;
+  }
+
+  get productoMasVendido(): string {
+    if (!this.productsData?.length) return 'No hay productos';
+    const top = this.productsData.reduce((prev, current) => 
+      (prev['stock'] < current['stock']) ? prev : current // El que menos stock tiene podría ser el más vendido
     );
+    return top['nombre_producto'];
   }
 
   ngOnInit() {
