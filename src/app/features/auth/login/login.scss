@@ -1,6 +1,6 @@
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ec7bd4 0%, #8c53c5 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,7 +8,7 @@
 }
 
 .login-card {
-  background: white;
+  background: rgb(250, 232, 246);
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 2.5rem;
@@ -56,8 +56,8 @@
 
     &:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: #9c3bf6;
+      box-shadow: 0 0 0 3px rgba(140, 18, 170, 0.199);
     }
 
     &::placeholder {
@@ -79,7 +79,7 @@
 
 .login-btn {
   width: 100%;
-  background: #3b82f6;
+  background: #f52ec3;
   color: white;
   border: none;
   padding: 0.875rem 1.5rem;
@@ -90,7 +90,7 @@
   transition: background 0.2s;
 
   &:hover:not(:disabled) {
-    background: #2563eb;
+    background: #9c119c;
   }
 
   &:disabled {

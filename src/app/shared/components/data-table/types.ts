@@ -1,11 +1,14 @@
+// types.ts
+export interface TableData {
+  id?: number | string;
+  [key: string]: any; // Para propiedades dinámicas
+}
+
 export interface Column {
   key: string;
   label: string;
   sortable?: boolean;
-}
-
-export interface TableData {
-  [key: string]: any;
+  template?: any; // Para templates personalizados
 }
 
 export interface SortEvent {
@@ -20,8 +23,8 @@ export interface PaginationConfig {
 }
 
 export interface SearchConfig {
-  placeholder?: string;
-  debounceTime?: number;
+  placeholder: string;
+  debounceTime: number;
 }
 
 export interface Action {
@@ -29,6 +32,7 @@ export interface Action {
   label: string;
   icon?: string;
   color?: string;
+  confirm?: boolean;
 }
 
 export interface ActionEvent {

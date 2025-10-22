@@ -1,58 +1,71 @@
-<aside class="sidebar" [class.sidebar--collapsed]="!isOpen">
+<aside 
+  class="sidebar" 
+  [class.sidebar--collapsed]="!isOpen"
+  [attr.aria-expanded]="isOpen">
   
-  <!-- Header del Sidebar -->
+  <!-- Header del sidebar -->
   <div class="sidebar__header">
-    <h2 *ngIf="isOpen" class="sidebar__title">Mi Tienda</h2>
-    <button (click)="toggleSidebar()" class="sidebar__toggle">
-      {{ isOpen ? '◀' : '▶' }}
+    <div class="sidebar__brand" *ngIf="isOpen">
+      <h2 class="sidebar__title">CakeCandy</h2>
+    </div>
+    
+    <button 
+      class="sidebar__toggle"
+      (click)="toggleSidebar()"
+      [attr.aria-label]="isOpen ? 'Contraer menú' : 'Expandir menú'">
+      <i-lucide [name]="getToggleIcon()" class="sidebar__toggle-icon"></i-lucide>
     </button>
   </div>
 
-  <!-- Navegación Principal -->
+  <!-- Navegación -->
   <nav class="sidebar__nav">
-    <a 
-      *ngFor="let item of navItems" 
-      [routerLink]="item.url"
-      routerLinkActive="active"
-      class="sidebar__nav-item">
-      
-      <span class="sidebar__nav-icon">{{ item.icon }}</span>
-      
-      <span 
-        class="sidebar__nav-text"
-        [class.sidebar__nav-text--hidden]="!isOpen">
-        {{ item.title }}
-      </span>
-    </a>
+    <ul class="sidebar__list">
+      <li *ngFor="let item of navItems" class="sidebar__item">
+        <a 
+          [routerLink]="item.url"
+          routerLinkActive="sidebar__link--active"
+          class="sidebar__link"
+          [attr.title]="!isOpen ? item.title : null">
+          
+          <i-lucide 
+            [name]="item.icon" 
+            class="sidebar__icon"
+            [attr.aria-label]="item.title">
+          </i-lucide>
+          
+          <span class="sidebar__text" *ngIf="isOpen">
+            {{ item.title }}
+          </span>
+        </a>
+      </li>
+    </ul>
   </nav>
 
-  <!-- Información del Usuario (Opcional) -->
-  <div *ngIf="isOpen && currentUser" class="sidebar__user">
-    <div class="user-info">
-      <div class="user-avatar">
-        {{ currentUser.name.charAt(0) }}
+  <!-- Footer del sidebar -->
+  <div class="sidebar__footer" *ngIf="currentUser">
+    <div class="sidebar__user">
+      <div class="sidebar__user-avatar">
+        <!-- ✅ Usando el icono desde la propiedad 'icons' -->
+        <i-lucide [name]="icons.user" class="sidebar__user-icon"></i-lucide>
       </div>
-      <div class="user-details">
-        <div class="user-name">{{ currentUser.name }}</div>
-        <div class="user-role">{{ currentUser.role }}</div>
+      
+      <div class="sidebar__user-info" *ngIf="isOpen">
+        <span class="sidebar__user-name">{{ currentUser.name }}</span>
+        <span class="sidebar__user-email">{{ currentUser.email }}</span>
       </div>
     </div>
-  </div>
 
-  <!-- Footer con Botón de Logout -->
-  <div class="sidebar__footer">
     <button 
+      class="sidebar__logout"
       (click)="onLogout()"
-      class="sidebar__logout-btn">
+      [attr.title]="!isOpen ? 'Cerrar sesión' : null">
       
-      <span class="sidebar__nav-icon">🚪</span>
+      <!-- ✅ Usando el icono desde la propiedad 'icons' -->
+      <i-lucide [name]="icons.logOut" class="sidebar__logout-icon"></i-lucide>
       
-      <span 
-        class="sidebar__nav-text"
-        [class.sidebar__nav-text--hidden]="!isOpen">
+      <span class="sidebar__logout-text" *ngIf="isOpen">
         Cerrar Sesión
       </span>
     </button>
   </div>
-
 </aside>

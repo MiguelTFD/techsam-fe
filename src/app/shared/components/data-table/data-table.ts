@@ -4,15 +4,41 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Column, TableData, SortEvent, PaginationConfig, SearchConfig, Action, ActionEvent } from './types';
 import { ExportButton } from '../export-button/export-button';
+import { LucideAngularModule } from 'lucide-angular';
+import { 
+  Search, X, Plus, Download, LoaderCircle, CakeSlice, 
+  ArrowUp, ArrowDown, ArrowUpDown, ChevronLeft, 
+  ChevronRight, ChevronsLeft, ChevronsRight,
+  SquarePen, Trash2, Eye, SeparatorVertical
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, ExportButton],
+  imports: [CommonModule, FormsModule, ExportButton, LucideAngularModule],
   templateUrl: './data-table.html',
   styleUrls: ['./data-table.scss']
 })
 export class DataTable implements OnInit, OnChanges {
+  icons = {
+    search: Search,
+    x: X,
+    plus: Plus,
+    download: Download,
+    loader: LoaderCircle,
+    cupcake: CakeSlice,
+    arrowUp: ArrowUp,
+    arrowDown: ArrowDown,
+    arrowUpDown: ArrowUpDown,
+    chevronLeft: ChevronLeft,
+    chevronRight: ChevronRight,
+    chevronsLeft: ChevronsLeft,
+    chevronsRight: ChevronsRight,
+    edit: SquarePen,
+    trash: Trash2,
+    eye: Eye,
+    more: SeparatorVertical
+  };
   @Input() columns: Column[] = [];
   @Input() data: TableData[] = [];
   @Input() loading: boolean = false;
@@ -200,5 +226,21 @@ export class DataTable implements OnInit, OnChanges {
   clearSearch() {
     this.searchTerm = '';
     this.searchChange.emit('');
+  }
+
+   // Método para obtener iconos de acciones
+  getActionIcon(actionName: string): any {
+    const iconMap: { [key: string]: any } = {
+      'edit': this.icons.edit,
+      'delete': this.icons.trash,
+      'view': this.icons.eye,
+      'toggle': this.icons.more
+    };
+    return iconMap[actionName] || this.icons.more;
+  }
+
+  // TrackBy function para mejor performance
+  trackByFn(index: number, item: TableData): any {
+    return item.id || index;
   }
 }
