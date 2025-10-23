@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
 
 export interface User {
   id: number;
@@ -15,51 +17,73 @@ export interface User {
 export class AuthService {
   private currentUser = signal<User | null>(null);
   private isAuthenticated = signal<boolean>(false);
+  private tokenEndpoint = 'http://localhost:9000/oauth2/token';
 
-  constructor(private router: Router) {
-    // Verificar si hay usuario en localStorage al iniciar
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
     const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
+    const savedToken = localStorage.getItem('access_token');
+    
+    if (savedUser && savedToken) {
       this.currentUser.set(JSON.parse(savedUser));
       this.isAuthenticated.set(true);
     }
   }
 
-  login(username: string, password: string): boolean {
-    // Simulación de login - en un caso real harías una petición HTTP
-    const users = [
-      { id: 1, username: 'admin', password: 'admin123', email: 'admin@tienda.com', name: 'Administrador', role: 'admin' },
-      { id: 2, username: 'vendedor', password: 'vendedor123', email: 'vendedor@tienda.com', name: 'Ana García', role: 'vendedor' },
-      { id: 3, username: 'inventario', password: 'inventario123', email: 'inventario@tienda.com', name: 'Carlos López', role: 'inventario' }
-    ];
+  // Método para client_credentials (sin usuario/contraseña)
+  loginWithClientCredentials() {
+    const body = new HttpParams()
+      .set('grant_type', 'client_credentials')
+      .set('scope', 'read write'); // Solo scopes de aplicación, no openid/profile
 
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      const userData: User = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      };
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic ' + btoa('angular-client:secret')
+    };
 
-      this.currentUser.set(userData);
-      this.isAuthenticated.set(true);
-      
-      // Guardar en localStorage
-      localStorage.setItem('currentUser', JSON.stringify(userData));
-      
-      return true;
+    return this.http.post<any>(this.tokenEndpoint, body.toString(), { headers }).pipe(
+      tap(response => {
+        localStorage.setItem('access_token', response.access_token);
+        
+        // Con client_credentials, no tenemos info del usuario
+        // Pero podemos crear un usuario genérico
+        const userData: User = {
+          id: 1,
+          username: 'angular-client',
+          email: 'client@tienda.com',
+          name: 'Cliente Angular',
+          role: 'client'
+        };
+
+        this.currentUser.set(userData);
+        this.isAuthenticated.set(true);
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+      }),
+      catchError(error => {
+        console.error('Login error:', error);
+        throw error;
+      })
+    );
+  }
+
+  // Método alternativo si quieres mantener usuario/contraseña
+  // PERO usando un enfoque diferente
+  login(username: string, password: string) {
+    // Opción A: Usar client_credentials pero validar credenciales manualmente
+    if (username === 'user' && password === '12345') {
+      return this.loginWithClientCredentials();
+    } else {
+      throw new Error('Credenciales inválidas');
     }
-    
-    return false;
   }
 
   logout(): void {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('access_token');
     this.router.navigate(['/login']);
   }
 
@@ -73,5 +97,9 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     return this.currentUser()?.role === role;
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('access_token');
   }
 }

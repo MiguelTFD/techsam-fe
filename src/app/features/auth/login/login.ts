@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
@@ -16,10 +17,8 @@ export class Login {
   loading: boolean = false;
   error: string = '';
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   onSubmit() {
     if (!this.username || !this.password) {
@@ -30,35 +29,23 @@ export class Login {
     this.loading = true;
     this.error = '';
 
-    // Simular delay de red
-    setTimeout(() => {
-      const success = this.authService.login(this.username, this.password);
-      
-      if (success) {
+    this.authService.login(this.username, this.password).subscribe({
+      next: () => {
+        this.loading = false;
         this.router.navigate(['/']);
-      } else {
+      },
+      error: (error) => {
+        this.loading = false;
         this.error = 'Usuario o contraseña incorrectos';
+        console.error('Login error:', error);
       }
-      
-      this.loading = false;
-    }, 1000);
+    });
   }
 
-  // Credenciales de prueba para desarrollo
+  // Credenciales de prueba
   fillDemoCredentials(role: string) {
-    switch (role) {
-      case 'admin':
-        this.username = 'admin';
-        this.password = 'admin123';
-        break;
-      case 'vendedor':
-        this.username = 'vendedor';
-        this.password = 'vendedor123';
-        break;
-      case 'inventario':
-        this.username = 'inventario';
-        this.password = 'inventario123';
-        break;
-    }
+    // Usa las credenciales de tu servidor
+    this.username = 'user';
+    this.password = '12345';
   }
 }
