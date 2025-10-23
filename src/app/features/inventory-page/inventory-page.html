@@ -7,13 +7,12 @@
           <i-lucide [img]="icons.package" class="header-icon"></i-lucide>
           Inventario de Dulcería
         </h1>
-        <p>Gestiona tu stock de productos dulces 🍭</p>
       </div>
       
-      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+
       <app-stats-cards [stats]="stats"></app-stats-cards>
 
-      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
+
       <app-featured-card
         [label]="'Producto Más Vendido'"
         [value]="productoMasVendido"

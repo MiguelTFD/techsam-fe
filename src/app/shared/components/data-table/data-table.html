@@ -28,7 +28,7 @@
           [title]="exportTitle"
           [fileName]="exportFileName"
           [stats]="exportStats"
-          (export)="export.emit()"
+          (export)="onExport()"
           class="data-table__button data-table__button--secondary">
           <i-lucide [img]="icons.download" class="data-table__button-icon"></i-lucide>
           Exportar

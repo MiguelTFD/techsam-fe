@@ -18,8 +18,8 @@ import {
     ModalForm, 
     CommonModule, 
     LucideAngularModule,
-    StatsCards,    // ✅ Nuevo componente
-    FeaturedCard   // ✅ Nuevo componente
+    StatsCards,
+    FeaturedCard
   ],
   templateUrl: './inventory-page.html',
   styleUrl: './inventory-page.scss'
@@ -232,7 +232,7 @@ export class InventoryPage implements OnInit {
   // Propiedades para el modal
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nuevo Producto Dulce 🍰';
+  modalTitle: string = 'Nuevo Producto';
 
   // Datos para los selects - ahora de dulces!
   categories = [

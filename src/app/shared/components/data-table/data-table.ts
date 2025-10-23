@@ -49,7 +49,7 @@ export class DataTable implements OnInit, OnChanges {
   @Input() showAddButton: boolean = true;
   @Input() addButtonLabel: string = 'Añadir Nuevo';
 //Inputs para exportar
-  @Input() showExportButton: boolean = false;
+  @Input() showExportButton: boolean = true;
   @Input() exportTitle: string = 'Reporte';
   @Input() exportFileName: string = 'reporte';
   @Input() exportStats: any = {};
@@ -242,5 +242,10 @@ export class DataTable implements OnInit, OnChanges {
   // TrackBy function para mejor performance
   trackByFn(index: number, item: TableData): any {
     return item.id || index;
+  }
+
+  onExport() {
+    console.log('📤 Botón exportar clickeado');
+    this.export.emit();
   }
 }

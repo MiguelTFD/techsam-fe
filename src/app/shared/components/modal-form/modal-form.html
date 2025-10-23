@@ -1,71 +1,78 @@
-<div class="modal-overlay" *ngIf="show" (click)="onCancel()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+<div *ngIf="show" class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
     
     <!-- Header -->
     <div class="modal-header">
-      <h2>{{ title }}</h2>
-      <button class="close-btn" (click)="onCancel()">×</button>
+      <h2 class="modal-title">{{ title }} 🎀</h2>
+      <button class="modal-close" (click)="onCancel()" [disabled]="loading">
+        ✕
+      </button>
     </div>
 
-    <!-- Form -->
+    <!-- Body -->
     <div class="modal-body">
-      <form (ngSubmit)="onSave()" class="form">
+      <div *ngFor="let field of fields; trackBy: trackByField" class="form-group">
         
-        <div *ngFor="let field of fields; trackBy: trackByField" class="form-group">
-          <label [for]="field.key" class="form-label">
-            {{ field.label }}
-            <span *ngIf="field.required" class="required">*</span>
-          </label>
+        <label class="form-label">
+          {{ field.label }}
+          <span *ngIf="field.required" class="required">*</span>
+        </label>
 
-          <!-- Input Text/Number/Email/Password -->
-          <input
-            *ngIf="field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'password'"
-            [id]="field.key"
-            [type]="field.type"
-            [placeholder]="field.placeholder || ''"
-            [(ngModel)]="formData[field.key]"
-            [name]="field.key"
-            class="form-input"
-            [required]="field.required ?? false">
+        <!-- Input de texto/número/email/password -->
+        <input
+          *ngIf="field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'password'"
+          [type]="field.type"
+          [placeholder]="field.placeholder || ''"
+          [(ngModel)]="formData[field.key]"
+          [required]="field.required || false"
+          class="form-control">
 
-          <!-- Textarea -->
-          <textarea
-            *ngIf="field.type === 'textarea'"
-            [id]="field.key"
-            [placeholder]="field.placeholder || ''"
-            [(ngModel)]="formData[field.key]"
-            [name]="field.key"
-            class="form-textarea"
-            [required]="field.required ?? false"
-            rows="4">
-          </textarea>
+        <!-- Textarea -->
+        <textarea
+          *ngIf="field.type === 'textarea'"
+          [placeholder]="field.placeholder || ''"
+          [(ngModel)]="formData[field.key]"
+          [required]="field.required || false"
+          class="form-control"></textarea>
 
-          <!-- Select -->
-          <select
-            *ngIf="field.type === 'select'"
-            [id]="field.key"
-            [(ngModel)]="formData[field.key]"
-            [name]="field.key"
-            class="form-select"
-            [required]="field.required ?? false">
-            <option value="">Seleccionar...</option>
-            <option *ngFor="let option of field.options" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+        <!-- Select -->
+        <select
+          *ngIf="field.type === 'select'"
+          [(ngModel)]="formData[field.key]"
+          [required]="field.required || false"
+          class="form-control">
+          
+          <option value="" disabled selected>
+            {{ field.placeholder || 'Selecciona una opción' }}
+          </option>
+          
+          <option 
+            *ngFor="let option of field.options || []" 
+            [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
 
-        </div>
-
-      </form>
+      </div>
     </div>
 
     <!-- Footer -->
     <div class="modal-footer">
-      <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">
+      <button 
+        class="btn btn-cancel" 
+        (click)="onCancel()" 
+        [disabled]="loading">
         Cancelar
       </button>
-      <button type="button" class="btn btn-save" (click)="onSave()" [disabled]="loading">
+      
+      <button 
+        class="btn btn-save" 
+        (click)="onSave()" 
+        [disabled]="loading">
+        
+        <span *ngIf="loading" class="btn-spinner"></span>
         {{ loading ? 'Guardando...' : 'Guardar' }}
+        
       </button>
     </div>
 

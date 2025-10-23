@@ -7,13 +7,11 @@
           <i-lucide [img]="icons.shoppingCart" class="header-icon"></i-lucide>
           Ventas de Dulcería
         </h1>
-        <p>Gestiona las ventas más dulces del mundo 🍭</p>
       </div>
       
-      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
+
       <app-stats-cards [stats]="stats"></app-stats-cards>
 
-      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
       <app-featured-card
         [label]="'Mejor Vendedor'"
         [value]="mejorVendedor"
