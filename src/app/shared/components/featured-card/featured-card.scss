@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
 
 .featured-card {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 123, 215, 0.705);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 1rem 1.5rem;
@@ -9,7 +9,7 @@
   transition: all 0.3s ease;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(226, 108, 191, 0.705);
     
     .featured-icon {
       animation: float 1.5s ease-in-out infinite;

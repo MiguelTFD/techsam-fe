@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
-  LogOut 
+  LogOut,
+  UserPen 
 } from 'lucide-angular';
 
 // Interface para los items del menú
@@ -79,6 +80,12 @@ export class Sidebar implements OnInit {
       url: '/sales', 
       icon: DollarSign,
       description: 'Registro de ventas'
+    },
+    { 
+      title: 'Usuarios', 
+      url: '/users', 
+      icon: UserPen,
+      description: 'Administrar usuarios'
     }
   ];
 

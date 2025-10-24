@@ -19,8 +19,8 @@ import {
     ModalForm, 
     CommonModule, 
     LucideAngularModule,
-    StatsCards,    // ✅ Nuevo componente
-    FeaturedCard   // ✅ Nuevo componente
+    StatsCards,
+    FeaturedCard
   ],
   templateUrl: './sales-page.html',
   styleUrl: './sales-page.scss'

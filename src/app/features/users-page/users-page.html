@@ -1,0 +1,67 @@
+<div class="users-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <lucide-icon [name]="icons.users" size="32"></lucide-icon>
+          Gestión de Usuarios
+        </h1>
+
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="onAdd()">
+          <lucide-icon [name]="icons.userPlus" size="18"></lucide-icon>
+          Nuevo Usuario
+        </button>
+      </div>
+    </div>
+     </header>
+ 
+
+  <!-- Estadísticas -->
+  <app-stats-cards [stats]="stats" class="stats-section"></app-stats-cards>
+
+  <!-- Tabla de Usuarios -->
+  <div class="table-section">
+    <div class="section-header">
+      <h2>
+        <lucide-icon [name]="icons.users" size="24"></lucide-icon>
+        Lista de Usuarios
+      </h2>
+      <div class="section-actions">
+        <button class="btn btn-secondary" (click)="onExport()">
+          <lucide-icon [name]="icons.download" size="16"></lucide-icon>
+          Exportar
+        </button>
+      </div>
+    </div>
+
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [actions]="actions"
+      [showAddButton]="false"
+      [showExportButton]="false"
+      [search]="{ placeholder: 'Buscar usuarios por nombre, email o rol...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)">
+    </app-data-table>
+  </div>
+
+  <!-- Modal para Nuevo Usuario -->
+  <app-modal-form
+    [title]="modalTitle"
+    [fields]="modalFields"
+    [show]="showModal"
+    [loading]="modalLoading"
+    (save)="onSaveUser($event)"
+    (cancel)="onCancelModal()">
+  </app-modal-form>
+</div>
