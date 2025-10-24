@@ -1,12 +1,14 @@
+@use '../../../../variables.scss' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
 
 .data-table {
   background: #f7bae8;
-  border-radius: 20px;
+  border-radius: $border-radius-large;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(255, 105, 180, 0.1);
-  border: 2px solid #ffe4f3;
-  font-family: 'Nunito', sans-serif;
+  border: 2px solid $color-pink-light;
+  font-family: $font-primary;
 
   &__header {
     display: flex;
@@ -16,16 +18,16 @@
     gap: 1rem;
     flex-wrap: wrap;
 
-    @media (max-width: 768px) {
+    @media (max-width: $breakpoint-mobile) {
       flex-direction: column;
       align-items: stretch;
     }
   }
 
   &__title {
-    font-family: 'Dancing Script', cursive;
+    font-family: $font-secondary;
     font-size: 1.75rem;
-    color: #74154f;
+    color: $color-purple-dark;
     margin: 0;
   }
 
@@ -36,7 +38,7 @@
     margin-left: auto;
     flex-wrap: wrap;
 
-    @media (max-width: 768px) {
+    @media (max-width: $breakpoint-mobile) {
       margin-left: 0;
       justify-content: center;
     }
@@ -49,17 +51,16 @@
     &-input {
       width: 100%;
       padding: 0.75rem 1rem 0.75rem 3rem;
-      border: 2px solid #ff9cd9;
+      border: 2px solid $color-accent;
       border-radius: 25px;
       background: white;
-      font-family: 'Nunito', sans-serif;
+      font-family: $font-primary;
       font-size: 0.9rem;
-
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
       &:focus {
         outline: none;
-        border-color: #ff6bb8;
+        border-color: $color-pink-medium;
         box-shadow: 0 0 0 2px rgba(255, 107, 184, 0.2);
       }
 
@@ -75,7 +76,7 @@
       transform: translateY(-50%);
       width: 1.25rem;
       height: 1.25rem;
-      color: #ff6bb8;
+      color: $color-pink-medium;
     }
 
     &-clear {
@@ -85,7 +86,7 @@
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: #ff6bb8;
+      color: $color-pink-medium;
       cursor: pointer;
       padding: 0.25rem;
       border-radius: 50%;
@@ -109,17 +110,16 @@
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 25px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 500;
+    font-family: $font-primary;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    // TRANSICIÓN MÁS RÁPIDA
     transition: all 0.15s ease;
     text-decoration: none;
     font-size: 0.9rem;
 
     &--primary {
-      background: #ff6bb8;
-      color: white;
+      background: $color-pink-medium;
+      color: $text-white;
       box-shadow: 0 2px 6px rgba(255, 107, 184, 0.3);
 
       &:hover {
@@ -130,11 +130,11 @@
 
     &--secondary {
       background: white;
-      color: #74154f;
-      border: 2px solid #ff9cd9;
+      color: $color-purple-dark;
+      border: 2px solid $color-accent;
 
       &:hover {
-        border-color: #ff6bb8;
+        border-color: $color-pink-medium;
       }
     }
 
@@ -147,10 +147,10 @@
   // Tabla - SIN TRANSICIONES EN ELEMENTOS PRINCIPALES
   &__table-container {
     background: white;
-    border-radius: 15px;
+    border-radius: $border-radius-medium;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid #ffe4f3;
+    border: 1px solid $color-pink-light;
   }
 
   &__table {
@@ -160,15 +160,15 @@
   }
 
   &__thead {
-    background: #ff9cd9;
+    background: $color-accent;
   }
 
   &__th {
     padding: 1rem;
     text-align: left;
-    font-weight: 600;
-    color: white;
-    font-family: 'Comic Neue', cursive;
+    font-weight: $font-weight-semibold;
+    color: $text-white;
+    font-family: $font-accent;
     font-size: 0.95rem;
     position: relative;
     cursor: pointer;
@@ -196,19 +196,21 @@
 
   &__tbody {
     .data-table__tr {
-      border-bottom: 1px solid #ffe4f3;
+      border-bottom: 1px solid $color-pink-light;
 
       &:last-child {
         border-bottom: none;
       }
 
       &:hover {
-        background: rgba(255, 156, 217, 0.05);
+        background: rgba(255, 156, 217, 0.212);
       }
 
       &:nth-child(even) {
-        background: rgba(255, 240, 245, 0.3);
+        background: rgba(255, 209, 231, 0.555);
       }
+
+      
     }
   }
 
@@ -235,7 +237,7 @@
     color: #888;
 
     &:hover {
-      color: #ff6bb8;
+      color: $color-pink-medium;
       background: rgba(255, 107, 184, 0.1);
     }
 
@@ -251,8 +253,8 @@
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    color: #ff6bb8;
-    font-family: 'Comic Neue', cursive;
+    color: $color-pink-medium;
+    font-family: $font-accent;
     font-size: 1rem;
 
     &-icon {
@@ -266,19 +268,19 @@
     text-align: center;
     padding: 2rem;
     color: #c4a6b5;
-    font-family: 'Comic Neue', cursive;
+    font-family: $font-accent;
 
     &-icon {
       width: 3rem;
       height: 3rem;
-      color: #ff9cd9;
+      color: $color-accent;
       margin-bottom: 0.75rem;
     }
 
     &-title {
       font-size: 1.25rem;
       margin-bottom: 0.5rem;
-      color: #74154f;
+      color: $color-purple-dark;
     }
 
     &-message {
@@ -294,19 +296,19 @@
     align-items: center;
     padding: 1rem 0 0;
     margin-top: 1rem;
-    border-top: 1px solid #ff9cd9;
+    border-top: 1px solid $color-accent;
     flex-wrap: wrap;
     gap: 1rem;
 
-    @media (max-width: 768px) {
+    @media (max-width: $breakpoint-mobile) {
       flex-direction: column;
       text-align: center;
     }
   }
 
   &__pagination-info {
-    color: #74154f;
-    font-family: 'Comic Neue', cursive;
+    color: $color-purple-dark;
+    font-family: $font-accent;
     font-size: 0.9rem;
   }
 
@@ -322,15 +324,15 @@
     justify-content: center;
     width: 2.25rem;
     height: 2.25rem;
-    border: 2px solid #ff9cd9;
+    border: 2px solid $color-accent;
     background: white;
     border-radius: 50%;
     cursor: pointer;
-    color: #74154f;
+    color: $color-purple-dark;
 
     &:hover:not(:disabled) {
-      background: #ff9cd9;
-      color: white;
+      background: $color-accent;
+      color: $text-white;
     }
 
     &:disabled {
@@ -339,8 +341,8 @@
     }
 
     &--active {
-      background: #ff6bb8;
-      color: white;
+      background: $color-pink-medium;
+      color: $text-white;
       border-color: transparent;
     }
 
@@ -373,10 +375,10 @@
 }
 
 .data-table__table-container::-webkit-scrollbar-track {
-  background: #ffe4f3;
+  background: $color-pink-light;
 }
 
 .data-table__table-container::-webkit-scrollbar-thumb {
-  background: #ff9cd9;
+  background: $color-accent;
   border-radius: 3px;
 }

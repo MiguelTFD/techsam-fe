@@ -46,7 +46,7 @@ export class BrandsPage implements OnInit {
   // PROPIEDADES PARA EL MODAL
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Marca Dulce 🎀';
+  modalTitle: string = 'Nueva Marca';
 
   modalFields: FormField[] = [
     {

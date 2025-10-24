@@ -1,0 +1,148 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">Panel de Control</h1>
+      <p class="dashboard-date">{{ currentDate }}</p>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Cargando datos del dashboard...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <!-- Total Products -->
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [name]="icons.package" class="icon"></i-lucide>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ totalProducts }}</h3>
+          <p class="stat-label">Productos Totales</p>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [name]="icons.dollarSign" class="icon"></i-lucide>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ formatCurrency(totalRevenue) }}</h3>
+          <p class="stat-label">Ingresos Totales</p>
+        </div>
+      </div>
+
+      <!-- Today's Sales -->
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [name]="icons.shoppingCart" class="icon"></i-lucide>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ salesStats.today }}</h3>
+          <p class="stat-label">Ventas de Hoy</p>
+          <div class="growth-badge" [class.positive]="salesStats.growth > 0">
+            <i-lucide [name]="salesStats.growth > 0 ? icons.arrowUp : icons.arrowRight" class="growth-icon"></i-lucide>
+            <span>{{ salesStats.growth }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Alert -->
+      <div class="stat-card alert">
+        <div class="stat-icon">
+          <i-lucide [name]="icons.alertTriangle" class="icon"></i-lucide>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ lowStockCount }}</h3>
+          <p class="stat-label">Productos con Stock Bajo</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Inventory Stats -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i-lucide [name]="icons.package" class="card-icon"></i-lucide>
+              Estadísticas de Inventario
+            </h3>
+          </div>
+          <div class="inventory-stats">
+            <div class="inventory-item">
+              <span class="inventory-label">Total en Inventario</span>
+              <span class="inventory-value">{{ inventoryStats.total }}</span>
+            </div>
+            <div class="inventory-item">
+              <span class="inventory-label">Disponibles</span>
+              <span class="inventory-value available">{{ inventoryStats.available }}</span>
+            </div>
+            <div class="inventory-item">
+              <span class="inventory-label">Stock Bajo</span>
+              <span class="inventory-value low-stock">{{ inventoryStats.lowStock }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Category -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i-lucide [name]="icons.star" class="card-icon"></i-lucide>
+              Categoría Más Popular
+            </h3>
+          </div>
+          <div class="top-category">
+            <div class="category-icon">
+              <i-lucide [name]="icons.cake" class="icon"></i-lucide>
+            </div>
+            <div class="category-info">
+              <h4 class="category-name">{{ topCategory }}</h4>
+              <p class="category-description">Categoría con más ventas este mes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Popular Products -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i-lucide [name]="icons.trendingUp" class="card-icon"></i-lucide>
+              Productos Populares
+            </h3>
+          </div>
+          <div class="products-list">
+            <div *ngFor="let product of popularProducts" class="product-item">
+              <div class="product-icon">
+                <i-lucide [name]="getProductIcon(product.icon)" class="icon"></i-lucide>
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <div class="product-details">
+                  <span class="sales">{{ product.sales }} ventas</span>
+                  <span class="stock" [class.low]="product.stock < 10">
+                    {{ product.stock }} en stock
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

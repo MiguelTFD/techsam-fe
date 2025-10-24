@@ -1,3 +1,7 @@
+@use '../../../../variables.scss' as *;
+
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+
 .login-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #ec7bd4 0%, #8c53c5 100%);
@@ -5,12 +9,13 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
+  font-family: $font-primary;
 }
 
 .login-card {
   background: rgb(250, 232, 246);
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: $border-radius-medium;
+  box-shadow: $shadow-sidebar;
   padding: 2.5rem;
   width: 100%;
   max-width: 400px;
@@ -21,15 +26,18 @@
   margin-bottom: 2rem;
 
   h1 {
-    color: #1f2937;
+    color: $text-dark;
     font-size: 2rem;
     margin: 0 0 0.5rem 0;
+    font-family: $font-secondary;
   }
 
   p {
     color: #6b7280;
     margin: 0;
     font-size: 0.9rem;
+    font-family: $font-primary;
+    font-weight: $font-weight-light;
   }
 }
 
@@ -41,9 +49,10 @@
   .form-label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #374151;
-    font-weight: 500;
+    color: $text-dark;
+    font-weight: $font-weight-medium;
     font-size: 0.9rem;
+    font-family: $font-primary;
   }
 
   .form-input {
@@ -52,12 +61,13 @@
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 1rem;
-    transition: all 0.2s;
+    transition: $transition-standard;
+    font-family: $font-primary;
 
     &:focus {
       outline: none;
-      border-color: #9c3bf6;
-      box-shadow: 0 0 0 3px rgba(140, 18, 170, 0.199);
+      border-color: $color-pink-medium;
+      box-shadow: 0 0 0 3px rgba(255, 107, 184, 0.2);
     }
 
     &::placeholder {
@@ -75,22 +85,24 @@
   margin-bottom: 1rem;
   font-size: 0.9rem;
   text-align: center;
+  font-family: $font-primary;
 }
 
 .login-btn {
   width: 100%;
-  background: #f52ec3;
-  color: white;
+  background: $color-pink-medium;
+  color: $text-white;
   border: none;
   padding: 0.875rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: $transition-standard;
+  font-family: $font-accent;
 
   &:hover:not(:disabled) {
-    background: #9c119c;
+    background: $color-purple-dark;
   }
 
   &:disabled {
@@ -109,6 +121,8 @@
     font-size: 0.9rem;
     margin: 0 0 1rem 0;
     text-align: center;
+    font-family: $font-primary;
+    font-weight: $font-weight-medium;
   }
 
   .demo-buttons {
@@ -125,7 +139,8 @@
     color: #374151;
     font-size: 0.8rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: $transition-standard;
+    font-family: $font-primary;
 
     &:hover {
       background: #f3f4f6;
@@ -156,11 +171,12 @@
     color: #9ca3af;
     font-size: 0.8rem;
     margin: 0;
+    font-family: $font-primary;
   }
 }
 
 // Responsive
-@media (max-width: 480px) {
+@media (max-width: $breakpoint-mobile) {
   .login-card {
     padding: 2rem 1.5rem;
   }

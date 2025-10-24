@@ -205,7 +205,7 @@ export class SalesPage implements OnInit{
   // Propiedades para el modal de venta
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Venta Dulce 🍰';
+  modalTitle: string = 'Nueva Venta';
 
   // Productos disponibles para vender - ahora de dulcería!
   availableProducts = [

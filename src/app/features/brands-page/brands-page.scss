@@ -1,4 +1,7 @@
+@use '../../../variables.scss' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+
 
 .brands-page {
   padding: 1rem;
@@ -7,12 +10,12 @@
 }
 
 .page-header {
-  background: linear-gradient(135deg, #ff9cd9 0%, #74154f 100%);
-  border-radius: 20px;
+  background: linear-gradient(135deg, $color-accent 0%, $color-purple-dark 100%);
+  border-radius: $border-radius-large;
   padding: 2rem;
   margin-bottom: 2rem;
-  color: white;
-  box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+  color: $text-white;
+  box-shadow: $shadow-sidebar;
   
   .header-content {
     .header-title {
@@ -22,18 +25,18 @@
       margin-bottom: 2rem;
       
       h1 {
-        font-family: 'Dancing Script', cursive;
+        font-family: $font-secondary;
         font-size: 2.5rem;
         margin: 0;
-        background: linear-gradient(45deg, #ffffff, #ffe4f3);
+        background: $text-gradient;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
       
       p {
-        font-family: 'Nunito', sans-serif;
-        font-weight: 300;
+        font-family: $font-primary;
+        font-weight: $font-weight-light;
         opacity: 0.9;
         margin: 0;
       }
@@ -41,12 +44,11 @@
       .header-icon {
         width: 2.5rem;
         height: 2.5rem;
-        color: #ff9cd9;
+        color: $color-accent;
       }
     }
   }
 }
-
 
 // Estilos para las filas personalizadas de marcas
 .brand-row {
@@ -58,7 +60,7 @@
   .brand-icon {
     width: 2.5rem;
     height: 2.5rem;
-    background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
+    background: linear-gradient(135deg, $color-accent, $color-pink-medium);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -67,7 +69,7 @@
     .brand-icon-svg {
       width: 1.25rem;
       height: 1.25rem;
-      color: white;
+      color: $text-white;
     }
   }
   
@@ -77,9 +79,9 @@
     flex: 1;
     
     .brand-name {
-      font-weight: 600;
-      font-family: 'Nunito', sans-serif;
-      color: #74154f;
+      font-weight: $font-weight-semibold;
+      font-family: $font-primary;
+      color: $color-purple-dark;
       font-size: 0.95rem;
     }
     
@@ -92,7 +94,7 @@
       .brand-country, .brand-since {
         font-size: 0.8rem;
         color: #666;
-        font-family: 'Nunito', sans-serif;
+        font-family: $font-primary;
       }
     }
   }
@@ -103,22 +105,22 @@
   color: #16a34a;
   background: rgba(22, 163, 74, 0.1);
   padding: 0.25rem 0.75rem;
-  border-radius: 15px;
+  border-radius: $border-radius-medium;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
 }
 
 .status-inactive {
   color: #dc2626;
   background: rgba(220, 38, 38, 0.1);
   padding: 0.25rem 0.75rem;
-  border-radius: 15px;
+  border-radius: $border-radius-medium;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
 }
 
 // Responsive
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-mobile) {
   .brands-page {
     padding: 0.5rem;
   }

@@ -140,7 +140,7 @@ export class CategoriesPage implements OnInit {
   // PROPIEDADES PARA EL MODAL de nueva categoria
   showModal: boolean = false;
   modalLoading: boolean = false;
-  modalTitle: string = 'Nueva Categoría de Dulce';
+  modalTitle: string = 'Nueva Categoría';
 
   modalFields: FormField[] = [
     {

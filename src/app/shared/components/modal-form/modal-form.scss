@@ -1,3 +1,5 @@
+@use '../../../../variables.scss' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
 
 .modal-overlay {
@@ -16,14 +18,14 @@
   animation: fadeIn 0.3s ease;
 
   .modal-container {
-    background: linear-gradient(135deg, #fff9fb 0%, #ffeef2 100%);
-    border-radius: 20px;
+    background: linear-gradient(135deg, #fff9fb 0%, #fff0f5 100%);
+    border-radius: $border-radius-large;
     padding: 2rem;
     width: 100%;
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+    box-shadow: $shadow-sidebar;
     border: 2px solid rgba(255, 156, 217, 0.3);
     animation: slideUp 0.3s ease;
     
@@ -36,18 +38,18 @@
       border-bottom: 2px solid rgba(255, 156, 217, 0.2);
 
       .modal-title {
-        font-family: 'Dancing Script', cursive;
+        font-family: $font-secondary;
         font-size: 2rem;
-        color: #74154f;
+        color: $text-dark;
         margin: 0;
-        background: linear-gradient(45deg, #ff6bb8, #ff9cd9);
+        background: linear-gradient(45deg, $color-pink-medium, $color-accent);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
 
       .modal-close {
-        background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
+        background: linear-gradient(135deg, $color-accent, $color-pink-medium);
         border: none;
         border-radius: 50%;
         width: 2.5rem;
@@ -56,8 +58,8 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.3s ease;
-        color: white;
+        transition: $transition-standard;
+        color: $text-white;
         font-size: 1.2rem;
 
         &:hover {
@@ -73,14 +75,14 @@
 
         .form-label {
           display: block;
-          font-family: 'Nunito', sans-serif;
-          font-weight: 600;
-          color: #74154f;
+          font-family: $font-primary;
+          font-weight: $font-weight-semibold;
+          color: $text-dark;
           margin-bottom: 0.5rem;
           font-size: 0.95rem;
 
           .required {
-            color: #ff6bb8;
+            color: $color-pink-medium;
             margin-left: 2px;
           }
         }
@@ -91,14 +93,14 @@
           border: 2px solid rgba(255, 156, 217, 0.3);
           border-radius: 12px;
           background: rgba(255, 255, 255, 0.8);
-          font-family: 'Nunito', sans-serif;
+          font-family: $font-primary;
           font-size: 0.95rem;
-          transition: all 0.3s ease;
-          color: #74154f;
+          transition: $transition-standard;
+          color: $text-dark;
 
           &:focus {
             outline: none;
-            border-color: #ff6bb8;
+            border-color: $color-pink-medium;
             background: white;
             box-shadow: 0 0 0 3px rgba(255, 107, 184, 0.1);
             transform: translateY(-1px);
@@ -113,7 +115,7 @@
         textarea.form-control {
           resize: vertical;
           min-height: 100px;
-          font-family: 'Nunito', sans-serif;
+          font-family: $font-primary;
         }
 
         select.form-control {
@@ -139,11 +141,11 @@
         padding: 0.75rem 1.5rem;
         border: none;
         border-radius: 12px;
-        font-family: 'Comic Neue', cursive;
-        font-weight: 700;
+        font-family: $font-accent;
+        font-weight: $font-weight-bold;
         font-size: 1rem;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: $transition-standard;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -157,20 +159,20 @@
 
         &.btn-cancel {
           background: rgba(255, 255, 255, 0.8);
-          color: #74154f;
+          color: $text-dark;
           border: 2px solid rgba(255, 156, 217, 0.5);
 
           &:hover:not(:disabled) {
             background: white;
-            border-color: #ff9cd9;
+            border-color: $color-accent;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 156, 217, 0.3);
           }
         }
 
         &.btn-save {
-          background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
-          color: white;
+          background: linear-gradient(135deg, $color-accent, $color-pink-medium);
+          color: $text-white;
           position: relative;
           overflow: hidden;
 
@@ -231,7 +233,7 @@
 }
 
 // Responsive
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-mobile) {
   .modal-overlay {
     padding: 0.5rem;
 

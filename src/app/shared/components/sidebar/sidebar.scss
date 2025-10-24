@@ -1,17 +1,19 @@
-// Importar fuentes bonitas (agregar en el index.html)
+@use '../../../../variables.scss' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+
 
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: linear-gradient(135deg, #fa84cd 0%, #881e5c 100%);
-  color: white;
+  background: $gradient-primary;
+  color: $text-white;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: $transition-standard;
   position: relative;
-  box-shadow: 2px 0 12px rgba(255, 105, 180, 0.3);
-  border-right: 3px solid #ff9cd9;
+  box-shadow: $shadow-sidebar;
+  border-right: 3px solid $border-pink;
 
   &::before {
     content: '';
@@ -20,8 +22,8 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #ff9cd9, #ff6bb8, #ff9cd9);
-    border-radius: 0 0 10px 10px;
+    background: $gradient-border;
+    border-radius: 0 0 $border-radius-small $border-radius-small;
   }
 
   &--collapsed {
@@ -40,7 +42,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.5rem 1rem;
-    border-bottom: 2px dashed #ff9cd9;
+    border-bottom: $border-dashed;
     position: relative;
   }
 
@@ -52,31 +54,31 @@
 
   &__title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     margin: 0;
-    color: #ffffff;
-    font-family: 'Dancing Script', cursive;
+    color: $text-white;
+    font-family: $font-secondary;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(45deg, #ffffff, #ffe4f3);
+    background: $text-gradient;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   &__toggle {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid #ff9cd9;
+    background: $bg-overlay-medium;
+    border: 2px solid $border-pink;
     border-radius: 50%;
     padding: 0.5rem;
-    color: white;
+    color: $text-white;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: $transition-standard;
+    backdrop-filter: $backdrop-blur;
+    box-shadow: $shadow-soft;
 
     &:hover {
-      background: #ff9cd9;
-      color: #74154f;
+      background: $color-accent;
+      color: $color-purple-dark;
       transform: scale(1.1) rotate(10deg);
     }
 
@@ -108,7 +110,7 @@
       transform: translateY(-50%);
       font-size: 0.8rem;
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: $transition-standard;
     }
 
     &:hover::before {
@@ -122,28 +124,28 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    color: #ffe4f3;
+    color: $text-light;
     text-decoration: none;
-    border-radius: 20px;
-    transition: all 0.3s ease;
+    border-radius: $border-radius-large;
+    transition: $transition-standard;
     position: relative;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 300;
+    font-family: $font-primary;
+    font-weight: $font-weight-light;
     border: 1px solid transparent;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      border: 1px solid #ff9cd9;
+      background: $bg-overlay;
+      color: $text-white;
+      border: 1px solid $border-pink;
       transform: translateX(8px);
-      box-shadow: 0 4px 12px rgba(255, 156, 217, 0.3);
+      box-shadow: $shadow-pink;
     }
 
     &--active {
-      background: linear-gradient(135deg, #ff6bb8, #f63b99);
-      color: white;
-      border: 1px solid #ff9cd9;
-      box-shadow: 0 4px 12px rgba(255, 107, 184, 0.4);
+      background: $gradient-accent;
+      color: $text-white;
+      border: 1px solid $border-pink;
+      box-shadow: $shadow-medium;
       
       &::after {
         position: absolute;
@@ -157,7 +159,7 @@
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
-    transition: all 0.3s ease;
+    transition: $transition-standard;
   }
 
   &__link:hover &__icon {
@@ -165,18 +167,18 @@
   }
 
   &__text {
-    font-weight: 400;
-    transition: all 0.3s ease;
+    font-weight: $font-weight-regular;
+    transition: $transition-standard;
     white-space: nowrap;
-    font-family: 'Nunito', sans-serif;
+    font-family: $font-primary;
     letter-spacing: 0.5px;
   }
 
   &__footer {
-    border-top: 2px dashed #ff9cd9;
+    border-top: $border-dashed;
     padding: 1rem;
-    background: rgba(116, 21, 79, 0.7);
-    backdrop-filter: blur(10px);
+    background: $bg-dark-overlay;
+    backdrop-filter: $backdrop-blur;
   }
 
   &__user {
@@ -185,12 +187,12 @@
     gap: 0.75rem;
     margin-bottom: 1rem;
     padding: 0.5rem;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    border-radius: $border-radius-medium;
+    background: $bg-overlay-light;
+    transition: $transition-standard;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: $bg-overlay-medium;
       transform: translateY(-2px);
     }
   }
@@ -199,39 +201,39 @@
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff9cd9, #ff6bb8);
+    background: linear-gradient(135deg, $color-accent, $color-pink-medium);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 2px solid white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid $text-white;
+    box-shadow: $shadow-soft;
   }
 
   &__user-icon {
     width: 1.25rem;
     height: 1.25rem;
-    color: #ffffff;
+    color: $text-white;
   }
 
   &__user-info {
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: $transition-standard;
   }
 
   &__user-name {
-    font-weight: 500;
+    font-weight: $font-weight-medium;
     font-size: 0.875rem;
-    color: white;
-    font-family: 'Comic Neue', cursive;
+    color: $text-white;
+    font-family: $font-accent;
   }
 
   &__user-email {
     font-size: 0.75rem;
-    color: #ffe4f3;
-    font-family: 'Comic Neue', cursive;
-    font-weight: 300;
+    color: $text-light;
+    font-family: $font-accent;
+    font-weight: $font-weight-light;
   }
 
   &__logout {
@@ -240,19 +242,19 @@
     gap: 0.75rem;
     width: 100%;
     padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #ff6b6b, #dc2626);
-    color: white;
+    background: $gradient-logout;
+    color: $text-white;
     border: none;
-    border-radius: 15px;
+    border-radius: $border-radius-medium;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Nunito', sans-serif;
-    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+    transition: $transition-standard;
+    font-family: $font-primary;
+    box-shadow: $shadow-red;
 
     &:hover {
-      background: linear-gradient(135deg, #ff5252, #b91c1c);
+      background: $gradient-logout-hover;
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4);
+      box-shadow: $shadow-red-hover;
       
       &::before {
         position: absolute;
@@ -269,13 +271,13 @@
   }
 
   &__logout-text {
-    font-weight: 500;
-    transition: all 0.3s ease;
+    font-weight: $font-weight-medium;
+    transition: $transition-standard;
     white-space: nowrap;
   }
 }
 
-// Animaciones bonitas
+// Animaciones
 @keyframes twinkle {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
@@ -287,12 +289,12 @@
 }
 
 // Responsive
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-mobile) {
   .sidebar {
     position: fixed;
     z-index: 50;
     transform: translateX(-100%);
-    border-radius: 0 20px 20px 0;
+    border-radius: 0 $border-radius-large $border-radius-large 0;
 
     &--collapsed {
       transform: translateX(0);
@@ -306,21 +308,3 @@
   }
 }
 
-// Scrollbar personalizado (opcional)
-.sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #ff9cd9;
-  border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #ff6bb8;
-}

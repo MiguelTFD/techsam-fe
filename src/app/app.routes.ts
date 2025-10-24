@@ -4,6 +4,7 @@ import { InventoryPage } from './features/inventory-page/inventory-page';
 import { SalesPage } from './features/sales-page/sales-page';
 import { BrandsPage } from './features/brands-page/brands-page';
 import { CategoriesPage } from './features/categories-page/categories-page';
+import { HomePage } from './features/home-page/home-page';
 import { AuthGuard } from './core/guards/auth.guard';
 import { Login } from './features/auth/login/login';
 
@@ -17,6 +18,7 @@ export const routes: Routes = [
     component: Dashboard,
      canActivate: [AuthGuard],
     children: [
+      { path: '', component: HomePage },
       { path: 'inventory', component: InventoryPage },
       { path: 'categories', component: CategoriesPage },
       { path: 'brands', component: BrandsPage },
