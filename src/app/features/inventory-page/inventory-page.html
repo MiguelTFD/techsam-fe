@@ -1,87 +1,95 @@
 <div class="inventory-page">
-  <!-- Header con estadísticas -->
-  <div class="page-header">
+  <!-- Header -->
+  <header class="page-header">
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [img]="icons.package" class="header-icon"></i-lucide>
+          <lucide-icon [name]="icons.package" size="32"></lucide-icon>
           Inventario de Dulcería
         </h1>
       </div>
-      
-
-      <app-stats-cards [stats]="stats"></app-stats-cards>
-
-
-      <app-featured-card
-        [label]="'Producto Más Vendido'"
-        [value]="productoMasVendido"
-        [icon]="icons.award">
-      </app-featured-card>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="onAdd()">
+          <lucide-icon [name]="icons.plus" size="18"></lucide-icon>
+          Nuevo Producto
+        </button>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Data Table -->
-  <app-data-table
-    [columns]="columns"
-    [data]="displayedData"
-    [pagination]="pagination"
-    [loading]="loading"
-    [showActions]="showActions"
-    [actions]="actions"
-    [showAddButton]="showAddButton"
-    [addButtonLabel]="addButtonLabel"
-    [showExportButton]="showExportButton"
-    [exportTitle]="exportTitle"
-    [exportFileName]="exportFileName"
-    [exportStats]="{
-      totalProductos: totalProductos,
-      productosDisponibles: productosDisponibles,
-      productosBajoStock: productosBajoStock,
-      valorTotalInventario: valorTotalInventario
-    }"
-    (pageChange)="onPageChange($event)"
-    (searchChange)="onSearchChange($event)"
-    (sort)="onSort($event)"
-    (rowClick)="onRowClick($event)"
-    (action)="onAction($event)"
-    (add)="onAdd()">
-    
-    <!-- Template personalizado para las filas -->
-    <ng-template let-row>
-      <div class="product-row">
-        <div class="product-icon">
-          <i-lucide [img]="getProductIcon(row['icon'])" class="product-icon-svg"></i-lucide>
-        </div>
-        <div class="product-info">
-          <span class="product-name">{{ row['nombre_producto'] }}</span>
-          <div class="product-meta">
-            <span class="product-category">{{ row['categoria'] }}</span>
-            <span class="product-brand">• {{ row['marca'] }}</span>
+  <!-- Estadísticas -->
+  <app-stats-cards [stats]="stats" class="stats-section"></app-stats-cards>
+
+  <!-- Tabla de Inventario -->
+  <div class="table-section">
+    <div class="section-header">
+      <h2>
+        <lucide-icon [name]="icons.package" size="24"></lucide-icon>
+        Lista de Productos
+      </h2>
+      <div class="section-actions">
+        <app-export-button
+          [title]="exportTitle"
+          [columns]="exportColumns"
+          [data]="productsData"
+          [fileName]="exportFileName"
+          [showStats]="true">
+        </app-export-button>
+      </div>
+    </div>
+
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [actions]="actions"
+      [showAddButton]="false"
+      [showExportButton]="false"
+      [search]="{ placeholder: 'Buscar productos por nombre, categoría o marca...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)">
+      
+      <!-- Template personalizado para los productos -->
+      <ng-template let-row>
+        <div class="product-row">
+          <div class="product-icon">
+            <lucide-icon [name]="getProductIcon(row['icon'])" size="20" class="product-icon-svg"></lucide-icon>
+          </div>
+          <div class="product-info">
+            <span class="product-name">{{ row['nombre_producto'] }}</span>
+            <div class="product-meta">
+              <span class="product-category">{{ row['categoria'] }}</span>
+              <span class="product-brand">• {{ row['marca'] }}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </ng-template>
+      </ng-template>
 
-    <!-- Template personalizado para el precio -->
-    <ng-template let-row>
-      <span class="product-price">{{ formatCurrency(row['precio_venta']) }}</span>
-    </ng-template>
+      <!-- Template personalizado para el precio -->
+      <ng-template let-row>
+        <span class="product-price">{{ formatCurrency(row['precio_venta']) }}</span>
+      </ng-template>
 
-    <!-- Template personalizado para el estado del stock -->
-    <ng-template let-row>
-      <span [class]="getStockStatusClass(row['estado_stock'])">
-        {{ row['estado_stock'] }}
-      </span>
-    </ng-template>
-    
-  </app-data-table>
+      <!-- Template personalizado para el estado del stock -->
+      <ng-template let-row>
+        <span class="stock-status" [class]="getStockStatusClass(row['estado_stock'])">
+          {{ row['estado_stock'] }}
+        </span>
+      </ng-template>
+      
+    </app-data-table>
+  </div>
 
-  <!-- Modal para nuevo producto -->
+  <!-- Modal para Nuevo Producto -->
   <app-modal-form
-    [show]="showModal"
     [title]="modalTitle"
     [fields]="modalFields"
+    [show]="showModal"
     [loading]="modalLoading"
     (save)="onSaveProduct($event)"
     (cancel)="onCancelModal()">

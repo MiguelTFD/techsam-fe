@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
-import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
+import { ExportButton } from '../../shared/components/export-button/export-button';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
@@ -20,7 +20,7 @@ import {
     CommonModule, 
     LucideAngularModule,
     StatsCards,
-    FeaturedCard
+    ExportButton
   ],
   templateUrl: './users-page.html',
   styleUrl: './users-page.scss'
@@ -200,6 +200,15 @@ export class UsersPage implements OnInit {
     { key: 'fecha_creacion', label: 'Fecha Registro', sortable: true },
     { key: 'estado', label: 'Estado', sortable: true }
   ];
+
+  exportColumns = [
+    { key: 'id_usuario', label: 'ID'},
+    { key: 'nombre', label: 'Nombre'},
+    { key: 'email', label: 'Email'},
+    { key: 'nombre_rol', label: 'Rol'},
+    { key: 'fecha_creacion', label: 'Fecha Registro'},
+    { key: 'estado', label: 'Estado'}
+  ]
 
   // Configuración
   displayedData: TableData[] = [];

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
-import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
+import { ExportButton } from '../../shared/components/export-button/export-button';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent} from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
-import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift, Package, TrendingUp, Award } from 'lucide-angular';
+import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift, Package, TrendingUp, Award, Download} from 'lucide-angular';
 
 @Component({
   selector: 'app-categories-page',
@@ -15,7 +15,7 @@ import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee
     CommonModule, 
     LucideAngularModule,
     StatsCards,
-    FeaturedCard
+    ExportButton
   ],
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.scss'
@@ -33,7 +33,8 @@ export class CategoriesPage implements OnInit {
     gift: Gift,
     package: Package,
     trendingUp: TrendingUp,
-    award: Award
+    award: Award,
+    download: Download
   };
 
   // Propiedades para exportar
@@ -167,6 +168,14 @@ export class CategoriesPage implements OnInit {
     { key: 'productCount', label: 'Productos', sortable: true },
     { key: 'status', label: 'Estado', sortable: true }
   ];
+
+  exportColumns = [
+    { key: 'id', label: 'ID'},
+    { key: 'name', label: 'Nombre'},
+    { key: 'description', label: 'Descripción'},
+    { key: 'productCount', label: 'Productos'},
+    { key: 'status', label: 'Estado'}
+  ]
 
   // Configuración
   displayedData: TableData[] = [];

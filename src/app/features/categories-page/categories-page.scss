@@ -1,11 +1,11 @@
 @use '../../../variables.scss' as *;
+@use 'sass:color';
 
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
 
-
 .categories-page {
   padding: 1rem;
-  background: linear-gradient(135deg, #fff5f7 0%, #ffeef2 100%);
+  background: linear-gradient(135deg, #fff9fb 0%, #fff0f5 100%);
   min-height: 100vh;
 }
 
@@ -18,11 +18,14 @@
   box-shadow: $shadow-sidebar;
   
   .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    
     .header-title {
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 2rem;
       
       h1 {
         font-family: $font-secondary;
@@ -32,43 +35,115 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
-      
-      p {
+    }
+    
+    .header-actions {
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: $border-radius-medium;
         font-family: $font-primary;
-        font-weight: $font-weight-light;
-        opacity: 0.9;
-        margin: 0;
-      }
-      
-      .header-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        color: $color-accent;
+        font-weight: $font-weight-medium;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &.btn-primary {
+          background: $color-accent;
+          color: $text-white;
+          
+          &:hover {
+            background: color.adjust($color-accent, $lightness: -10%);
+            transform: translateY(-2px);
+            box-shadow: $shadow-sidebar;
+          }
+        }
       }
     }
   }
 }
 
-// Estilos para las filas personalizadas
+// Sección de estadísticas
+.stats-section {
+  margin-bottom: 2rem;
+}
+
+// Sección de tabla
+.table-section {
+  background: white;
+  border-radius: $border-radius-large;
+  padding: 1.5rem;
+  box-shadow: $shadow-sidebar;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h2 {
+      font-family: $font-secondary;
+      font-size: 1.75rem;
+      color: $color-purple-dark;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .section-actions {
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: $border-radius-medium;
+        font-family: $font-primary;
+        font-weight: $font-weight-medium;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &.btn-secondary {
+          background: transparent;
+          color: $color-purple-dark;
+          border: 1px solid $color-purple-dark;
+          
+          &:hover {
+            background: rgba($color-purple-dark, 0.1);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos para las filas personalizadas de categorías
 .category-row {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 0;
   
   .category-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: linear-gradient(135deg, $color-accent, $color-pink-medium);
-    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(135deg, $color-pink-light 0%, $color-pink-medium 100%);
+    border-radius: $border-radius-medium;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     
     .category-icon-svg {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.5rem;
+      height: 1.5rem;
       color: $text-white;
     }
   }
@@ -76,40 +151,79 @@
   .category-info {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
     
     .category-name {
       font-weight: $font-weight-semibold;
       font-family: $font-primary;
       color: $color-purple-dark;
-      font-size: 0.95rem;
+      font-size: 1rem;
+      line-height: 1.2;
     }
     
     .category-description {
-      font-size: 0.875rem;
-      color: #666;
       font-family: $font-primary;
-      margin-top: 0.25rem;
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
 
-// Estados personalizados (manteniendo el estilo rosita compatible)
-.status-active {
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.1);
+// Estados personalizados para categorías
+.category-status {
   padding: 0.25rem 0.75rem;
   border-radius: $border-radius-medium;
   font-size: 0.8rem;
   font-weight: $font-weight-medium;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  &.status-active {
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.1);
+  }
+  
+  &.status-inactive {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.1);
+  }
+  
+  &.status-archived {
+    color: #6b7280;
+    background: rgba(107, 114, 128, 0.1);
+  }
+  
+  &.status-featured {
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+  }
 }
 
-.status-inactive {
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.1);
-  padding: 0.25rem 0.75rem;
-  border-radius: $border-radius-medium;
-  font-size: 0.8rem;
+// Información adicional de categorías (para otras columnas)
+.category-products {
+  font-family: $font-primary;
+  color: $color-purple-dark;
   font-weight: $font-weight-medium;
+  
+  .products-count {
+    font-family: $font-accent;
+    font-size: 1.1rem;
+  }
+}
+
+.category-date {
+  font-family: $font-primary;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 // Responsive
@@ -121,19 +235,57 @@
   .page-header {
     padding: 1.5rem;
     
-    .header-title {
+    .header-content {
       flex-direction: column;
+      gap: 1rem;
       text-align: center;
-      gap: 0.5rem;
       
-      h1 {
-        font-size: 2rem;
+      .header-title {
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        h1 {
+          font-size: 2rem;
+        }
+      }
+      
+      .header-actions {
+        width: 100%;
+        
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+  
+  .table-section {
+    padding: 1rem;
+    
+    .section-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+      
+      h2 {
+        font-size: 1.5rem;
       }
     }
   }
   
   .category-row {
     gap: 0.75rem;
+    
+    .category-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      
+      .category-icon-svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
     
     .category-info {
       .category-name {
@@ -142,7 +294,71 @@
       
       .category-description {
         font-size: 0.8rem;
+        -webkit-line-clamp: 1;
       }
     }
+  }
+  
+  .category-status {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+  
+  .category-products,
+  .category-date {
+    font-size: 0.8rem;
+  }
+}
+
+// Estilos para las tarjetas de estadísticas
+.stats-section ::ng-deep app-stats-cards {
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .stat-card {
+    background: white;
+    border-radius: $border-radius-medium;
+    padding: 1.5rem;
+    box-shadow: $shadow-sidebar;
+    border-left: 4px solid $color-pink-medium;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-sidebar;
+    }
+    
+    .stat-value {
+      font-family: $font-accent;
+      font-size: 1.75rem;
+      font-weight: $font-weight-semibold;
+      color: $color-purple-dark;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      font-family: $font-primary;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .stat-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: $color-pink-medium;
+      margin-bottom: 0.75rem;
+    }
+  }
+}
+
+// Efectos especiales para categorías
+.category-row {
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateX(4px);
   }
 }

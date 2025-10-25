@@ -1,86 +1,94 @@
 <div class="brands-page">
-  <!-- Header con estadísticas -->
-  <div class="page-header">
+  <!-- Header -->
+  <header class="page-header">
     <div class="header-content">
       <div class="header-title">
         <h1>
-          <i-lucide [img]="icons.crown" class="header-icon"></i-lucide>
+          <lucide-icon [name]="icons.crown" size="32"></lucide-icon>
           Marcas de Dulcería
         </h1>
       </div>
-      
-      <!-- ✅ COMPONENTE REUTILIZABLE DE ESTADÍSTICAS -->
-      <app-stats-cards [stats]="stats"></app-stats-cards>
-
-      <!-- ✅ COMPONENTE REUTILIZABLE DE DESTACADO -->
-      <app-featured-card
-        [label]="'Marca Destacada'"
-        [value]="topBrand"
-        [icon]="icons.award">
-      </app-featured-card>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="onAdd()">
+          <lucide-icon [name]="icons.plus" size="18"></lucide-icon>
+          Nueva Marca
+        </button>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Data Table -->
-  <app-data-table
-    [columns]="columns"
-    [data]="displayedData"
-    [pagination]="pagination"
-    [loading]="loading"
-    [showActions]="showActions"
-    [actions]="actions"
-    [showAddButton]="showAddButton"
-    [addButtonLabel]="addButtonLabel"
-    [showExportButton]="showExportButton"
-    [exportTitle]="exportTitle"
-    [exportFileName]="exportFileName"
-    [exportStats]="{
-      totalBrands: totalBrands,
-      activeBrands: activeBrands,
-      internationalBrands: internationalBrands,
-      totalProducts: totalProducts
-    }"
-    (pageChange)="onPageChange($event)"
-    (searchChange)="onSearchChange($event)"
-    (sort)="onSort($event)"
-    (rowClick)="onRowClick($event)"
-    (action)="onAction($event)"
-    (add)="onAdd()">
-    
-    <!-- Template personalizado para las filas -->
-    <ng-template let-row>
-      <div class="brand-row">
-        <div class="brand-icon">
-          <i-lucide [img]="getBrandIcon(row['icon'])" class="brand-icon-svg"></i-lucide>
-        </div>
-        <div class="brand-info">
-          <span class="brand-name">{{ row['name'] }}</span>
-          <div class="brand-meta">
-            <span class="brand-country">
-              {{ getCountryFlag(row['country']) }} {{ row['country'] }}
-            </span>
-            <span class="brand-since" *ngIf="row['since']">
-              • Desde {{ row['since'] }}
-            </span>
+  <!-- Estadísticas -->
+  <app-stats-cards [stats]="stats" class="stats-section"></app-stats-cards>
+
+  <!-- Tabla de Marcas -->
+  <div class="table-section">
+    <div class="section-header">
+      <h2>
+        <lucide-icon [name]="icons.crown" size="24"></lucide-icon>
+        Lista de Marcas
+      </h2>
+      <div class="section-actions">
+         <app-export-button
+          [title]="exportTitle"
+          [columns]="exportColumns"
+          [data]="brandsData"
+          [fileName]="exportFileName"
+          [showStats]="true">
+        </app-export-button>
+      </div>
+    </div>
+
+    <app-data-table
+      [columns]="columns"
+      [data]="displayedData"
+      [loading]="loading"
+      [pagination]="pagination"
+      [showActions]="showActions"
+      [actions]="actions"
+      [showAddButton]="false"
+      [showExportButton]="false"
+      [search]="{ placeholder: 'Buscar marcas por nombre, país o estado...', debounceTime: 500 }"
+      (sort)="onSort($event)"
+      (rowClick)="onRowClick($event)"
+      (pageChange)="onPageChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (action)="onAction($event)">
+      
+      <!-- Template personalizado para las marcas -->
+      <ng-template let-row>
+        <div class="brand-row">
+          <div class="brand-icon">
+            <lucide-icon [name]="getBrandIcon(row['icon'])" size="20" class="brand-icon-svg"></lucide-icon>
+          </div>
+          <div class="brand-info">
+            <span class="brand-name">{{ row['name'] }}</span>
+            <div class="brand-meta">
+              <span class="brand-country">
+                {{ getCountryFlag(row['country']) }} {{ row['country'] }}
+              </span>
+              <span class="brand-since" *ngIf="row['since']">
+                • Desde {{ row['since'] }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </ng-template>
+      </ng-template>
 
-    <!-- Template personalizado para el estado -->
-    <ng-template let-row>
-      <span [class]="getStatusClass(row['status'])">
-        {{ row['status'] }}
-      </span>
-    </ng-template>
-    
-  </app-data-table>
+      <!-- Template personalizado para el estado -->
+      <ng-template let-row>
+        <span class="brand-status" [class]="getStatusClass(row['status'])">
+          {{ row['status'] }}
+        </span>
+      </ng-template>
+      
+    </app-data-table>
+  </div>
 
-  <!-- Modal para nueva marca -->
+  <!-- Modal para Nueva Marca -->
   <app-modal-form
-    [show]="showModal"
     [title]="modalTitle"
     [fields]="modalFields"
+    [show]="showModal"
     [loading]="modalLoading"
     (save)="onSaveBrand($event)"
     (cancel)="onCancelModal()">

@@ -18,7 +18,6 @@
     </div>
      </header>
  
-
   <!-- Estadísticas -->
   <app-stats-cards [stats]="stats" class="stats-section"></app-stats-cards>
 
@@ -30,10 +29,13 @@
         Lista de Usuarios
       </h2>
       <div class="section-actions">
-        <button class="btn btn-secondary" (click)="onExport()">
-          <lucide-icon [name]="icons.download" size="16"></lucide-icon>
-          Exportar
-        </button>
+         <app-export-button
+          [title]="exportTitle"
+          [columns]="exportColumns"
+          [data]="usersData"
+          [fileName]="exportFileName"
+          [showStats]="true">
+        </app-export-button>
       </div>
     </div>
 

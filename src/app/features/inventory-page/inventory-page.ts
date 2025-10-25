@@ -5,10 +5,11 @@ import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-
 import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
+import { ExportButton } from '../../shared/components/export-button/export-button';
 import { LucideAngularModule } from 'lucide-angular';
 import { 
   Package, Plus, CakeSlice, IceCreamCone, Candy, Cake, 
-  Coffee, Gift, ShoppingCart, TrendingUp, AlertTriangle, Award
+  Coffee, Gift, ShoppingCart, TrendingUp, AlertTriangle, Award, Download
 } from 'lucide-angular';
 
 @Component({
@@ -19,7 +20,8 @@ import {
     CommonModule, 
     LucideAngularModule,
     StatsCards,
-    FeaturedCard
+    FeaturedCard,
+    ExportButton
   ],
   templateUrl: './inventory-page.html',
   styleUrl: './inventory-page.scss'
@@ -38,7 +40,8 @@ export class InventoryPage implements OnInit {
     shoppingCart: ShoppingCart,
     trendingUp: TrendingUp,
     alertTriangle: AlertTriangle,
-    award: Award
+    award: Award,
+    download: Download
   };
 
   // ✅ INICIALIZAR productsData PRIMERO
@@ -313,6 +316,17 @@ export class InventoryPage implements OnInit {
     { key: 'estado_stock', label: 'Estado', sortable: true }
   ];
 
+  exportColumns = [
+    { key: 'id_producto', label: 'ID' },
+    { key: 'nombre_producto', label: 'Producto' },
+    { key: 'categoria', label: 'Categoría' },
+    { key: 'marca', label: 'Marca' },
+    { key: 'precio_venta', label: 'Precio (S/)' },
+    { key: 'stock', label: 'Stock' },
+    { key: 'estado_stock', label: 'Estado' }
+  ];
+
+
   // Configuración
   displayedData: TableData[] = [];
   pagination: PaginationConfig = {
@@ -330,6 +344,7 @@ export class InventoryPage implements OnInit {
     { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
     { name: 'toggle', label: 'Discontinuar', icon: '🚫', color: 'red', confirm: true, dangerous: true }
   ];
+
 
   // Propiedades computadas para estadísticas
   get totalProductos(): number {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
-import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
+import { ExportButton } from '../../shared/components/export-button/export-button';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField} from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
@@ -20,7 +20,7 @@ import {
     CommonModule, 
     LucideAngularModule,
     StatsCards,
-    FeaturedCard
+    ExportButton
   ],
   templateUrl: './sales-page.html',
   styleUrl: './sales-page.scss'
@@ -284,6 +284,16 @@ export class SalesPage implements OnInit{
     { key: 'metodo_pago', label: 'Pago', sortable: true },
     { key: 'estado', label: 'Estado', sortable: true }
   ];
+
+  exportColumns = [
+    { key: 'id_venta', label: 'ID Venta'},
+    { key: 'nombre_usuario', label: 'Vendedor'},
+    { key: 'producto', label: 'Producto'},
+    { key: 'fecha_venta', label: 'Fecha'},
+    { key: 'total', label: 'Total (S/)' },
+    { key: 'metodo_pago', label: 'Pago'},
+    { key: 'estado', label: 'Estado'}
+  ]
 
   // Configuración
   displayedData: TableData[] = [];

@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
-import { FeaturedCard } from '../../shared/components/featured-card/featured-card';
+import { ExportButton } from '../../shared/components/export-button/export-button';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent } from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule } from 'lucide-angular';
 import { 
   Crown, Plus, Building2, Globe, Package, 
-  TrendingUp, Users, Award, Star
+  TrendingUp, Users, Award, Star, Download
 } from 'lucide-angular';
 
 @Component({
@@ -19,7 +19,7 @@ import {
     ModalForm, 
     LucideAngularModule,
     StatsCards,
-    FeaturedCard
+    ExportButton
   ],
   templateUrl: './brands-page.html',
   styleUrl: './brands-page.scss'
@@ -35,7 +35,8 @@ export class BrandsPage implements OnInit {
     trendingUp: TrendingUp,
     users: Users,
     award: Award,
-    star: Star
+    star: Star,
+    download: Download
   };
 
   // Propiedades para exportar
@@ -81,6 +82,15 @@ export class BrandsPage implements OnInit {
     { key: 'productCount', label: 'Productos', sortable: true },
     { key: 'status', label: 'Estado', sortable: true }
   ];
+
+  exportColumns = [
+    { key: 'id', label: 'ID'},
+    { key: 'name', label: 'Nombre'},
+    { key: 'description', label: 'Descripción'},
+    { key: 'country', label: 'País'},
+    { key: 'productCount', label: 'Productos'},
+    { key: 'status', label: 'Estado'}
+  ]
 
   // Datos de ejemplo para marcas de dulces 🍰
   brandsData: TableData[] = [

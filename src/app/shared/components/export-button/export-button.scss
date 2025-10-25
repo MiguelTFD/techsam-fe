@@ -1,23 +1,27 @@
+@use '../../../../variables.scss' as *;
+@use 'sass:color';
+
 .export-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  background: transparent;
+  color: $color-purple-dark;
+  border: 1px solid $color-purple-dark;
+  padding: 0.5rem 1rem;
+  border-radius: $border-radius-medium;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: $font-weight-medium;
+  font-family: $font-primary;
+  transition: all 0.3s ease;
   position: relative;
   white-space: nowrap;
 
   &:hover:not(.export-btn--disabled):not(.export-btn--loading) {
-    background: #059669;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background: rgba($color-purple-dark, 0.1);
+    transform: translateY(-2px);
+    box-shadow: $shadow-sidebar;
   }
 
   &:active:not(.export-btn--disabled):not(.export-btn--loading) {
@@ -27,27 +31,34 @@
   &--loading {
     background: #9ca3af;
     cursor: not-allowed;
+    border-color: #9ca3af;
+    color: white;
   }
 
   &--disabled {
     background: #d1d5db;
+    border-color: #d1d5db;
     cursor: not-allowed;
     opacity: 0.6;
+    color: #6b7280;
   }
 
   &__icon {
-    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: currentColor;
   }
 
   &__text {
     font-size: 14px;
+    font-family: $font-primary;
   }
 
   &__spinner {
     width: 16px;
     height: 16px;
     border: 2px solid transparent;
-    border-top: 2px solid white;
+    border-top: 2px solid currentColor;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -58,34 +69,68 @@
   100% { transform: rotate(360deg); }
 }
 
-// Variantes de color
+// Variantes de color que coincidan con tu diseño
 .export-btn {
   &.primary {
-    background: #3b82f6;
+    background: $color-accent;
+    border-color: $color-accent;
+    color: $text-white;
     
     &:hover:not(.export-btn--disabled):not(.export-btn--loading) {
-      background: #2563eb;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      background: color.adjust($color-accent, $lightness: -10%);
+      border-color: color.adjust($color-accent, $lightness: -10%);
+      box-shadow: 0 4px 12px rgba($color-accent, 0.3);
     }
   }
 
   &.secondary {
-    background: #6b7280;
+    background: transparent;
+    color: $color-purple-dark;
+    border: 1px solid $color-purple-dark;
     
     &:hover:not(.export-btn--disabled):not(.export-btn--loading) {
-      background: #4b5563;
-      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+      background: rgba($color-purple-dark, 0.1);
+      box-shadow: 0 4px 12px rgba($color-purple-dark, 0.2);
+    }
+  }
+
+  // Nueva variante para coincidir con tu diseño de botones
+  &.outline {
+    background: transparent;
+    color: $color-purple-dark;
+    border: 1px solid $color-purple-dark;
+    
+    &:hover:not(.export-btn--disabled):not(.export-btn--loading) {
+      background: rgba($color-purple-dark, 0.1);
+      transform: translateY(-2px);
     }
   }
 }
 
 // Responsive
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-mobile) {
   .export-btn {
     padding: 0.625rem 1rem;
+    font-size: 13px;
     
     &__text {
       font-size: 13px;
+    }
+    
+    &__icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+// Para usar con tu componente en las páginas
+.section-actions {
+  app-export-button {
+    display: inline-flex;
+    
+    ::ng-deep .export-btn {
+      // Hereda todos los estilos anteriores
     }
   }
 }
