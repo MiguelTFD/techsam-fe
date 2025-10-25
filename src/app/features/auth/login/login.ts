@@ -42,10 +42,4 @@ export class Login {
     });
   }
 
-  // Credenciales de prueba
-  fillDemoCredentials(role: string) {
-    // Usa las credenciales de tu servidor
-    this.username = 'user';
-    this.password = '12345';
-  }
 }

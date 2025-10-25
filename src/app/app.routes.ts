@@ -8,6 +8,7 @@ import { UsersPage } from './features/users-page/users-page';
 import { HomePage } from './features/home-page/home-page';
 import { AuthGuard } from './core/guards/auth.guard';
 import { Login } from './features/auth/login/login';
+import { CallbackComponent } from './features/auth/callback/callback';
 
 export const routes: Routes = [
   { 
@@ -15,9 +16,13 @@ export const routes: Routes = [
     component: Login 
   },
   { 
+    path: 'callback', 
+    component: CallbackComponent 
+  },
+  { 
     path: '', 
     component: Dashboard,
-     canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       { path: '', component: HomePage },
       { path: 'inventory', component: InventoryPage },
