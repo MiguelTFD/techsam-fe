@@ -5,10 +5,17 @@ import { FormsModule } from '@angular/forms';
 export interface FormField {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'select';
+  type: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'date' | 'checkbox';
   required?: boolean;
-  options?: { value: any; label: string }[];
   placeholder?: string;
+  options?: { value: any; label: string }[];
+  // Agregar propiedades de validación
+  min?: number;
+  max?: number;
+  step?: number;
+  pattern?: string;
+  disabled?: boolean;
+  hidden?: boolean;
 }
 
 @Component({
