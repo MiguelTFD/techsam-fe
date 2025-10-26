@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
@@ -11,6 +11,9 @@ import {
   Mail, Calendar, Key, TrendingUp, Award,
   Edit2, ToggleLeft, ToggleRight, Download
 } from 'lucide-angular';
+import { UserService, User, Role } from '../../core/services/user.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-users-page',
@@ -26,6 +29,8 @@ import {
   styleUrl: './users-page.scss'
 })
 export class UsersPage implements OnInit {
+  private userService = inject(UserService);
+
   // Iconos para usar en el template
   icons = {
     users: Users,
@@ -44,92 +49,32 @@ export class UsersPage implements OnInit {
     download: Download
   };
 
-  // Datos de usuarios basados en tu BD
-  usersData: TableData[] = [
-    { 
-      id_usuario: 1, 
-      nombre: 'Ana García', 
-      email: 'ana@tienda.com', 
-      id_rol: 1, 
-      nombre_rol: 'Administrador', 
-      fecha_creacion: '2024-01-15 10:30:00', 
-      estado: 'Activo',
-      icon: 'userCheck'
-    },
-    { 
-      id_usuario: 2, 
-      nombre: 'Carlos López', 
-      email: 'carlos@tienda.com', 
-      id_rol: 2, 
-      nombre_rol: 'Vendedor', 
-      fecha_creacion: '2024-01-16 14:20:00', 
-      estado: 'Activo',
-      icon: 'userCheck'
-    },
-    { 
-      id_usuario: 3, 
-      nombre: 'María Torres', 
-      email: 'maria@tienda.com', 
-      id_rol: 2, 
-      nombre_rol: 'Vendedor', 
-      fecha_creacion: '2024-01-17 09:15:00', 
-      estado: 'Activo',
-      icon: 'userCheck'
-    },
-    { 
-      id_usuario: 4, 
-      nombre: 'Juan Pérez', 
-      email: 'juan@tienda.com', 
-      id_rol: 3, 
-      nombre_rol: 'Inventario', 
-      fecha_creacion: '2024-01-18 11:45:00', 
-      estado: 'Inactivo',
-      icon: 'userX'
-    },
-    { 
-      id_usuario: 5, 
-      nombre: 'Laura Medina', 
-      email: 'laura@tienda.com', 
-      id_rol: 2, 
-      nombre_rol: 'Vendedor', 
-      fecha_creacion: '2024-01-19 16:30:00', 
-      estado: 'Activo',
-      icon: 'userCheck'
-    },
-    { 
-      id_usuario: 6, 
-      nombre: 'Roberto Silva', 
-      email: 'roberto@tienda.com', 
-      id_rol: 1, 
-      nombre_rol: 'Administrador', 
-      fecha_creacion: '2024-01-20 08:00:00', 
-      estado: 'Activo',
-      icon: 'userCheck'
-    }
-  ];
+  // Datos reales desde el backend
+  usersData: TableData[] = [];
+  displayedData: TableData[] = [];
 
   // ✅ ESTADÍSTICAS CONFIGURABLES PARA USUARIOS
   stats: StatCard[] = [
     {
-      value: this.totalUsuarios,
+      value: 0,
       label: 'Total Usuarios',
       icon: this.icons.users,
       gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
     },
     {
-      value: this.usuariosActivos,
+      value: 0,
       label: 'Usuarios Activos',
       icon: this.icons.userCheck,
       gradient: 'linear-gradient(135deg, #10b981, #059669)'
     },
     {
-      value: this.usuariosPorRol['Administrador'] || 0,
+      value: 0,
       label: 'Administradores',
       icon: this.icons.shield,
       gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
     },
     {
-      value: this.usuariosPorRol['Vendedor'] || 0,
+      value: 0,
       label: 'Vendedores',
       icon: this.icons.trendingUp,
       gradient: 'linear-gradient(135deg, #ec4899, #db2777)'
@@ -146,12 +91,8 @@ export class UsersPage implements OnInit {
   modalLoading: boolean = false;
   modalTitle: string = 'Nuevo Usuario';
 
-  // Roles disponibles (de tu tabla 'rol')
-  roles = [
-    { value: 1, label: '👑 Administrador' },
-    { value: 2, label: '📊 Vendedor' },
-    { value: 3, label: '📦 Inventario' }
-  ];
+  // Roles disponibles desde el backend
+  roles: any[] = [];
 
   modalFields: FormField[] = [
     {
@@ -191,7 +132,6 @@ export class UsersPage implements OnInit {
     }
   ];
 
-  // Columnas para usuarios
   columns: Column[] = [
     { key: 'id_usuario', label: 'ID', sortable: true },
     { key: 'nombre', label: 'Nombre', sortable: true },
@@ -211,11 +151,10 @@ export class UsersPage implements OnInit {
   ]
 
   // Configuración
-  displayedData: TableData[] = [];
   pagination: PaginationConfig = {
     page: 1,
     pageSize: 5,
-    total: this.usersData.length
+    total: 0
   };
   
   loading: boolean = false;
@@ -223,48 +162,106 @@ export class UsersPage implements OnInit {
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nuevo Usuario';
 
-  // Acciones para la tabla
   actions = [
     { name: 'edit', label: 'Editar', icon: 'edit2', color: 'blue' },
     { name: 'toggle', label: 'Activar/Desactivar', icon: 'toggleLeft', color: 'orange', confirm: true }
   ];
 
-  // Propiedades computadas para estadísticas
-  get totalUsuarios(): number {
-    return this.usersData?.length || 0;
-  }
-
-  get usuariosActivos(): number {
-    return this.usersData?.filter(u => u['estado'] === 'Activo').length || 0;
-  }
-
-  get usuariosInactivos(): number {
-    return this.usersData?.filter(u => u['estado'] === 'Inactivo').length || 0;
-  }
-
-  get usuariosPorRol(): any {
-    const rolesCount: any = {};
-    this.usersData?.forEach(user => {
-      const rol = user['nombre_rol'];
-      rolesCount[rol] = (rolesCount[rol] || 0) + 1;
-    });
-    return rolesCount;
-  }
-
-  get ultimoRegistro(): string {
-    if (!this.usersData?.length) return 'Sin registros';
-    const ultimo = this.usersData.reduce((prev, current) => 
-      new Date(prev['fecha_creacion']) > new Date(current['fecha_creacion']) ? prev : current
-    );
-    return this.formatDate(ultimo['fecha_creacion']);
-  }
+  private allData: TableData[] = [];
 
   ngOnInit() {
-    this.allData = [...this.usersData];
-    this.updateDisplayedData();
+    this.loadUsers();
+    this.loadStats();
+    this.loadRoles();
   }
 
-  private allData: TableData[] = [];
+  private loadUsers() {
+    this.loading = true;
+    this.userService.getUsers(this.pagination.page, this.pagination.pageSize)
+      .pipe(
+        finalize(() => this.loading = false),
+        catchError(error => {
+          console.error('Error loading users:', error);
+          alert('Error al cargar los usuarios');
+          return of({ data: { users: [], total: 0 }, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.usersData = response.data.users;
+          this.allData = [...this.usersData];
+          this.pagination.total = response.data.total;
+          this.updateDisplayedData();
+        }
+      });
+  }
+
+  private loadStats() {
+    this.userService.getUserStats()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading user stats:', error);
+          return of({ 
+            data: {
+              totalUsuarios: 0,
+              usuariosActivos: 0,
+              usuariosInactivos: 0,
+              usuariosPorRol: {},
+              ultimoRegistro: 'Sin registros'
+            }, 
+            success: false, 
+            message: '' 
+          });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.updateStats(response.data);
+        }
+      });
+  }
+
+  private loadRoles() {
+    this.userService.getRoles()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading roles:', error);
+          return of({ data: [], success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.roles = response.data.map((role: Role) => ({
+            value: role.id_rol,
+            label: this.getRoleDisplayName(role.nombre_rol)
+          }));
+          this.updateRoleField();
+        }
+      });
+  }
+
+  private updateStats(statsData: any) {
+    this.stats[0].value = statsData.totalUsuarios;
+    this.stats[1].value = statsData.usuariosActivos;
+    this.stats[2].value = statsData.usuariosPorRol['Administrador'] || 0;
+    this.stats[3].value = statsData.usuariosPorRol['Vendedor'] || 0;
+  }
+
+  private updateRoleField() {
+    const roleField = this.modalFields.find(field => field.key === 'id_rol');
+    if (roleField) {
+      roleField.options = this.roles;
+    }
+  }
+
+  private getRoleDisplayName(roleName: string): string {
+    const roleIcons: { [key: string]: string } = {
+      'Administrador': '👑 Administrador',
+      'Vendedor': '📊 Vendedor',
+      'Inventario': '📦 Inventario'
+    };
+    return roleIcons[roleName] || roleName;
+  }
 
   private updateDisplayedData() {
     const startIndex = (this.pagination.page - 1) * this.pagination.pageSize;
@@ -275,27 +272,38 @@ export class UsersPage implements OnInit {
   // Manejar eventos de la tabla
   onPageChange(page: number) {
     this.pagination.page = page;
-    this.updateDisplayedData();
+    this.loadUsers();
   }
 
   onSearchChange(searchTerm: string) {
     if (!searchTerm.trim()) {
-      this.allData = [...this.usersData];
+      this.loadUsers();
     } else {
-      this.allData = this.usersData.filter(user =>
-        user['nombre'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user['email'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user['nombre_rol'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user['id_usuario'].toString().includes(searchTerm)
-      );
+      this.loading = true;
+      this.userService.getUsers(1, this.pagination.pageSize, searchTerm)
+        .pipe(
+          finalize(() => this.loading = false),
+          catchError(error => {
+            console.error('Error searching users:', error);
+            alert('Error al buscar usuarios');
+            return of({ data: { users: [], total: 0 }, success: false, message: '' });
+          })
+        )
+        .subscribe(response => {
+          if (response.success) {
+            this.usersData = response.data.users;
+            this.allData = [...this.usersData];
+            this.pagination.total = response.data.total;
+            this.pagination.page = 1;
+            this.updateDisplayedData();
+          }
+        });
     }
-    this.pagination.total = this.allData.length;
-    this.pagination.page = 1;
-    this.updateDisplayedData();
   }
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando usuarios por:', sortEvent);
+    // Implementar lógica de ordenamiento si es necesario
   }
 
   onRowClick(row: TableData) {
@@ -318,53 +326,55 @@ export class UsersPage implements OnInit {
 
   onAdd() {
     this.showModal = true;
+    // Recargar roles para tener información actualizada
+    this.loadRoles();
   }
 
-  onExport() {
-    console.log('📄 Exportando usuarios a PDF');
-  }
-
-  // Métodos para el modal
   onSaveUser(formData: any) {
-    console.log('💾 Guardando usuario:', formData);
+    console.log(' Guardando usuario:', formData);
 
     // Validar contraseñas
     if (formData.password !== formData.confirm_password) {
-      alert('❌ Las contraseñas no coinciden');
+      alert('Las contraseñas no coinciden');
       return;
     }
 
     if (formData.password.length < 6) {
-      alert('❌ La contraseña debe tener al menos 6 caracteres');
+      alert('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
     this.modalLoading = true;
 
-    // Simular guardado
-    setTimeout(() => {
-      const rol = this.roles.find(r => r.value == formData.id_rol)?.label.replace(/[👑📊📦]/g, '').trim() || 'Desconocido';
-      
-      // Registrar el nuevo usuario
-      const newUser = {
-        id_usuario: this.usersData.length + 1,
-        nombre: formData.nombre,
-        email: formData.email,
-        id_rol: formData.id_rol,
-        nombre_rol: rol,
-        fecha_creacion: new Date().toLocaleString('es-ES'),
-        estado: 'Activo',
-        icon: 'userCheck'
-      };
+    // Crear usuario en el backend
+    const userData = {
+      nombre: formData.nombre,
+      email: formData.email,
+      id_rol: formData.id_rol,
+      password: formData.password
+    };
 
-      this.usersData.unshift(newUser);
-      this.updateDisplayedData();
-      
-      this.modalLoading = false;
-      this.showModal = false;
-      
-      alert('✅ Usuario creado exitosamente');
-    }, 1000);
+    this.userService.createUser(userData)
+      .pipe(
+        finalize(() => this.modalLoading = false),
+        catchError(error => {
+          console.error('Error creating user:', error);
+          alert('Error al crear el usuario');
+          return of({ data: null, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.showModal = false;
+          alert('Usuario creado exitosamente');
+          
+          // Recargar datos
+          this.loadUsers();
+          this.loadStats();
+        } else {
+          alert('Error al crear el usuario: ' + response.message);
+        }
+      });
   }
 
   onCancelModal() {
@@ -372,7 +382,8 @@ export class UsersPage implements OnInit {
   }
 
   private editUser(user: any) {
-    console.log('✏️ Editando usuario:', user);
+    console.log(' Editando usuario:', user);
+    // Aquí puedes implementar un modal de edición
     alert(`Editando usuario: ${user.nombre}`);
   }
 
@@ -381,8 +392,24 @@ export class UsersPage implements OnInit {
     const action = newStatus === 'Activo' ? 'activar' : 'desactivar';
     
     if (confirm(`¿Estás seguro de ${action} al usuario "${user.nombre}"?`)) {
-      console.log(`✅ Usuario ${action}do:`, user.nombre);
-      alert(`Usuario ${action}do correctamente`);
+      this.userService.toggleUserStatus(user.id_usuario)
+        .pipe(
+          catchError(error => {
+            console.error('Error toggling user status:', error);
+            alert('Error al cambiar el estado del usuario');
+            return of({ data: null, success: false, message: '' });
+          })
+        )
+        .subscribe(response => {
+          if (response.success) {
+            console.log(`Usuario ${action}do:`, user.nombre);
+            alert(`Usuario ${action}do correctamente`);
+            
+            // Recargar datos
+            this.loadUsers();
+            this.loadStats();
+          }
+        });
     }
   }
 
@@ -406,17 +433,32 @@ export class UsersPage implements OnInit {
 
   // Formatear fecha
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    if (!dateString) return 'Fecha no disponible';
+    try {
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateString;
+    }
   }
 
   // Obtener el icono Lucide
   getUserIcon(iconName: string): any {
     return this.icons[iconName as keyof typeof this.icons] || this.icons.users;
+  }
+
+  // Obtener clase CSS para el rol
+  getRoleClass(rol: string): string {
+    const roleClasses: { [key: string]: string } = {
+      'Administrador': 'role-admin',
+      'Vendedor': 'role-seller',
+      'Inventario': 'role-inventory'
+    };
+    return roleClasses[rol] || '';
   }
 }

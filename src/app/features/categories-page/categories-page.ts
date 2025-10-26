@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http'; // ✅ Importar HttpClientModule
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
 import { ExportButton } from '../../shared/components/export-button/export-button';
 import { Column, TableData, PaginationConfig, SortEvent, ActionEvent} from '../../shared/components/data-table/types';
 import { ModalForm, FormField } from '../../shared/components/modal-form/modal-form';
 import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee, Utensils, Gift, Package, TrendingUp, Award, Download} from 'lucide-angular';
+import { CategoryService, Category } from '../../core/services/category.service'; 
 
 @Component({
   selector: 'app-categories-page',
@@ -15,13 +17,14 @@ import { LucideAngularModule, Plus, CakeSlice, IceCreamCone, Candy, Cake, Coffee
     CommonModule, 
     LucideAngularModule,
     StatsCards,
-    ExportButton
+    ExportButton,
+    HttpClientModule 
   ],
   templateUrl: './categories-page.html',
-  styleUrl: './categories-page.scss'
+  styleUrl: './categories-page.scss',
+  providers: [CategoryService] 
 })
 export class CategoriesPage implements OnInit {
-  // Iconos para usar en el template
   icons = {
     plus: Plus,
     cupcake: CakeSlice,
@@ -42,103 +45,37 @@ export class CategoriesPage implements OnInit {
   exportTitle: string = 'Reporte de Categorías de Dulces';
   exportFileName: string = 'categorias_dulces';
 
-  // ✅ INICIALIZAR categoriesData PRIMERO
-  categoriesData: TableData[] = [
-    { 
-      id: 1, 
-      name: 'Pasteles Decorados', 
-      description: 'Pasteles artesanales con decoraciones especiales', 
-      productCount: 15, 
-      status: 'Activo',
-      icon: 'cake'
-    },
-    { 
-      id: 2, 
-      name: 'Cupcakes', 
-      description: 'Pequeños pasteles individuales con toppings', 
-      productCount: 8, 
-      status: 'Activo',
-      icon: 'cupcake'
-    },
-    { 
-      id: 3, 
-      name: 'Helados Artesanales', 
-      description: 'Helados gourmet con sabores únicos', 
-      productCount: 12, 
-      status: 'Activo',
-      icon: 'iceCream'
-    },
-    { 
-      id: 4, 
-      name: 'Chocolates Finos', 
-      description: 'Chocolates premium y trufas artesanales', 
-      productCount: 20, 
-      status: 'Activo',
-      icon: 'candy'
-    },
-    { 
-      id: 5, 
-      name: 'Galletas Decoradas', 
-      description: 'Galletas con glaseado y diseños creativos', 
-      productCount: 5, 
-      status: 'Activo',
-      icon: 'utensils'
-    },
-    { 
-      id: 6, 
-      name: 'Postres Individuales', 
-      description: 'Postres pequeños para eventos y regalos', 
-      productCount: 7, 
-      status: 'Activo',
-      icon: 'gift'
-    },
-    { 
-      id: 7, 
-      name: 'Bebidas Dulces', 
-      description: 'Malteadas, frappés y bebidas especiales', 
-      productCount: 3, 
-      status: 'Activo',
-      icon: 'coffee'
-    },
-    { 
-      id: 8, 
-      name: 'Dulces Tradicionales', 
-      description: 'Dulces mexicanos y tradicionales', 
-      productCount: 9, 
-      status: 'Activo',
-      icon: 'candy'
-    }
-  ];
 
-  // ✅ AHORA SÍ CREAR LAS STATS (después de categoriesData)
+  categoriesData: TableData[] = [];
+
   stats: StatCard[] = [
     {
-      value: this.totalCategories,
+      value: 0,
       label: 'Total Categorías',
       icon: this.icons.package,
       gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
     },
     {
-      value: this.activeCategories,
+      value: 0,
       label: 'Categorías Activas',
       icon: this.icons.trendingUp,
       gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
     },
     {
-      value: this.categoriesWithProducts,
+      value: 0,
       label: 'Con Productos',
       icon: this.icons.cake,
       gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
     },
     {
-      value: this.totalProducts,
+      value: 0,
       label: 'Total Productos',
       icon: this.icons.gift,
       gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
     }
   ];
 
-  // PROPIEDADES PARA EL MODAL de nueva categoria
+ 
   showModal: boolean = false;
   modalLoading: boolean = false;
   modalTitle: string = 'Nueva Categoría';
@@ -160,7 +97,6 @@ export class CategoriesPage implements OnInit {
     }
   ];
 
-  // Columnas específicas para categorías de dulces
   columns: Column[] = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Nombre', sortable: true },
@@ -177,15 +113,14 @@ export class CategoriesPage implements OnInit {
     { key: 'status', label: 'Estado'}
   ]
 
-  // Configuración
   displayedData: TableData[] = [];
   pagination: PaginationConfig = {
     page: 1,
     pageSize: 5,
-    total: this.categoriesData.length
+    total: 0 
   };
   
-  loading: boolean = false;
+  loading: boolean = true;
   showActions: boolean = true;
   actions = [
     { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
@@ -194,9 +129,11 @@ export class CategoriesPage implements OnInit {
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nueva Categoría';
 
+  constructor(private categoryService: CategoryService) {}
+
   // Propiedades computadas para estadísticas
   get totalCategories(): number {
-    return this.categoriesData?.length || 0; // ✅ Agregar safe navigation
+    return this.categoriesData?.length || 0;
   }
 
   get activeCategories(): number {
@@ -219,12 +156,72 @@ export class CategoriesPage implements OnInit {
     return top['name'];
   }
 
+
   ngOnInit() {
-    this.allData = [...this.categoriesData];
-    this.updateDisplayedData();
+    this.loadCategories();
   }
 
   private allData: TableData[] = [];
+
+  
+  private loadCategories() {
+    this.loading = true;
+    
+    this.categoryService.getCategories().subscribe({
+      next: (categories: Category[]) => {
+
+        this.categoriesData = categories.map(cat => ({
+          id: cat.id,
+          name: cat.name,
+          description: cat.description,
+          productCount: cat.productCount,
+          status: cat.status,
+          icon: cat.icon || 'gift' // Valor por defecto
+        }));
+
+        this.allData = [...this.categoriesData];
+        this.pagination.total = this.categoriesData.length;
+        this.updateDisplayedData();
+        this.updateStats();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar categorías:', error);
+        alert('Error al cargar las categorías');
+        this.loading = false;
+      }
+    });
+  }
+
+  // actualizar estadísticas
+  private updateStats() {
+    this.stats = [
+      {
+        value: this.totalCategories,
+        label: 'Total Categorías',
+        icon: this.icons.package,
+        gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
+      },
+      {
+        value: this.activeCategories,
+        label: 'Categorías Activas',
+        icon: this.icons.trendingUp,
+        gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
+      },
+      {
+        value: this.categoriesWithProducts,
+        label: 'Con Productos',
+        icon: this.icons.cake,
+        gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+      },
+      {
+        value: this.totalProducts,
+        label: 'Total Productos',
+        icon: this.icons.gift,
+        gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
+      }
+    ];
+  }
 
   private updateDisplayedData() {
     const startIndex = (this.pagination.page - 1) * this.pagination.pageSize;
@@ -253,16 +250,16 @@ export class CategoriesPage implements OnInit {
   }
 
   onSort(sortEvent: SortEvent) {
-    console.log('🔄 Ordenando categorías por:', sortEvent);
+    console.log(' Ordenando categorías por:', sortEvent);
   }
 
   onRowClick(row: TableData) {
-    console.log('📝 Categoría seleccionada:', row);
+    console.log(' Categoría seleccionada:', row);
     alert(`Categoría: ${row['name']}\nDescripción: ${row['description']}`);
   }
 
   onAction(event: ActionEvent) {
-    console.log('🔧 Acción en categoría:', event.action, event.row);
+    console.log('Acción en categoría:', event.action, event.row);
     
     switch (event.action) {
       case 'edit':
@@ -278,48 +275,76 @@ export class CategoriesPage implements OnInit {
      this.showModal = true;
   }
 
-  // Métodos para el modal
+  // ✅ MODIFICAR onSaveCategory para guardar en el backend
   onSaveCategory(formData: any) {
-    console.log('💾 Guardando categoría:', formData);
+    console.log(' Guardando categoría:', formData);
     this.modalLoading = true;
 
-    // Simular guardado
-    setTimeout(() => {
-      const newCategory = {
-        id: this.categoriesData.length + 1,
-        name: formData.name,
-        description: formData.description,
-        productCount: 0,
-        status: 'Activo',
-        icon: 'gift'
-      };
+    const newCategory = {
+      name: formData.name,
+      description: formData.description,
+      productCount: 0,
+      status: 'Activo',
+      icon: 'gift'
+    };
 
-      this.categoriesData.unshift(newCategory);
-      this.updateDisplayedData();
-      
-      this.modalLoading = false;
-      this.showModal = false;
-      
-      alert('✅ Categoría de dulce creada exitosamente 🍰');
-    }, 1000);
+    this.categoryService.createCategory(newCategory).subscribe({
+      next: (savedCategory) => {
+        // Agregar la nueva categoría al inicio de la lista
+        this.categoriesData.unshift({
+          id: savedCategory.id,
+          ...newCategory
+        });
+        
+        this.updateDisplayedData();
+        this.updateStats(); // ✅ Actualizar estadísticas
+        
+        this.modalLoading = false;
+        this.showModal = false;
+        
+        alert('✅ Categoría de dulce creada exitosamente 🍰');
+      },
+      error: (error) => {
+        console.error('Error al crear categoría:', error);
+        alert('Error al crear la categoría');
+        this.modalLoading = false;
+      }
+    });
   }
 
   onCancelModal() {
     this.showModal = false;
   }
 
+  // ✅ MODIFICAR editCategory para usar el backend
   private editCategory(category: any) {
     console.log('✏️ Editando categoría:', category);
+    // Aquí podrías abrir un modal de edición
     alert(`Editando categoría: ${category.name}`);
   }
 
+  // ✅ MODIFICAR toggleCategory para usar el backend
   private toggleCategory(category: any) {
     const newStatus = category.status === 'Activo' ? 'Inactivo' : 'Activo';
     const action = newStatus === 'Activo' ? 'activar' : 'desactivar';
     
     if (confirm(`¿Estás seguro de ${action} la categoría "${category.name}"?`)) {
-      console.log(`✅ Categoría ${action}da:`, category.name);
-      alert(`Categoría ${action}da correctamente`);
+      this.categoryService.toggleCategoryStatus(category.id).subscribe({
+        next: (updatedCategory) => {
+          // Actualizar la categoría en el array local
+          const index = this.categoriesData.findIndex(c => c.id === category.id);
+          if (index !== -1) {
+            this.categoriesData[index]['status'] = updatedCategory['status'];
+            this.updateDisplayedData();
+            this.updateStats();
+          }
+          alert(`Categoría ${action}da correctamente`);
+        },
+        error: (error) => {
+          console.error('Error al cambiar estado:', error);
+          alert('Error al cambiar el estado de la categoría');
+        }
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
@@ -10,6 +10,9 @@ import {
   Crown, Plus, Building2, Globe, Package, 
   TrendingUp, Users, Award, Star, Download
 } from 'lucide-angular';
+import { BrandService, Brand } from '../../core/services/brand.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-brands-page',
@@ -25,6 +28,8 @@ import {
   styleUrl: './brands-page.scss'
 })
 export class BrandsPage implements OnInit {
+  private brandService = inject(BrandService);
+
   // Iconos para usar en el template
   icons = {
     crown: Crown,
@@ -92,116 +97,15 @@ export class BrandsPage implements OnInit {
     { key: 'status', label: 'Estado'}
   ]
 
-  // Datos de ejemplo para marcas de dulces 🍰
-  brandsData: TableData[] = [
-    { 
-      id: 1, 
-      name: 'Dulce Corazón', 
-      description: 'Pastelería artesanal con ingredientes premium', 
-      country: 'Francia', 
-      productCount: 23, 
-      status: 'Activo',
-      icon: 'crown',
-      since: 1995
-    },
-    { 
-      id: 2, 
-      name: 'Pastelería Mágica', 
-      description: 'Creaciones únicas y decoraciones especiales', 
-      country: 'Italia', 
-      productCount: 18, 
-      status: 'Activo',
-      icon: 'award',
-      since: 2005
-    },
-    { 
-      id: 3, 
-      name: 'Chocolatería Finita', 
-      description: 'Chocolates gourmet y trufas artesanales', 
-      country: 'Bélgica', 
-      productCount: 15, 
-      status: 'Activo',
-      icon: 'star',
-      since: 1988
-    },
-    { 
-      id: 4, 
-      name: 'Heladería Artesanal', 
-      description: 'Helados naturales con sabores únicos', 
-      country: 'Italia', 
-      productCount: 12, 
-      status: 'Activo',
-      icon: 'globe',
-      since: 1999
-    },
-    { 
-      id: 5, 
-      name: 'Galletas Encantadas', 
-      description: 'Galletas decoradas con diseños creativos', 
-      country: 'México', 
-      productCount: 14, 
-      status: 'Activo',
-      icon: 'package',
-      since: 2010
-    },
-    { 
-      id: 6, 
-      name: 'Repostería Creativa', 
-      description: 'Postres innovadores y modernos', 
-      country: 'España', 
-      productCount: 9, 
-      status: 'Activo',
-      icon: 'building',
-      since: 2015
-    },
-    { 
-      id: 7, 
-      name: 'Dulces Tradicionales', 
-      description: 'Recetas ancestrales y auténticas', 
-      country: 'México', 
-      productCount: 7, 
-      status: 'Activo',
-      icon: 'users',
-      since: 1975
-    },
-    { 
-      id: 8, 
-      name: 'Postres Gourmet', 
-      description: 'Alta repostería y presentaciones elegantes', 
-      country: 'Francia', 
-      productCount: 5, 
-      status: 'Inactivo',
-      icon: 'award',
-      since: 2008
-    },
-    { 
-      id: 9, 
-      name: 'Cafetería Especial', 
-      description: 'Bebidas dulces y acompañamientos', 
-      country: 'Colombia', 
-      productCount: 11, 
-      status: 'Activo',
-      icon: 'globe',
-      since: 2012
-    },
-    { 
-      id: 10, 
-      name: 'Confitería Real', 
-      description: 'Dulces finos y caramelos artesanales', 
-      country: 'Suiza', 
-      productCount: 8, 
-      status: 'Activo',
-      icon: 'crown',
-      since: 1992
-    }
-  ];
+  // Datos reales desde el backend
+  brandsData: TableData[] = [];
+  displayedData: TableData[] = [];
 
   // Configuración
-  displayedData: TableData[] = [];
   pagination: PaginationConfig = {
     page: 1,
     pageSize: 5,
-    total: this.brandsData.length
+    total: 0
   };
   
   loading: boolean = false;
@@ -210,69 +114,97 @@ export class BrandsPage implements OnInit {
   addButtonLabel: string = 'Nueva Marca';
 
   actions = [
-    { name: 'edit', label: 'Editar', icon: '✏️', color: 'blue' },
-    { name: 'toggle', label: 'Activar/Desactivar', icon: '🔁', color: 'orange', confirm: true }
+    { name: 'edit', label: 'Editar', icon: 'edit2', color: 'blue' },
+    { name: 'toggle', label: 'Activar/Desactivar', icon: 'toggleLeft', color: 'orange', confirm: true }
   ];
 
-  // ✅ ESTADÍSTICAS CONFIGURABLES PARA EL NUEVO COMPONENTE
+  // Estadísticas
   stats: StatCard[] = [
     {
-      value: this.totalBrands,
+      value: 0,
       label: 'Total Marcas',
       icon: this.icons.building,
       gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
     },
     {
-      value: this.activeBrands,
+      value: 0,
       label: 'Marcas Activas',
       icon: this.icons.trendingUp,
       gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
     },
     {
-      value: this.internationalBrands,
+      value: 0,
       label: 'Países',
       icon: this.icons.globe,
       gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
     },
     {
-      value: this.totalProducts,
+      value: 0,
       label: 'Total Productos',
       icon: this.icons.package,
       gradient: 'linear-gradient(135deg, #f59e0b, #d97706)'
     }
   ];
 
-  // Propiedades computadas para estadísticas
-  get totalBrands(): number {
-    return this.brandsData.length;
-  }
-
-  get activeBrands(): number {
-    return this.brandsData.filter(b => b['status'] === 'Activo').length;
-  }
-
-  get internationalBrands(): number {
-    const countries = new Set(this.brandsData.map(b => b['country']));
-    return countries.size;
-  }
-
-  get totalProducts(): number {
-    return this.brandsData.reduce((sum, brand) => sum + brand['productCount'], 0);
-  }
-
-  get topBrand(): string {
-    const top = this.brandsData.reduce((prev, current) => 
-      (prev['productCount'] > current['productCount']) ? prev : current
-    );
-    return top['name'];
-  }
+  private allData: TableData[] = [];
 
   ngOnInit() {
-    this.allData = [...this.brandsData];
-    this.updateDisplayedData();
+    this.loadBrands();
+    this.loadStats();
   }
 
-  private allData: TableData[] = [];
+  private loadBrands() {
+    this.loading = true;
+    this.brandService.getBrands(this.pagination.page, this.pagination.pageSize)
+      .pipe(
+        finalize(() => this.loading = false),
+        catchError(error => {
+          console.error('Error loading brands:', error);
+          alert('Error al cargar las marcas');
+          return of({ data: { brands: [], total: 0 }, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.brandsData = response.data.brands;
+          this.allData = [...this.brandsData];
+          this.pagination.total = response.data.total;
+          this.updateDisplayedData();
+        }
+      });
+  }
+
+  private loadStats() {
+    this.brandService.getBrandStats()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading stats:', error);
+          return of({ 
+            data: {
+              totalBrands: 0,
+              activeBrands: 0,
+              internationalBrands: 0,
+              totalProducts: 0,
+              topBrand: 'N/A'
+            }, 
+            success: false, 
+            message: '' 
+          });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.updateStats(response.data);
+        }
+      });
+  }
+
+  private updateStats(statsData: any) {
+    this.stats[0].value = statsData.totalBrands;
+    this.stats[1].value = statsData.activeBrands;
+    this.stats[2].value = statsData.internationalBrands;
+    this.stats[3].value = statsData.totalProducts;
+  }
 
   private updateDisplayedData() {
     const startIndex = (this.pagination.page - 1) * this.pagination.pageSize;
@@ -283,26 +215,38 @@ export class BrandsPage implements OnInit {
   // Manejar eventos de la tabla
   onPageChange(page: number) {
     this.pagination.page = page;
-    this.updateDisplayedData();
+    this.loadBrands();
   }
 
   onSearchChange(searchTerm: string) {
     if (!searchTerm.trim()) {
-      this.allData = [...this.brandsData];
+      this.loadBrands();
     } else {
-      this.allData = this.brandsData.filter(brand =>
-        brand['name'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        brand['description'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        brand['country'].toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      this.loading = true;
+      this.brandService.getBrands(1, this.pagination.pageSize, searchTerm)
+        .pipe(
+          finalize(() => this.loading = false),
+          catchError(error => {
+            console.error('Error searching brands:', error);
+            alert('Error al buscar marcas');
+            return of({ data: { brands: [], total: 0 }, success: false, message: '' });
+          })
+        )
+        .subscribe(response => {
+          if (response.success) {
+            this.brandsData = response.data.brands;
+            this.allData = [...this.brandsData];
+            this.pagination.total = response.data.total;
+            this.pagination.page = 1;
+            this.updateDisplayedData();
+          }
+        });
     }
-    this.pagination.total = this.allData.length;
-    this.pagination.page = 1;
-    this.updateDisplayedData();
   }
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando marcas por:', sortEvent);
+    // Implementar lógica de ordenamiento si es necesario
   }
 
   onRowClick(row: TableData) {
@@ -328,8 +272,22 @@ export class BrandsPage implements OnInit {
     const action = newStatus === 'Activo' ? 'activar' : 'desactivar';
     
     if (confirm(`¿Estás seguro de ${action} la marca "${brand.name}"?`)) {
-      console.log(`✅ Marca ${action}da:`, brand.name);
-      alert(`Marca ${action}da correctamente 🎀`);
+      this.brandService.toggleBrandStatus(brand.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error toggling brand status:', error);
+            alert('Error al cambiar el estado de la marca');
+            return of({ data: null, success: false, message: '' });
+          })
+        )
+        .subscribe(response => {
+          if (response.success) {
+            console.log(`✅ Marca ${action}da:`, brand.name);
+            alert(`Marca ${action}da correctamente 🎀`);
+            this.loadBrands(); // Recargar datos
+            this.loadStats(); // Actualizar estadísticas
+          }
+        });
     }
   }
 
@@ -341,26 +299,25 @@ export class BrandsPage implements OnInit {
     console.log('💾 Guardando marca:', formData);
     this.modalLoading = true;
 
-    setTimeout(() => {
-      const newBrand = {
-        id: this.brandsData.length + 1,
-        name: formData.name,
-        description: formData.description,
-        country: formData.country,
-        productCount: 0,
-        status: 'Activo',
-        icon: this.getRandomIcon(),
-        since: new Date().getFullYear()
-      };
-
-      this.brandsData.unshift(newBrand);
-      this.updateDisplayedData();
-      
-      this.modalLoading = false;
-      this.showModal = false;
-      
-      alert('🎉 Marca creada exitosamente! 🌟');
-    }, 1000);
+    this.brandService.createBrand(formData)
+      .pipe(
+        finalize(() => this.modalLoading = false),
+        catchError(error => {
+          console.error('Error creating brand:', error);
+          alert('Error al crear la marca');
+          return of({ data: null, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.showModal = false;
+          alert('🎉 Marca creada exitosamente! 🌟');
+          this.loadBrands(); // Recargar datos
+          this.loadStats(); // Actualizar estadísticas
+        } else {
+          alert('Error al crear la marca: ' + response.message);
+        }
+      });
   }
 
   onCancelModal() {
@@ -369,6 +326,7 @@ export class BrandsPage implements OnInit {
 
   private editBrand(brand: any) {
     console.log('✏️ Editando marca:', brand);
+    // Aquí puedes implementar un modal de edición similar al de creación
     alert(`Editando marca: ${brand.name}`);
   }
 

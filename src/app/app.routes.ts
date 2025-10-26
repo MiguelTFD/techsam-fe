@@ -7,6 +7,7 @@ import { CategoriesPage } from './features/categories-page/categories-page';
 import { UsersPage } from './features/users-page/users-page';
 import { HomePage } from './features/home-page/home-page';
 import { AuthGuard } from './core/guards/auth.guard';
+import { AdminGuard } from './core/guards/admin.guard'; // Importa el AdminGuard
 import { Login } from './features/auth/login/login';
 import { CallbackComponent } from './features/auth/callback/callback';
 
@@ -29,7 +30,11 @@ export const routes: Routes = [
       { path: 'categories', component: CategoriesPage },
       { path: 'brands', component: BrandsPage },
       { path: 'sales', component: SalesPage },
-      { path: 'users', component: UsersPage },
+      { 
+        path: 'users', 
+        component: UsersPage,
+        canActivate: [AdminGuard] // Solo admin puede acceder
+      },
     ]
   },
   { 

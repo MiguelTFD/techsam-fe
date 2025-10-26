@@ -70,10 +70,6 @@ export class DataTable implements OnInit, OnChanges {
 
   // OnInit: Se ejecuta cuando el componente se inicializa
   ngOnInit() {
-    console.log('🚀 DataTable inicializado');
-    console.log('🔍 DataTable - showExportButton:', this.showExportButton);
-    console.log('🔍 DataTable - columns:', this.columns);
-    console.log('🔍 DataTable - data length:', this.data.length);
     
     // Inicializaciones que solo se hacen una vez
     this.initializeDefaultSort();
@@ -130,12 +126,12 @@ export class DataTable implements OnInit, OnChanges {
     
     // Verificar si realmente hubo un cambio en los datos
     if (previousData.length !== currentData.length) {
-      console.log(`📊 Cambio en cantidad de datos: ${previousData.length} → ${currentData.length}`);
+      console.log(` Cambio en cantidad de datos: ${previousData.length} → ${currentData.length}`);
     }
 
     // Si los datos están vacíos y había datos antes, podría indicar un problema
     if (previousData.length > 0 && currentData.length === 0 && !this.loading) {
-      console.warn('⚠️ DataTable: Los datos se vaciaron inesperadamente');
+      console.warn(' DataTable: Los datos se vaciaron inesperadamente');
     }
   }
 
@@ -145,7 +141,7 @@ export class DataTable implements OnInit, OnChanges {
 
     // Validar que la página actual esté dentro del rango válido
     if (currentPagination.page > this.totalPages && this.totalPages > 0) {
-      console.warn('⚠️ Página fuera de rango, ajustando a la última página disponible');
+      console.warn(' Página fuera de rango, ajustando a la última página disponible');
       this.pageChange.emit(this.totalPages);
     }
   }
@@ -166,7 +162,7 @@ export class DataTable implements OnInit, OnChanges {
     return pages;
   }
 
-   // AGREGAR estas propiedades computadas para el template
+   // propiedades computadas para el template
   get displayRangeStart(): number {
     return (this.pagination.page - 1) * this.pagination.pageSize + 1;
   }
@@ -176,13 +172,12 @@ export class DataTable implements OnInit, OnChanges {
   }
 
   onAdd() {
-    console.log('➕ Botón añadir clickeado');
     this.add.emit();
   }
 
   onAction(actionName: string, row: TableData, event: Event) {
-    event.stopPropagation(); // Importante: evita que se active el click de la fila
-    console.log('🔧 Acción:', actionName, 'en fila:', row);
+    event.stopPropagation(); //evita que se active el click de la fila
+    console.log('Acción:', actionName, 'en fila:', row);
     this.action.emit({ 
       action: actionName, 
       row: row 
@@ -245,7 +240,6 @@ export class DataTable implements OnInit, OnChanges {
   }
 
   onExport() {
-    console.log('📤 Botón exportar clickeado');
     this.export.emit();
   }
 }

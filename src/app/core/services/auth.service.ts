@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { from, Observable, of, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 
 export interface User {
   id: number;
@@ -18,9 +18,21 @@ export interface User {
 export class AuthService {
   private currentUser = signal<User | null>(null);
   private isAuthenticated = signal<boolean>(false);
+
+  // CONFIG: ajústalas si cambias puertos/paths
   private authServerUrl = 'http://localhost:9000';
   private tokenEndpoint = `${this.authServerUrl}/oauth2/token`;
   private authEndpoint = `${this.authServerUrl}/oauth2/authorize`;
+  private clientId = 'angular-client';
+  private redirectUri = 'http://localhost:4200/callback';
+  private scope = 'openid profile read write';
+
+  // keys en storage
+  private readonly STORAGE_STATE = 'oauth_state';
+  private readonly STORAGE_CODE_VERIFIER = 'pkce_code_verifier';
+  private readonly STORAGE_ACCESS_TOKEN = 'access_token';
+  private readonly STORAGE_REFRESH_TOKEN = 'refresh_token';
+  private readonly STORAGE_USER = 'currentUser';
 
   constructor(
     private router: Router,
@@ -29,174 +41,219 @@ export class AuthService {
     this.initializeAuthState();
   }
 
-  private initializeAuthState() {
-    const savedUser = localStorage.getItem('currentUser');
-    const savedToken = localStorage.getItem('access_token');
-    
-    if (savedUser && savedToken) {
+  // --- inicialización desde localStorage ---
+  private initializeAuthState(): void {
+    const savedUser = localStorage.getItem(this.STORAGE_USER);
+    const savedToken = localStorage.getItem(this.STORAGE_ACCESS_TOKEN);
+
+    if (savedUser && savedToken && !this.isTokenExpired(savedToken)) {
       this.currentUser.set(JSON.parse(savedUser));
       this.isAuthenticated.set(true);
+    } else {
+      // limpiar si token expiró
+      if (savedToken && this.isTokenExpired(savedToken)) {
+        this.clearStorage();
+      }
     }
   }
 
-  // Método síncrono para generar code_challenge
-  private generateCodeChallengeSync(codeVerifier: string): string {
-    // Implementación síncrona simple para code_challenge
-    // En un entorno real, deberías usar la implementación asíncrona
-    // pero para desarrollo esta es suficiente
-    let hash = 0;
-    for (let i = 0; i < codeVerifier.length; i++) {
-      const char = codeVerifier.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash).toString(36);
+  // --- PKCE helpers ---
+  private generateRandomState(): string {
+    return Math.random().toString(36).substring(2, 15) +
+           Math.random().toString(36).substring(2, 15);
   }
 
-  // Iniciar el flujo de Authorization Code (SÍNCRONO)
-  startAuthorizationFlow(): void {
+  private generateCodeVerifier(): string {
+    const array = new Uint8Array(64);
+    crypto.getRandomValues(array);
+    return this.base64UrlEncode(array);
+  }
+
+  private base64UrlEncode(array: Uint8Array): string {
+    // btoa on raw bytes:
+    let str = '';
+    for (let i = 0; i < array.length; i++) {
+      str += String.fromCharCode(array[i]);
+    }
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  private async generateCodeChallenge(verifier: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    const hashed = new Uint8Array(digest);
+    return this.base64UrlEncode(hashed);
+  }
+
+  // --- inicio del flujo (redirección al auth server) ---
+  async startAuthorizationFlow(): Promise<void> {
     const state = this.generateRandomState();
     const codeVerifier = this.generateCodeVerifier();
-    
-    // Usar versión síncrona para evitar problemas con Promises
-    const codeChallenge = this.generateCodeChallengeSync(codeVerifier);
-    
-    // Guardar para usar después
-    localStorage.setItem('oauth_state', state);
-    localStorage.setItem('code_verifier', codeVerifier);
+    const codeChallenge = await this.generateCodeChallenge(codeVerifier);
 
-    const authUrl = `${this.authEndpoint}?` +
-      `response_type=code&` +
-      `client_id=angular-client&` +
-      `redirect_uri=${encodeURIComponent('http://localhost:4200/callback')}&` +
-      `scope=${encodeURIComponent('openid profile read write')}&` +
-      `state=${state}&` +
-      `code_challenge=${codeChallenge}&` +
-      `code_challenge_method=S256`;
+    // Guardar para validar después
+    localStorage.setItem(this.STORAGE_STATE, state);
+    localStorage.setItem(this.STORAGE_CODE_VERIFIER, codeVerifier);
 
-    console.log('Redirecting to auth server...');
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
+      scope: this.scope,
+      state: state,
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256'
+    });
+
+    const authUrl = `${this.authEndpoint}?${params.toString()}`;
+    console.log('[AuthService] redirecting to', authUrl);
     window.location.href = authUrl;
   }
 
-  // Manejar el callback con el código de autorización
-  handleAuthorizationCallback(code: string, state: string): Observable<any> {
-    const savedState = localStorage.getItem('oauth_state');
-    const codeVerifier = localStorage.getItem('code_verifier');
+  // --- intercambio del authorization code por tokens (usa code_verifier) ---
+  handleAuthorizationCallback(code: string | null, state: string | null): Observable<any> {
+    const savedState = localStorage.getItem(this.STORAGE_STATE);
+    const codeVerifier = localStorage.getItem(this.STORAGE_CODE_VERIFIER);
 
-    // Validar state para prevenir CSRF
+    if (!code || !state) {
+      return throwError(() => new Error('Code or state missing in callback'));
+    }
     if (state !== savedState) {
-      throw new Error('Invalid state parameter');
+      return throwError(() => new Error('Invalid state parameter'));
+    }
+    if (!codeVerifier) {
+      return throwError(() => new Error('PKCE code_verifier missing'));
     }
 
-    const body = new HttpParams()
-      .set('grant_type', 'authorization_code')
-      .set('code', code)
-      .set('redirect_uri', 'http://localhost:4200/callback')
-      .set('client_id', 'angular-client')
-      .set('code_verifier', codeVerifier || '');
+    // Construir body x-www-form-urlencoded
+    const body = new URLSearchParams();
+    body.set('grant_type', 'authorization_code');
+    body.set('code', code);
+    body.set('redirect_uri', this.redirectUri);
+    body.set('client_id', this.clientId);
+    body.set('code_verifier', codeVerifier);
 
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-
-    return this.http.post<any>(this.tokenEndpoint, body.toString(), { headers }).pipe(
+    // IMPORTANTE: no enviar Authorization header (no client_secret)
+    return this.http.post<any>(this.tokenEndpoint, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(
       tap(response => {
-        console.log('Token response:', response);
-        
-        // Guardar tokens
-        localStorage.setItem('access_token', response.access_token);
+        // guardar tokens y usuario
+        localStorage.setItem(this.STORAGE_ACCESS_TOKEN, response.access_token);
         if (response.refresh_token) {
-          localStorage.setItem('refresh_token', response.refresh_token);
+          localStorage.setItem(this.STORAGE_REFRESH_TOKEN, response.refresh_token);
         }
-        
-        // Limpiar valores temporales
-        localStorage.removeItem('oauth_state');
-        localStorage.removeItem('code_verifier');
-        
-        // Extraer información del usuario
+        // limpiar pkce/state
+        localStorage.removeItem(this.STORAGE_STATE);
+        localStorage.removeItem(this.STORAGE_CODE_VERIFIER);
+
         const userInfo = this.decodeJwt(response.access_token);
         const userData = this.createUserData(userInfo);
-        
-        // Actualizar estado
         this.currentUser.set(userData);
         this.isAuthenticated.set(true);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem(this.STORAGE_USER, JSON.stringify(userData));
       }),
-      catchError(error => {
-        console.error('Callback error:', error);
-        // Limpiar en caso de error
-        localStorage.removeItem('oauth_state');
-        localStorage.removeItem('code_verifier');
-        throw error;
+      catchError(err => {
+        console.error('[AuthService] token exchange failed', err);
+        // limpiar elementos de PKCE/state por seguridad
+        localStorage.removeItem(this.STORAGE_STATE);
+        localStorage.removeItem(this.STORAGE_CODE_VERIFIER);
+        return throwError(() => err);
       })
     );
   }
 
-  // Método para mantener compatibilidad
-  login(username: string, password: string): Observable<any> {
-    this.startAuthorizationFlow();
-    return new Observable(subscriber => {
-      subscriber.complete();
-    });
+  // --- intentar manejar callback directamente desde la URL (útil para CallbackComponent) ---
+  handleCallbackFromUrl(): Observable<any> {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+
+    if (!code) {
+      return throwError(() => new Error('No code in URL'));
+    }
+    return this.handleAuthorizationCallback(code, state);
   }
 
-  // Método para client_credentials
-  loginWithClientCredentials(): Observable<any> {
-    const body = new HttpParams()
-      .set('grant_type', 'client_credentials')
-      .set('scope', 'read write');
+  // --- refresh token ---
+  refreshAccessToken(): Observable<any> {
+    const refreshToken = localStorage.getItem(this.STORAGE_REFRESH_TOKEN);
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
 
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic ' + btoa('angular-client:secret')
-    };
+    const body = new URLSearchParams();
+    body.set('grant_type', 'refresh_token');
+    body.set('refresh_token', refreshToken);
+    body.set('client_id', this.clientId);
 
-    return this.http.post<any>(this.tokenEndpoint, body.toString(), { headers }).pipe(
+    return this.http.post<any>(this.tokenEndpoint, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(
       tap(response => {
-        localStorage.setItem('access_token', response.access_token);
-        
-        const userData: User = {
-          id: 0,
-          username: 'angular-client',
-          email: 'client@cakecandy.com',
-          name: 'Cliente Angular',
-          role: 'client'
-        };
-
+        localStorage.setItem(this.STORAGE_ACCESS_TOKEN, response.access_token);
+        if (response.refresh_token) {
+          localStorage.setItem(this.STORAGE_REFRESH_TOKEN, response.refresh_token);
+        }
+        const userInfo = this.decodeJwt(response.access_token);
+        const userData = this.createUserData(userInfo);
         this.currentUser.set(userData);
         this.isAuthenticated.set(true);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem(this.STORAGE_USER, JSON.stringify(userData));
       }),
-      catchError(error => {
-        console.error('Client credentials login error:', error);
-        throw error;
+      catchError(err => {
+        console.error('[AuthService] refresh token failed', err);
+        this.logout(); // limpiar estado
+        return throwError(() => err);
       })
     );
   }
 
-  // Helpers (sin cambios)
+  // --- login clásico (se mantiene para compatibilidad, redirige al flujo PKCE) ---
+  login(username?: string, password?: string): Observable<void> {
+    // Redirigimos al Authorization Code + PKCE
+    return from(this.startAuthorizationFlow());
+  }
+
+  // --- client_credentials (opcional; NO para SPA usuarias humanas) ---
+  // Nota: generalmente no se hace en frontend público; queda implementado por completitud.
+  loginWithClientCredentials(): Observable<any> {
+    const body = new URLSearchParams();
+    body.set('grant_type', 'client_credentials');
+    body.set('scope', 'read write');
+    // Si tu backend requiere client credentials para este grant, este request debe salir desde backend,
+    // no desde la SPA. Aquí lo dejamos, pero no es recomendado en producción.
+    const basic = btoa(`${this.clientId}:secret-if-you-have`);
+    return this.http.post<any>(this.tokenEndpoint, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': `Basic ${basic}` }
+    }).pipe(
+      tap(resp => {
+        localStorage.setItem(this.STORAGE_ACCESS_TOKEN, resp.access_token);
+      }),
+      catchError(err => {
+        return throwError(() => err);
+      })
+    );
+  }
+
+  // --- utilidades ---
   private createUserData(tokenInfo: any): User {
-    const username = tokenInfo.sub || 'user';
-    const name = tokenInfo.name || tokenInfo.preferred_username || this.capitalizeName(username);
-    
+    const username = tokenInfo.preferred_username || tokenInfo.sub || 'user';
+    const name = tokenInfo.name || username;
     let role = 'user';
     if (tokenInfo.roles && tokenInfo.roles.includes('ADMIN')) {
       role = 'admin';
     } else if (tokenInfo.scope && tokenInfo.scope.includes('admin')) {
       role = 'admin';
     }
-
     return {
-      id: tokenInfo.sub ? parseInt(tokenInfo.sub) : Date.now(),
-      username: username,
-      email: tokenInfo.email || username,
-      name: name,
-      role: role
+      id: tokenInfo.sub ? Number(tokenInfo.sub) : Date.now(),
+      username,
+      email: tokenInfo.email || `${username}@local`,
+      name,
+      role
     };
-  }
-
-  private capitalizeName(name: string): string {
-    return name.charAt(0).toUpperCase() + name.slice(1);
   }
 
   private decodeJwt(token: string): any {
@@ -210,38 +267,34 @@ export class AuthService {
     }
   }
 
-  private generateRandomState(): string {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15);
-  }
-
-  private generateCodeVerifier(): string {
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    return this.base64UrlEncode(array);
-  }
-
-  private base64UrlEncode(array: Uint8Array): string {
-    return btoa(String.fromCharCode(...array))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+  private isTokenExpired(token: string): boolean {
+    const decoded = this.decodeJwt(token);
+    if (!decoded || !decoded.exp) return true;
+    const now = Math.floor(Date.now() / 1000);
+    return decoded.exp < now;
   }
 
   logout(): void {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    this.clearStorage();
+    // Si tienes endpoint de logout en el auth server, podrías redirigirlo allí.
     this.router.navigate(['/login']);
   }
 
-  getCurrentUser() {
+  private clearStorage(): void {
+    localStorage.removeItem(this.STORAGE_ACCESS_TOKEN);
+    localStorage.removeItem(this.STORAGE_REFRESH_TOKEN);
+    localStorage.removeItem(this.STORAGE_USER);
+    localStorage.removeItem(this.STORAGE_STATE);
+    localStorage.removeItem(this.STORAGE_CODE_VERIFIER);
+  }
+
+  getCurrentUser(): User | null {
     return this.currentUser();
   }
 
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     return this.isAuthenticated();
   }
 
@@ -250,6 +303,6 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem(this.STORAGE_ACCESS_TOKEN);
   }
 }

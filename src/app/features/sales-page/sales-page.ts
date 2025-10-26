@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { StatsCards, StatCard } from '../../shared/components/stats-cards/stats-cards';
@@ -11,6 +11,9 @@ import {
   CheckCircle, Clock, XCircle, Users, Package,
   Calendar, CreditCard, Gift, Award
 } from 'lucide-angular';
+import { SaleService, Sale, Product, User } from '../../core/services/sale.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-sales-page',
@@ -25,7 +28,9 @@ import {
   templateUrl: './sales-page.html',
   styleUrl: './sales-page.scss'
 })
-export class SalesPage implements OnInit{
+export class SalesPage implements OnInit {
+  private saleService = inject(SaleService);
+
   // Iconos para usar en el template
   icons = {
     shoppingCart: ShoppingCart,
@@ -43,153 +48,33 @@ export class SalesPage implements OnInit{
     award: Award
   };
 
-  // ✅ INICIALIZAR salesData PRIMERO
-  salesData: TableData[] = [
-    { 
-      id_venta: 1, 
-      id_usuario: 101, 
-      nombre_usuario: 'Ana García', 
-      producto: 'Pastel de Fresa Decorado',
-      fecha_venta: '2024-01-15 10:30:00', 
-      total: 90.00, 
-      metodo_pago: 'tarjeta',
-      estado: 'Completada',
-      cantidad: 2,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 2, 
-      id_usuario: 102, 
-      nombre_usuario: 'Carlos López', 
-      producto: 'Cupcakes de Vainilla',
-      fecha_venta: '2024-01-15 11:15:00', 
-      total: 75.00, 
-      metodo_pago: 'efectivo',
-      estado: 'Completada',
-      cantidad: 6,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 3, 
-      id_usuario: 103, 
-      nombre_usuario: 'María Torres', 
-      producto: 'Helado de Chocolate',
-      fecha_venta: '2024-01-15 14:20:00', 
-      total: 54.00, 
-      metodo_pago: 'yape',
-      estado: 'Completada',
-      cantidad: 3,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 4, 
-      id_usuario: 101, 
-      nombre_usuario: 'Ana García', 
-      producto: 'Cheesecake de Frutos Rojos',
-      fecha_venta: '2024-01-16 09:45:00', 
-      total: 44.00, 
-      metodo_pago: 'transferencia',
-      estado: 'Completada',
-      cantidad: 2,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 5, 
-      id_usuario: 104, 
-      nombre_usuario: 'Juan Pérez', 
-      producto: 'Galletas con Glaseado',
-      fecha_venta: '2024-01-16 12:30:00', 
-      total: 25.50, 
-      metodo_pago: 'efectivo',
-      estado: 'Pendiente',
-      cantidad: 3,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 6, 
-      id_usuario: 102, 
-      nombre_usuario: 'Carlos López', 
-      producto: 'Malteada de Fresa',
-      fecha_venta: '2024-01-16 15:10:00', 
-      total: 45.00, 
-      metodo_pago: 'tarjeta',
-      estado: 'Completada',
-      cantidad: 3,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 7, 
-      id_usuario: 105, 
-      nombre_usuario: 'Laura Medina', 
-      producto: 'Brownie con Nuez',
-      fecha_venta: '2024-01-17 08:20:00', 
-      total: 22.50, 
-      metodo_pago: 'yape',
-      estado: 'Completada',
-      cantidad: 3,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 8, 
-      id_usuario: 103, 
-      nombre_usuario: 'María Torres', 
-      producto: 'Trufas de Chocolate',
-      fecha_venta: '2024-01-17 11:45:00', 
-      total: 50.00, 
-      metodo_pago: 'efectivo',
-      estado: 'Cancelada',
-      cantidad: 2,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 9, 
-      id_usuario: 101, 
-      nombre_usuario: 'Ana García', 
-      producto: 'Pastel de Fresa',
-      fecha_venta: '2024-01-17 16:30:00', 
-      total: 45.00, 
-      metodo_pago: 'tarjeta',
-      estado: 'Completada',
-      cantidad: 1,
-      icon: 'gift'
-    },
-    { 
-      id_venta: 10, 
-      id_usuario: 104, 
-      nombre_usuario: 'Juan Pérez', 
-      producto: 'Variedad de Cupcakes',
-      fecha_venta: '2024-01-18 10:00:00', 
-      total: 150.00, 
-      metodo_pago: 'transferencia',
-      estado: 'Completada',
-      cantidad: 12,
-      icon: 'gift'
-    }
-  ];
+  // Datos reales desde el backend
+  salesData: TableData[] = [];
+  displayedData: TableData[] = [];
 
   // ✅ ESTADÍSTICAS CONFIGURABLES PARA VENTAS
   stats: StatCard[] = [
     {
-      value: this.totalVentas,
+      value: 0,
       label: 'Total Ventas',
       icon: this.icons.shoppingCart,
       gradient: 'linear-gradient(135deg, #ff9cd9, #ff6bb8)'
     },
     {
-      value: this.ventasCompletadas,
+      value: 0,
       label: 'Completadas',
       icon: this.icons.checkCircle,
       gradient: 'linear-gradient(135deg, #4ade80, #22c55e)'
     },
     {
-      value: this.totalIngresos,
+      value: 0,
       label: 'Ingresos Totales',
       icon: this.icons.dollarSign,
       gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
       format: 'currency'
     },
     {
-      value: this.promedioVenta,
+      value: 0,
       label: 'Ticket Promedio',
       icon: this.icons.trendingUp,
       gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
@@ -207,26 +92,9 @@ export class SalesPage implements OnInit{
   modalLoading: boolean = false;
   modalTitle: string = 'Nueva Venta';
 
-  // Productos disponibles para vender - ahora de dulcería!
-  availableProducts = [
-    { value: 1, label: 'Pastel de Fresa Decorado - S/ 45.00 (Stock: 8)', stock: 8, price: 45.00, icon: 'gift' },
-    { value: 2, label: 'Cupcakes de Vainilla - S/ 12.50 (Stock: 24)', stock: 24, price: 12.50, icon: 'gift' },
-    { value: 3, label: 'Helado de Chocolate Belga - S/ 18.00 (Stock: 15)', stock: 15, price: 18.00, icon: 'gift' },
-    { value: 4, label: 'Trufas de Chocolate Amargo - S/ 25.00 (Stock: 0)', stock: 0, price: 25.00, icon: 'gift' },
-    { value: 5, label: 'Galletas con Glaseado - S/ 8.50 (Stock: 32)', stock: 32, price: 8.50, icon: 'gift' },
-    { value: 6, label: 'Malteada de Fresa - S/ 15.00 (Stock: 20)', stock: 20, price: 15.00, icon: 'gift' },
-    { value: 7, label: 'Cheesecake de Frutos Rojos - S/ 22.00 (Stock: 12)', stock: 12, price: 22.00, icon: 'gift' },
-    { value: 8, label: 'Brownie con Nuez - S/ 7.50 (Stock: 28)', stock: 28, price: 7.50, icon: 'gift' }
-  ];
-
-  // Vendedores (usuarios)
-  sellers = [
-    { value: 101, label: 'Ana García' },
-    { value: 102, label: 'Carlos López' },
-    { value: 103, label: 'María Torres' },
-    { value: 104, label: 'Juan Pérez' },
-    { value: 105, label: 'Laura Medina' }
-  ];
+  // Productos y vendedores desde el backend
+  availableProducts: any[] = [];
+  sellers: any[] = [];
 
   modalFields: FormField[] = [
     {
@@ -241,10 +109,7 @@ export class SalesPage implements OnInit{
       label: 'Producto Dulce 🍭',
       type: 'select',
       required: true,
-      options: this.availableProducts.map(p => ({
-        value: p.value,
-        label: p.label
-      }))
+      options: this.availableProducts
     },
     {
       key: 'cantidad',
@@ -296,11 +161,10 @@ export class SalesPage implements OnInit{
   ]
 
   // Configuración
-  displayedData: TableData[] = [];
   pagination: PaginationConfig = {
     page: 1,
     pageSize: 5,
-    total: this.salesData.length
+    total: 0
   };
   
   loading: boolean = false;
@@ -308,55 +172,122 @@ export class SalesPage implements OnInit{
   showAddButton: boolean = true;
   addButtonLabel: string = 'Nueva Venta';
 
-  // Propiedades computadas para estadísticas
-  get totalVentas(): number {
-    return this.salesData?.length || 0;
-  }
-
-  get ventasCompletadas(): number {
-    return this.salesData?.filter(v => v['estado'] === 'Completada').length || 0;
-  }
-
-  get ventasPendientes(): number {
-    return this.salesData?.filter(v => v['estado'] === 'Pendiente').length || 0;
-  }
-
-  get totalIngresos(): number {
-    return this.salesData
-      ?.filter(v => v['estado'] === 'Completada')
-      ?.reduce((sum, venta) => sum + parseFloat(venta['total']), 0) || 0;
-  }
-
-  get promedioVenta(): number {
-    const ventasCompletadas = this.salesData?.filter(v => v['estado'] === 'Completada') || [];
-    return ventasCompletadas.length > 0 
-      ? this.totalIngresos / ventasCompletadas.length 
-      : 0;
-  }
-
-  get mejorVendedor(): string {
-    if (!this.salesData?.length) return 'Sin ventas';
-    
-    const ventasPorVendedor = this.salesData.reduce((acc, venta) => {
-      if (venta['estado'] === 'Completada') {
-        acc[venta['nombre_usuario']] = (acc[venta['nombre_usuario']] || 0) + parseFloat(venta['total']);
-      }
-      return acc;
-    }, {} as { [key: string]: number });
-
-    const mejor = Object.entries(ventasPorVendedor).reduce((prev, current) => 
-      (prev[1] > current[1]) ? prev : current, ['', 0]
-    );
-
-    return mejor[0] || 'Sin ventas';
-  }
+  private allData: TableData[] = [];
 
   ngOnInit() {
-    this.allData = [...this.salesData];
-    this.updateDisplayedData();
+    this.loadSales();
+    this.loadStats();
+    this.loadFormData();
   }
 
-  private allData: TableData[] = [];
+  private loadSales() {
+    this.loading = true;
+    this.saleService.getSales(this.pagination.page, this.pagination.pageSize)
+      .pipe(
+        finalize(() => this.loading = false),
+        catchError(error => {
+          console.error('Error loading sales:', error);
+          alert('Error al cargar las ventas');
+          return of({ data: { sales: [], total: 0 }, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.salesData = response.data.sales;
+          this.allData = [...this.salesData];
+          this.pagination.total = response.data.total;
+          this.updateDisplayedData();
+        }
+      });
+  }
+
+  private loadStats() {
+    this.saleService.getSaleStats()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading sales stats:', error);
+          return of({ 
+            data: {
+              totalVentas: 0,
+              ventasCompletadas: 0,
+              totalIngresos: 0,
+              promedioVenta: 0,
+              mejorVendedor: 'Sin ventas',
+              ventasPendientes: 0
+            }, 
+            success: false, 
+            message: '' 
+          });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.updateStats(response.data);
+        }
+      });
+  }
+
+  private loadFormData() {
+    // Cargar productos disponibles
+    this.saleService.getAvailableProducts()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading products:', error);
+          return of({ data: [], success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.availableProducts = response.data.map((product: Product) => ({
+            value: product.id,
+            label: `${product.nombre} - S/ ${product.precio.toFixed(2)} (Stock: ${product.stock})`,
+            stock: product.stock,
+            price: product.precio,
+            icon: 'gift'
+          }));
+          this.updateProductField();
+        }
+      });
+
+    // Cargar vendedores
+    this.saleService.getSellers()
+      .pipe(
+        catchError(error => {
+          console.error('Error loading sellers:', error);
+          return of({ data: [], success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.sellers = response.data.map((user: User) => ({
+            value: user.id,
+            label: user.nombre
+          }));
+          this.updateSellerField();
+        }
+      });
+  }
+
+  private updateStats(statsData: any) {
+    this.stats[0].value = statsData.totalVentas;
+    this.stats[1].value = statsData.ventasCompletadas;
+    this.stats[2].value = statsData.totalIngresos;
+    this.stats[3].value = statsData.promedioVenta;
+  }
+
+  private updateProductField() {
+    const productField = this.modalFields.find(field => field.key === 'id_producto');
+    if (productField) {
+      productField.options = this.availableProducts;
+    }
+  }
+
+  private updateSellerField() {
+    const sellerField = this.modalFields.find(field => field.key === 'id_usuario');
+    if (sellerField) {
+      sellerField.options = this.sellers;
+    }
+  }
 
   private updateDisplayedData() {
     const startIndex = (this.pagination.page - 1) * this.pagination.pageSize;
@@ -367,27 +298,38 @@ export class SalesPage implements OnInit{
   // Manejar eventos de la tabla
   onPageChange(page: number) {
     this.pagination.page = page;
-    this.updateDisplayedData();
+    this.loadSales();
   }
 
   onSearchChange(searchTerm: string) {
     if (!searchTerm.trim()) {
-      this.allData = [...this.salesData];
+      this.loadSales();
     } else {
-      this.allData = this.salesData.filter(venta =>
-        venta['nombre_usuario'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venta['producto'].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venta['id_venta'].toString().includes(searchTerm) ||
-        venta['estado'].toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      this.loading = true;
+      this.saleService.getSales(1, this.pagination.pageSize, searchTerm)
+        .pipe(
+          finalize(() => this.loading = false),
+          catchError(error => {
+            console.error('Error searching sales:', error);
+            alert('Error al buscar ventas');
+            return of({ data: { sales: [], total: 0 }, success: false, message: '' });
+          })
+        )
+        .subscribe(response => {
+          if (response.success) {
+            this.salesData = response.data.sales;
+            this.allData = [...this.salesData];
+            this.pagination.total = response.data.total;
+            this.pagination.page = 1;
+            this.updateDisplayedData();
+          }
+        });
     }
-    this.pagination.total = this.allData.length;
-    this.pagination.page = 1;
-    this.updateDisplayedData();
   }
 
   onSort(sortEvent: SortEvent) {
     console.log('🔄 Ordenando ventas por:', sortEvent);
+    // Implementar lógica de ordenamiento si es necesario
   }
 
   onRowClick(row: TableData) {
@@ -401,6 +343,8 @@ export class SalesPage implements OnInit{
 
   onAdd() {
     this.showModal = true;
+    // Recargar datos del formulario para tener información actualizada
+    this.loadFormData();
   }
 
   onSaveSale(formData: any) {
@@ -429,42 +373,37 @@ export class SalesPage implements OnInit{
       return;
     }
 
-    // Simular registro de venta
-    setTimeout(() => {
-      const vendedor = this.sellers.find(s => s.value == formData.id_usuario)?.label || 'Desconocido';
-      const producto = this.availableProducts.find(p => p.value == formData.id_producto);
-      
-      if (!producto) {
-        alert('❌ Error al procesar la venta');
-        this.modalLoading = false;
-        return;
-      }
+    // Crear venta en el backend
+    const saleData = {
+      id_usuario: formData.id_usuario,
+      id_producto: formData.id_producto,
+      cantidad: cantidad,
+      metodo_pago: formData.metodo_pago,
+      observaciones: formData.observaciones
+    };
 
-      const total = producto.price * cantidad;
-      
-      // Registrar la venta
-      const newSale = {
-        id_venta: this.salesData.length + 1,
-        id_usuario: formData.id_usuario,
-        nombre_usuario: vendedor,
-        producto: producto.label.split(' - ')[0],
-        fecha_venta: new Date().toLocaleString('es-ES'),
-        total: total,
-        metodo_pago: formData.metodo_pago,
-        estado: 'Completada',
-        cantidad: cantidad,
-        precio_unitario: producto.price,
-        icon: 'gift'
-      };
-
-      this.salesData.unshift(newSale);
-      this.updateDisplayedData();
-      
-      this.modalLoading = false;
-      this.showModal = false;
-      
-      alert(`🎉 Venta registrada exitosamente!\n💰 Total: S/ ${total.toFixed(2)}\n🍰 ${cantidad} x ${producto.label.split(' - ')[0]}`);
-    }, 1000);
+    this.saleService.createSale(saleData)
+      .pipe(
+        finalize(() => this.modalLoading = false),
+        catchError(error => {
+          console.error('Error creating sale:', error);
+          alert('Error al registrar la venta');
+          return of({ data: null, success: false, message: '' });
+        })
+      )
+      .subscribe(response => {
+        if (response.success) {
+          this.showModal = false;
+          const total = selectedProduct.price * cantidad;
+          alert(`🎉 Venta registrada exitosamente!\n💰 Total: S/ ${total.toFixed(2)}\n🍰 ${cantidad} x ${selectedProduct.label.split(' - ')[0]}`);
+          
+          // Recargar datos
+          this.loadSales();
+          this.loadStats();
+        } else {
+          alert('Error al registrar la venta: ' + response.message);
+        }
+      });
   }
 
   onCancelModal() {
@@ -509,15 +448,22 @@ export class SalesPage implements OnInit{
 
   // Formatear moneda
   formatCurrency(amount: number): string {
-    return `S/ ${amount.toFixed(2)}`;
+    return `S/ ${amount?.toFixed(2) || '0.00'}`;
   }
 
   // Formatear fecha
   formatDate(fecha: string): string {
-    return new Date(fecha).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    if (!fecha) return 'Fecha no disponible';
+    try {
+      return new Date(fecha).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return fecha;
+    }
   }
 }
