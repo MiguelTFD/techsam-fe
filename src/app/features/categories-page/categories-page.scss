@@ -134,7 +134,7 @@
   .category-icon {
     width: 3rem;
     height: 3rem;
-    background: linear-gradient(135deg, $color-pink-light 0%, $color-pink-medium 100%);
+    background: linear-gradient(135deg, $color-blue-light 0%, $color-blue-medium 100%);
     border-radius: $border-radius-medium;
     display: flex;
     align-items: center;
@@ -323,7 +323,7 @@
     border-radius: $border-radius-medium;
     padding: 1.5rem;
     box-shadow: $shadow-sidebar;
-    border-left: 4px solid $color-pink-medium;
+    border-left: 4px solid $color-blue-medium;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     
     &:hover {
@@ -348,7 +348,7 @@
     .stat-icon {
       width: 1.5rem;
       height: 1.5rem;
-      color: $color-pink-medium;
+      color: $color-blue-medium;
       margin-bottom: 0.75rem;
     }
   }

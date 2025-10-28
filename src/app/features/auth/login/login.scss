@@ -1,10 +1,10 @@
 @use '../../../../variables.scss' as *;
 
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Dancing+Script:wght@400;500;600&family=Nunito:wght@200;300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
 
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ec7bd4 0%, #8c53c5 100%);
+  background: linear-gradient(135deg, $color-nord0 0%, $color-nord3 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +13,7 @@
 }
 
 .login-card {
-  background: rgb(250, 232, 246);
+  background: $color-nord6;
   border-radius: $border-radius-medium;
   box-shadow: $shadow-sidebar;
   padding: 2.5rem;
@@ -66,7 +66,7 @@
 
     &:focus {
       outline: none;
-      border-color: $color-pink-medium;
+      border-color: $color-blue-medium;
       box-shadow: 0 0 0 3px rgba(255, 107, 184, 0.2);
     }
 
@@ -90,7 +90,7 @@
 
 .login-btn {
   width: 100%;
-  background: $color-pink-medium;
+  background: $color-blue-medium;
   color: $text-white;
   border: none;
   padding: 0.875rem 1.5rem;

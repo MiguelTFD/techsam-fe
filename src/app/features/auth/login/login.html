@@ -1,28 +1,23 @@
 <div class="login-container">
   <div class="login-card">
-    <!-- Header -->
     <div class="login-header">
-      <h1>Cake Candy</h1>
-      <p>Sistema de Gestión de Inventario</p>
+      <h1>Techsam</h1>
     </div>
 
-    <!-- Formulario -->
     <form (ngSubmit)="onSubmit()" class="login-form">
       
-      <!-- Campo Usuario -->
       <div class="form-group">
-        <label for="username" class="form-label">Usuario</label>
+        <label for="email" class="form-label">email</label>
         <input
           type="text"
-          id="username"
-          [(ngModel)]="username"
-          name="username"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
           class="form-input"
-          placeholder="Ingresa tu usuario"
+          placeholder="Ingresa tu email"
           required>
       </div>
 
-      <!-- Campo Contraseña -->
       <div class="form-group">
         <label for="password" class="form-label">Contraseña</label>
         <input
@@ -35,12 +30,10 @@
           required>
       </div>
 
-      <!-- Mensaje de Error -->
       <div *ngIf="error" class="error-message">
         {{ error }}
       </div>
 
-      <!-- Botón de Login -->
       <button 
         type="submit" 
         class="login-btn"
@@ -53,7 +46,6 @@
 
     <!-- Footer -->
     <div class="login-footer">
-      <p>© 2024 CakeCandy. Todos los derechos reservados.</p>
     </div>
   </div>
 </div>

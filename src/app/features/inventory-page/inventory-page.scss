@@ -134,7 +134,7 @@
   .product-icon {
     width: 3rem;
     height: 3rem;
-    background: linear-gradient(135deg, $color-accent 0%, $color-pink-light 100%);
+    background: linear-gradient(135deg, $color-accent 0%, $color-blue-light 100%);
     border-radius: $border-radius-medium;
     display: flex;
     align-items: center;
@@ -170,9 +170,9 @@
       
       .product-category {
         font-family: $font-primary;
-        color: $color-pink-medium;
+        color: $color-blue-medium;
         font-weight: $font-weight-medium;
-        background: rgba($color-pink-medium, 0.1);
+        background: rgba($color-blue-medium, 0.1);
         padding: 0.2rem 0.5rem;
         border-radius: $border-radius-small;
       }

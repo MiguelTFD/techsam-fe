@@ -12,7 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./login.scss']
 })
 export class Login {
-  username: string = '';
+  email: string = '';
   password: string = '';
   loading: boolean = false;
   error: string = '';
@@ -21,7 +21,7 @@ export class Login {
   private router = inject(Router);
 
   onSubmit() {
-    if (!this.username || !this.password) {
+    if (!this.email || !this.password) {
       this.error = 'Por favor completa todos los campos';
       return;
     }
@@ -29,7 +29,7 @@ export class Login {
     this.loading = true;
     this.error = '';
 
-    this.authService.login(this.username, this.password).subscribe({
+    this.authService.login(this.email, this.password).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate(['/']);
