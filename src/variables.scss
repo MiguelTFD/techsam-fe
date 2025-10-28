@@ -1,73 +1,72 @@
-// Variables globales SCSS
-// =============================================
-
-// Fuentes
-// =============================================
 $font-primary: 'Nunito', sans-serif;
-$font-secondary: 'Dancing Script', cursive;
+$font-secondary: 'Fredoka', sans-serif;
 $font-accent: 'Comic Neue', cursive;
 
-// Pesos de fuentes
 $font-weight-light: 300;
 $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
-// Colores principales
-// =============================================
-$color-primary: #fa84cd;
-$color-secondary: #a53d6e;
-$color-accent: #ff9ae6;
-$color-pink-light: #ffe4f3;
-$color-pink-medium: #ff6bb8;
-$color-pink-dark: #f63b99;
-$color-purple-dark: #d44983 ;
+$color-nord0: #2e3440;
+$color-nord1: #3b4252;
+$color-nord2: #434c5e;
+$color-nord3: #4c566a;
+$color-nord4: #d8dee9;
+$color-nord5: #e5e9f0;
+$color-nord6: #eceff4;
+$color-nord7: #8fbcbb;
+$color-nord8: #88c0d0;
+$color-nord9: #81a1c1;
+$color-nord10: #5e81ac;
+$color-nord11: #bf616a;
+$color-nord12: #d08770;
+$color-nord13: #ebcb8b;
+$color-nord14: #a3be8c;
+$color-nord15: #b48ead;
 
-// Gradientes
-// =============================================
-$gradient-primary: linear-gradient(135deg, #f59dd3 0%, #d44983 100%);
-$gradient-accent: linear-gradient(135deg, #fd5098 , #f79bf7);
-$gradient-border: linear-gradient(90deg, #ff9cd9, #ff6bb8, #ff9cd9);
-$gradient-logout: linear-gradient(135deg, #ff6b84, #ff3f6f);
-$gradient-logout-hover: linear-gradient(135deg, #ff5269, #b91c65);
+$color-primary: $color-nord8;
+$color-secondary: $color-nord9;
+$color-accent: $color-nord7;
 
-// Colores de texto
-// =============================================
-$text-white: #ffffff;
-$text-light: #ffe4f3;
-$text-dark: #610259;
-$text-gradient: linear-gradient(45deg, #ffffff, #ffe4f3);
+$color-blue: $color-nord10;
+$color-blue-light: $color-nord10;
+$color-blue-medium: $color-nord9;
+$color-blue-dark: $color-nord2;
+$color-purple-dark: $color-nord15;
 
-// Colores de fondo y overlays
-// =============================================
-$bg-overlay: rgba(255, 255, 255, 0.15);
-$bg-overlay-light: rgba(255, 255, 255, 0.1);
-$bg-overlay-medium: rgba(255, 255, 255, 0.2);
-$bg-dark-overlay: rgba(116, 21, 79, 0.7);
+$gradient-primary: linear-gradient(135deg, $color-nord8 0%, $color-nord9 100%);
+$gradient-accent: linear-gradient(135deg, $color-nord7, $color-nord10);
+$gradient-border: linear-gradient(90deg, $color-nord7, $color-nord8, $color-nord9);
+$gradient-logout: linear-gradient(135deg, $color-nord11, $color-nord12);
+$gradient-logout-hover: linear-gradient(135deg, lighten($color-nord11, 5%), darken($color-nord12, 5%));
 
-// Sombras
-// =============================================
-$shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.1);
-$shadow-medium: 0 4px 12px rgba(255, 107, 184, 0.4);
-$shadow-pink: 0 4px 12px rgba(255, 156, 217, 0.3);
-$shadow-red: 0 4px 8px rgba(220, 38, 38, 0.3);
-$shadow-red-hover: 0 6px 12px rgba(220, 38, 38, 0.4);
-$shadow-sidebar: 2px 0 12px rgba(255, 105, 180, 0.3);
+$text-white: $color-nord6;
+$text-light: $color-nord5;
+$text-dark: $color-nord1;
+$text-gradient: linear-gradient(45deg, $color-nord5, $color-nord8);
 
-// Bordes
-// =============================================
-$border-pink: #ff9cd9;
-$border-dashed: 2px dashed #ff9cd9;
+$bg-overlay: rgba(46, 52, 64, 0.15);
+$bg-overlay-light: rgba(236, 239, 244, 0.1);
+$bg-overlay-medium: rgba(46, 52, 64, 0.25);
+$bg-dark-overlay: rgba(46, 52, 64, 0.7);
+
+$shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.15);
+$shadow-medium: 0 4px 12px rgba(136, 192, 208, 0.3);
+$shadow-accent: 0 4px 12px rgba(129, 161, 193, 0.3);
+$shadow-blue: 0 4px 12px rgba(129, 161, 193, 0.3);
+$shadow-red: 0 4px 8px rgba(191, 97, 106, 0.3);
+$shadow-red-hover: 0 6px 12px rgba(191, 97, 106, 0.4);
+$shadow-sidebar: 2px 0 12px rgba(76, 86, 106, 0.4);
+
+$border-accent: $color-nord8;
+$border-blue : $color-blue;
+$border-dashed: 2px dashed $color-nord8;
 $border-radius-small: 10px;
 $border-radius-medium: 15px;
 $border-radius-large: 20px;
 
-// Estados y efectos
-// =============================================
 $transition-standard: all 0.3s ease;
 $backdrop-blur: blur(10px);
 
-// Breakpoints
-// =============================================
 $breakpoint-mobile: 768px;

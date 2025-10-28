@@ -42,14 +42,14 @@
         font-size: 2rem;
         color: $text-dark;
         margin: 0;
-        background: linear-gradient(45deg, $color-pink-medium, $color-accent);
+        background: linear-gradient(45deg, $color-blue-medium, $color-accent);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
 
       .modal-close {
-        background: linear-gradient(135deg, $color-accent, $color-pink-medium);
+        background: linear-gradient(135deg, $color-accent, $color-blue-medium);
         border: none;
         border-radius: 50%;
         width: 2.5rem;
@@ -82,7 +82,7 @@
           font-size: 0.95rem;
 
           .required {
-            color: $color-pink-medium;
+            color: $color-blue-medium;
             margin-left: 2px;
           }
         }
@@ -100,7 +100,7 @@
 
           &:focus {
             outline: none;
-            border-color: $color-pink-medium;
+            border-color: $color-blue-medium;
             background: white;
             box-shadow: 0 0 0 3px rgba(255, 107, 184, 0.1);
             transform: translateY(-1px);
@@ -171,7 +171,7 @@
         }
 
         &.btn-save {
-          background: linear-gradient(135deg, $color-accent, $color-pink-medium);
+          background: linear-gradient(135deg, $color-accent, $color-blue-medium);
           color: $text-white;
           position: relative;
           overflow: hidden;

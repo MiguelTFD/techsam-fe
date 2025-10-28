@@ -1,16 +1,4 @@
-// Importaciones
 @use "tailwindcss";
 
-
 $radius: 0.625rem;
-// Base styles con nesting de SCSS
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
